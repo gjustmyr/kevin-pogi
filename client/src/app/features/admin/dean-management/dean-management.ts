@@ -17,6 +17,9 @@ export class DeanManagementComponent implements OnInit {
   totalPages = signal(1);
   totalItems = signal(0);
   pageSize = 10;
+  
+  // Expose Math for template
+  Math = Math;
 
   constructor(private deanService: DeanService) {}
 

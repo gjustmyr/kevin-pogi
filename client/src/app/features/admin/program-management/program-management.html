@@ -1,183 +1,119 @@
-<div>
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Programs Management</h1>
-    <button
-      (click)="openCreateModal()"
-      class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition duration-200 inline-flex items-center"
-    >
-      <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4v16m8-8H4"
-        ></path>
-      </svg>
-      Add Program
-    </button>
-  </div>
-  <hr class="mb-4" />
-
-  <!-- Search and Filter Bar -->
-  <div class="mb-4 flex gap-4">
-    <div class="flex flex-col flex-1">
-      <label for="search" class="mb-2 font-medium">Search Programs</label>
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (input)="searchPrograms()"
-        placeholder="Search programs..."
-        id="search"
-        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"
-      />
+<div class="p-4">
+  <!-- Action Bar -->
+  <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
+    <div class="flex gap-2">
+      <button
+        (click)="openCreateModal()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
+      >
+        + Add Program
+      </button>
     </div>
-    <div class="flex flex-col">
-      <label for="department-filter" class="mb-2 font-medium">Filter by Department</label>
+    <div class="flex gap-2">
+      <!-- Department Filter -->
       <select
-        id="department-filter"
         [(ngModel)]="selectedDepartmentId"
         (change)="filterByDepartment()"
-        class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"
+        class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
       >
         <option [value]="undefined">All Departments</option>
         @for (dept of departmentsList(); track dept.department_id) {
           <option [value]="dept.department_id">{{ dept.department_name }}</option>
         }
       </select>
+      <!-- Search -->
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="searchPrograms()"
+        placeholder="Search programs..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+      />
     </div>
   </div>
 
-  <!-- Programs Table -->
-  <div class="relative overflow-x-auto bg-white shadow-xs border border-gray-200">
-    @if (loading()) {
-      <div class="p-8 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-        <p class="mt-2 text-gray-900">Loading...</p>
-      </div>
-    } @else {
-      <table class="w-full text-sm text-left rtl:text-right text-gray-900">
-        <thead class="bg-gray-100 border-b border-gray-200">
+  <!-- Table -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">Program Name</th>
+          <th scope="col" class="px-6 py-3">Department</th>
+          <th scope="col" class="px-6 py-3">Created</th>
+          <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
           <tr>
-            <th scope="col" class="px-6 py-3 font-medium">Program Name</th>
-            <th scope="col" class="px-6 py-3 font-medium">Department</th>
-            <th scope="col" class="px-6 py-3 font-medium">Created</th>
-            <th scope="col" class="px-6 py-3 font-medium">Actions</th>
+            <td colspan="4" class="px-6 py-4 text-center text-sm">Loading...</td>
           </tr>
-        </thead>
-        <tbody>
-          @for (program of programsList(); track program.program_id; let i = $index) {
-            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+        } @else if (programsList().length === 0) {
+          <tr>
+            <td colspan="4" class="px-6 py-4 text-center text-sm">No programs found</td>
+          </tr>
+        } @else {
+          @for (program of programsList(); track program.program_id) {
+            <tr class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4 font-semibold text-gray-900 text-sm">
                 {{ program.program_name }}
-              </th>
-              <td class="px-6 py-4">
-                {{ program.department?.department_name }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 text-sm">
+                {{ program.department?.department_name || 'N/A' }}
+              </td>
+              <td class="px-6 py-4 text-sm">
                 {{ program.createdAt | date: 'MMM d, y' }}
               </td>
-              <td class="px-6 py-4">
-                <button
-                  (click)="openEditModal(program)"
-                  class="font-medium text-blue-600 hover:underline mr-3"
-                >
+              <td class="px-6 py-4 text-sm">
+                <button (click)="openEditModal(program)" class="text-blue-600 hover:underline mr-3">
                   Edit
                 </button>
-                <button
-                  (click)="openDeleteModal(program)"
-                  class="font-medium text-red-600 hover:underline"
-                >
+                <button (click)="openDeleteModal(program)" class="text-red-600 hover:underline">
                   Delete
                 </button>
               </td>
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="4" class="px-6 py-8 text-center text-gray-900">
-                <svg
-                  class="mx-auto h-12 w-12 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                  ></path>
-                </svg>
-                <p class="mt-2">No programs found</p>
-              </td>
-            </tr>
           }
-        </tbody>
-      </table>
+        }
+      </tbody>
+    </table>
+  </div>
 
-      <!-- Pagination -->
-      <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
-        <div class="flex-1 flex justify-between sm:hidden">
+  <!-- Pagination -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-sm text-gray-700">
+      Showing {{ (currentPage() - 1) * pageSize + 1 }} to
+      {{ Math.min(currentPage() * pageSize, totalItems()) }} of {{ totalItems() }} results
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="changePage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      @for (page of getPageNumbers(); track page) {
+        @if (page === -1) {
+          <span class="px-3 py-1">...</span>
+        } @else {
           <button
-            (click)="changePage(currentPage() - 1)"
-            [disabled]="currentPage() === 1"
-            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-200 disabled:opacity-50"
+            (click)="changePage(page)"
+            [class.bg-blue-600]="page === currentPage()"
+            [class.text-white]="page === currentPage()"
+            class="px-3 py-1 border rounded hover:bg-gray-100"
           >
-            Previous
+            {{ page }}
           </button>
-          <button
-            (click)="changePage(currentPage() + 1)"
-            [disabled]="currentPage() === totalPages()"
-            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-200 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm text-gray-700">
-              Showing page <span class="font-medium">{{ currentPage() }}</span> of
-              <span class="font-medium">{{ totalPages() }}</span>
-              ({{ totalItems() }} total)
-            </p>
-          </div>
-          <div>
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-              <button
-                (click)="changePage(currentPage() - 1)"
-                [disabled]="currentPage() === 1"
-                class="relative inline-flex items-center px-2 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-200 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              @for (page of getPageNumbers(); track page) {
-                @if (page === -1) {
-                  <span
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-                    >...</span
-                  >
-                } @else {
-                  <button
-                    (click)="changePage(page)"
-                    [class.bg-red-50]="currentPage() === page"
-                    [class.border-red-500]="currentPage() === page"
-                    [class.text-red-600]="currentPage() === page"
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-200"
-                  >
-                    {{ page }}
-                  </button>
-                }
-              }
-              <button
-                (click)="changePage(currentPage() + 1)"
-                [disabled]="currentPage() === totalPages()"
-                class="relative inline-flex items-center px-2 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-200 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
-    }
+        }
+      }
+      <button
+        (click)="changePage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </div>

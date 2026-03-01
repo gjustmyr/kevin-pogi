@@ -16,6 +16,7 @@ export interface UserProfile {
   dean_id?: number;
   faculty_id?: number;
   organization_id?: number;
+  employee_id?: string;
   first_name?: string;
   middle_name?: string;
   last_name?: string;
@@ -26,6 +27,9 @@ export interface UserProfile {
   department_name?: string;
   description?: string;
   name?: string;
+  clearance_status?: 'pending' | 'cleared' | 'withholding';
+  clearance_remarks?: string;
+  clearance_date?: string;
 }
 
 export interface User {

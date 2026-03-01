@@ -297,4 +297,117 @@ export class DeanRequirementsMonitoring implements OnInit {
       percentage: Math.round((cleared / total) * 100),
     };
   }
+
+  getClearanceStatusClass(status?: string): string {
+    switch (status) {
+      case 'cleared':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'withholding':
+        return 'bg-red-100 text-red-800 border-red-300';
+      case 'pending':
+      default:
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    }
+  }
+
+  getClearanceStatusText(status?: string): string {
+    switch (status) {
+      case 'cleared':
+        return 'CLEARED';
+      case 'withholding':
+        return 'WITHHOLDING';
+      case 'pending':
+      default:
+        return 'PENDING';
+    }
+  }
+
+  setFacultyClearanceStatus(status: 'pending' | 'cleared' | 'withholding') {
+    if (!this.selectedFacultyAccomplishment()) return;
+
+    const statusText = status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'Withholding' : 'Pending';
+
+    Swal.fire({
+      title: `Set Faculty Status to ${statusText}?`,
+      text: `This will manually set the faculty's clearance status to ${statusText.toLowerCase()}`,
+      input: 'textarea',
+      inputLabel: 'Remarks (optional)',
+      inputPlaceholder: 'Enter any remarks...',
+      showCancelButton: true,
+      confirmButtonText: `Set to ${statusText}`,
+      confirmButtonColor: status === 'cleared' ? '#10b981' : status === 'withholding' ? '#dc2626' : '#f59e0b',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.requirementService
+          .setFacultyClearanceStatus(
+            this.selectedFacultyAccomplishment()!.faculty.faculty_id,
+            status,
+            result.value || undefined,
+            this.selectedAcademicYear() || undefined,
+            this.selectedSemester() || undefined
+          )
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Updated',
+                text: `Faculty clearance status set to ${statusText.toLowerCase()}`,
+                confirmButtonColor: '#2563eb',
+              });
+              this.loadFacultyAccomplishment();
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error?.message || 'Failed to update clearance status',
+                confirmButtonColor: '#2563eb',
+              });
+            },
+          });
+      }
+    });
+  }
+
+  calculateFacultyClearanceStatus() {
+    if (!this.selectedFacultyAccomplishment()) return;
+
+    Swal.fire({
+      title: 'Auto-Calculate Clearance Status?',
+      text: 'This will automatically determine the faculty clearance status based on their requirements',
+      showCancelButton: true,
+      confirmButtonText: 'Calculate',
+      confirmButtonColor: '#2563eb',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.requirementService
+          .calculateFacultyClearanceStatus(
+            this.selectedFacultyAccomplishment()!.faculty.faculty_id,
+            this.selectedAcademicYear() || undefined,
+            this.selectedSemester() || undefined
+          )
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Calculated',
+                text: 'Faculty clearance status calculated and updated',
+                confirmButtonColor: '#2563eb',
+              });
+              this.loadFacultyAccomplishment();
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error?.message || 'Failed to calculate clearance status',
+                confirmButtonColor: '#2563eb',
+              });
+            },
+          });
+      }
+    });
+  }
 }

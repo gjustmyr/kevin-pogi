@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { LoginCredentials, LoginResponse, User } from '../../shared/interface/auth.interface';
 import { environment } from '../../environments/environment';
+import { secureSetItem, secureGetItem, secureRemoveItem } from '../../shared/utils/storage.util';
 
 @Injectable({
   providedIn: 'root',
@@ -37,8 +38,8 @@ export class Auth {
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    secureRemoveItem(this.TOKEN_KEY);
+    secureRemoveItem(this.USER_KEY);
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.router.navigate(['/login']);
@@ -60,28 +61,53 @@ export class Auth {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return secureGetItem(this.TOKEN_KEY);
   }
 
   private setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    secureSetItem(this.TOKEN_KEY, token);
   }
 
   private setUser(user: User): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    secureSetItem(this.USER_KEY, JSON.stringify(user));
   }
 
   private getUserFromStorage(): User | null {
-    const userJson = localStorage.getItem(this.USER_KEY);
+    const userJson = secureGetItem(this.USER_KEY);
     return userJson ? JSON.parse(userJson) : null;
   }
 
   private hasToken(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
+    return !!secureGetItem(this.TOKEN_KEY);
   }
 
   hasRole(role: string): boolean {
     const user = this.currentUser();
     return user ? user.role === role : false;
+  }
+
+  /**
+   * Get the dashboard path for the current user based on their role
+   */
+  getDashboardPath(): string {
+    const user = this.currentUser();
+    if (!user || !user.role) {
+      return '/login';
+    }
+
+    switch (user.role) {
+      case 'superadmin':
+        return '/superadmin/dashboard';
+      case 'admin':
+        return '/admin/dashboard';
+      case 'dean':
+        return '/dean/dashboard';
+      case 'faculty':
+        return '/faculty/dashboard';
+      case 'organization':
+        return '/organization/dashboard';
+      default:
+        return '/login';
+    }
   }
 }

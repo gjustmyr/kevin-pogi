@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
 import { FacultyRequirements } from '../../faculty/requirements/requirements';
+import { FacultyCredentials } from '../../faculty/credentials/credentials';
 import {
   FacultyRequirementService,
   Assignment,
@@ -12,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-faculty-dashboard',
-  imports: [CommonModule, RouterModule, FacultyRequirements, FormsModule],
+  imports: [CommonModule, RouterModule, FacultyRequirements, FacultyCredentials, FormsModule],
   template: `
     <!-- Sidebar -->
     <aside
@@ -73,6 +74,26 @@ import { FormsModule } from '@angular/forms';
                 />
               </svg>
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Accomplishments</span>
+            </button>
+          </li>
+
+          <!-- Credentials -->
+          <li>
+            <button
+              (click)="selectTab('credentials')"
+              [class.bg-green-50]="activeTab() === 'credentials'"
+              [class.text-green-600]="activeTab() === 'credentials'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Credentials</span>
             </button>
           </li>
         </ul>
@@ -180,14 +201,6 @@ import { FormsModule } from '@angular/forms';
     <div class="pt-20 pl-4 pr-4 pb-4 transition-all duration-300" [class.ml-64]="isSidebarOpen()">
       @if (activeTab() === 'dashboard') {
         <div class="p-4 border border-gray-200 border-dashed rounded-lg">
-          <!-- Welcome Section -->
-          <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">
-              Welcome, {{ authService.currentUser()?.profile?.first_name }}!
-            </h1>
-            <p class="text-gray-600 mt-1">Here's your accomplishment progress overview</p>
-          </div>
-
           <!-- Filters -->
           <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -254,19 +267,80 @@ import { FormsModule } from '@angular/forms';
               </div>
             </div>
 
-            <div
-              class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium opacity-90 mb-1">Cleared</h3>
-                  <p class="text-4xl font-bold">{{ dashboardStats().cleared }}</p>
+            @if (authService.currentUser()?.profile) {
+              @if (authService.currentUser()!.profile.clearance_status === 'cleared') {
+                <div
+                  class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                      <p class="text-4xl font-bold">Cleared</p>
+                      @if (authService.currentUser()!.profile.clearance_date) {
+                        <p class="text-xs opacity-80 mt-1">
+                          {{ authService.currentUser()!.profile.clearance_date | date: 'MMM d, y' }}
+                        </p>
+                      }
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                  </div>
                 </div>
-                <div class="text-5xl opacity-30">
-                  <i class="fas fa-check-circle"></i>
+              } @else if (authService.currentUser()!.profile.clearance_status === 'withholding') {
+                <div
+                  class="bg-linear-to-br from-red-500 to-red-600 text-white rounded-lg shadow-lg p-6"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                      <p class="text-4xl font-bold">Withholding</p>
+                      @if (authService.currentUser()!.profile.clearance_date) {
+                        <p class="text-xs opacity-80 mt-1">
+                          {{ authService.currentUser()!.profile.clearance_date | date: 'MMM d, y' }}
+                        </p>
+                      }
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <div
+                  class="bg-linear-to-br from-yellow-500 to-yellow-600 text-white rounded-lg shadow-lg p-6"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                      <p class="text-4xl font-bold">Pending</p>
+                      @if (authService.currentUser()!.profile.clearance_date) {
+                        <p class="text-xs opacity-80 mt-1">
+                          {{ authService.currentUser()!.profile.clearance_date | date: 'MMM d, y' }}
+                        </p>
+                      }
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-clock"></i>
+                    </div>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div
+                class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-sm font-medium opacity-90 mb-1">Cleared</h3>
+                    <p class="text-4xl font-bold">{{ dashboardStats().cleared }}</p>
+                  </div>
+                  <div class="text-5xl opacity-30">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
                 </div>
               </div>
-            </div>
+            }
 
             <div
               class="bg-linear-to-br from-indigo-500 to-indigo-600 text-white rounded-lg shadow-lg p-6"
@@ -552,6 +626,9 @@ import { FormsModule } from '@angular/forms';
       @if (activeTab() === 'accomplishments') {
         <app-faculty-requirements />
       }
+      @if (activeTab() === 'credentials') {
+        <app-faculty-credentials />
+      }
     </div>
   `,
   styles: [],
@@ -587,8 +664,17 @@ export class FacultyDashboard implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.refreshProfile();
     this.loadAcademicYears();
     this.loadDashboardData();
+  }
+
+  refreshProfile() {
+    this.authService.getProfile().subscribe({
+      error: (error) => {
+        console.error('Error refreshing profile:', error);
+      }
+    });
   }
 
   loadAcademicYears() {
@@ -685,6 +771,8 @@ export class FacultyDashboard implements OnInit {
         return 'Dashboard';
       case 'accomplishments':
         return 'Accomplishments';
+      case 'credentials':
+        return 'Credentials';
       default:
         return 'Faculty Portal';
     }

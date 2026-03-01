@@ -6,6 +6,7 @@ import {
   Department,
   CreateDepartmentData,
 } from '../../../services/department.service';
+import { SweetAlertService } from '../../../shared/services/sweetalert.service';
 
 @Component({
   selector: 'app-department-management',
@@ -31,8 +32,14 @@ export class DepartmentManagementComponent implements OnInit {
   createForm = { department_name: '', status: 'enabled' as 'enabled' | 'disabled' };
   editForm = { department_id: 0, department_name: '', status: 'enabled' as 'enabled' | 'disabled' };
   deleteTarget: Department | null = null;
+  
+  // Expose Math for template
+  Math = Math;
 
-  constructor(private departmentService: DepartmentService) {}
+  constructor(
+    private departmentService: DepartmentService,
+    private sweetAlert: SweetAlertService
+  ) {}
 
   ngOnInit() {
     this.loadDepartments();
@@ -53,7 +60,7 @@ export class DepartmentManagementComponent implements OnInit {
         error: (error) => {
           console.error('Error loading departments:', error);
           this.loading.set(false);
-          alert('Failed to load departments');
+          this.sweetAlert.error('Failed to load departments');
         },
       });
   }
@@ -112,7 +119,7 @@ export class DepartmentManagementComponent implements OnInit {
 
   submitCreateForm() {
     if (!this.createForm.department_name.trim()) {
-      alert('Please enter department name');
+      this.sweetAlert.warning('Please enter department name');
       return;
     }
     
@@ -121,12 +128,12 @@ export class DepartmentManagementComponent implements OnInit {
       next: () => {
         this.loading.set(false);
         this.closeCreateModal();
-        alert('Department created successfully!');
+        this.sweetAlert.success('Department created successfully!');
         this.loadDepartments();
       },
       error: (error) => {
         this.loading.set(false);
-        alert(error.error?.message || 'Failed to create department');
+        this.sweetAlert.error(error.error?.message || 'Failed to create department');
       },
     });
   }
@@ -147,7 +154,7 @@ export class DepartmentManagementComponent implements OnInit {
 
   submitEditForm() {
     if (!this.editForm.department_name.trim()) {
-      alert('Please enter department name');
+      this.sweetAlert.warning('Please enter department name');
       return;
     }
     
@@ -159,12 +166,12 @@ export class DepartmentManagementComponent implements OnInit {
       next: () => {
         this.loading.set(false);
         this.closeEditModal();
-        alert('Department updated successfully!');
+        this.sweetAlert.success('Department updated successfully!');
         this.loadDepartments();
       },
       error: (error) => {
         this.loading.set(false);
-        alert(error.error?.message || 'Failed to update department');
+        this.sweetAlert.error(error.error?.message || 'Failed to update department');
       },
     });
   }
@@ -187,12 +194,12 @@ export class DepartmentManagementComponent implements OnInit {
       next: () => {
         this.loading.set(false);
         this.closeDeleteModal();
-        alert('Department deleted successfully!');
+        this.sweetAlert.success('Department deleted successfully!');
         this.loadDepartments();
       },
       error: (error) => {
         this.loading.set(false);
-        alert(error.error?.message || 'Failed to delete department');
+        this.sweetAlert.error(error.error?.message || 'Failed to delete department');
       },
     });
   }

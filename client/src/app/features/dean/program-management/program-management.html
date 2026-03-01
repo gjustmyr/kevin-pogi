@@ -1,32 +1,26 @@
 <div class="p-4">
-  <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Program Management</h1>
-    <p class="text-sm text-gray-600 mt-1">Manage programs for your department</p>
-  </div>
-
   <!-- Action Bar -->
-  <div class="mb-4 flex flex-col lg:flex-row justify-between gap-4">
+  <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
     <div class="flex gap-2">
       <button
         (click)="openCreateModal()"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
       >
         + Add Program
       </button>
     </div>
-    <div class="flex flex-col sm:flex-row gap-2">
+    <div class="flex gap-2">
       <!-- Search -->
       <input
         type="text"
         [(ngModel)]="searchQuery"
         (keyup.enter)="searchPrograms()"
         placeholder="Search programs..."
-        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
       />
       <button
         (click)="searchPrograms()"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
       >
         Search
       </button>
@@ -81,7 +75,7 @@
   </div>
 
   <!-- Pagination -->
-  <div class="flex justify-between items-center mt-4 flex-col sm:flex-row gap-4">
+  <div class="flex justify-between items-center mt-4">
     <div class="text-sm text-gray-700">
       Showing {{ (currentPage() - 1) * pageSize + 1 }} to
       {{ Math.min(currentPage() * pageSize, totalItems()) }} of {{ totalItems() }} programs
@@ -90,23 +84,19 @@
       <button
         (click)="changePage(currentPage() - 1)"
         [disabled]="currentPage() === 1"
-        [class.opacity-50]="currentPage() === 1"
-        [class.cursor-not-allowed]="currentPage() === 1"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:hover:bg-blue-600 transition text-sm"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </button>
       @for (page of getPageNumbers(); track page) {
         @if (page === -1) {
-          <span class="px-4 py-2 text-gray-500">...</span>
+          <span class="px-3 py-1">...</span>
         } @else {
           <button
             (click)="changePage(page)"
             [class.bg-blue-600]="page === currentPage()"
             [class.text-white]="page === currentPage()"
-            [class.bg-gray-200]="page !== currentPage()"
-            [class.text-gray-700]="page !== currentPage()"
-            class="px-4 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition text-sm"
+            class="px-3 py-1 border rounded hover:bg-gray-100"
           >
             {{ page }}
           </button>
@@ -115,9 +105,7 @@
       <button
         (click)="changePage(currentPage() + 1)"
         [disabled]="currentPage() === totalPages()"
-        [class.opacity-50]="currentPage() === totalPages()"
-        [class.cursor-not-allowed]="currentPage() === totalPages()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:hover:bg-blue-600 transition text-sm"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>

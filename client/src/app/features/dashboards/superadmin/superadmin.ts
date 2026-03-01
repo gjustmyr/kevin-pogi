@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
@@ -8,6 +8,10 @@ import { SuperadminSectionManagement } from '../../superadmin/section-management
 import { SuperadminAcademicYearManagement } from '../../superadmin/academic-year-management/academic-year-management';
 import { SuperadminDeanManagement } from '../../superadmin/dean-management/dean-management';
 import { SuperadminFacultyView } from '../../superadmin/faculty-view/faculty-view';
+import {
+  SuperadminDashboardService,
+  SuperadminStatistics,
+} from '../../../services/superadmin-dashboard.service';
 
 @Component({
   selector: 'app-superadmin-dashboard',
@@ -310,12 +314,186 @@ import { SuperadminFacultyView } from '../../superadmin/faculty-view/faculty-vie
     <!-- Main Content -->
     <div class="pt-20 pl-4 pr-4 pb-4 transition-all duration-300" [class.ml-64]="isSidebarOpen()">
       @if (activeTab() === 'dashboard') {
-        <div class="p-4 border border-gray-200 border-dashed rounded-lg">
-          <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Welcome, Super Admin!</h1>
-            <p class="text-gray-600 mt-1">{{ authService.currentUser()?.email }}</p>
+        <div class="space-y-6">
+          <!-- Statistics Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Total Faculty -->
+            <div
+              class="bg-linear-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
+                  <p class="text-4xl font-bold">{{ statistics().total_faculty }}</p>
+                </div>
+                <div class="text-5xl opacity-30">
+                  <i class="fas fa-users"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Deans -->
+            <div
+              class="bg-linear-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Deans</h3>
+                  <p class="text-4xl font-bold">{{ statistics().total_deans }}</p>
+                </div>
+                <div class="text-5xl opacity-30">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Departments -->
+            <div
+              class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium opacity-90 mb-1">Departments</h3>
+                  <p class="text-4xl font-bold">{{ statistics().total_departments }}</p>
+                </div>
+                <div class="text-5xl opacity-30">
+                  <i class="fas fa-building"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Files -->
+            <div
+              class="bg-linear-to-br from-indigo-500 to-indigo-600 text-white rounded-lg shadow-lg p-6"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Files</h3>
+                  <p class="text-4xl font-bold">{{ statistics().total_files.toLocaleString() }}</p>
+                </div>
+                <div class="text-5xl opacity-30">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="text-gray-500">Dashboard content will be displayed here</div>
+
+          <!-- Storage Statistics -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Storage Consumption -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-6">Storage Consumption</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">Total Storage</p>
+                    <p class="text-2xl font-bold text-gray-800">
+                      {{ statistics().total_storage_gb.toFixed(2) }} GB
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{ statistics().total_storage_mb.toFixed(2) }} MB
+                    </p>
+                  </div>
+                  <div class="text-6xl text-blue-500 opacity-30">
+                    <i class="fas fa-database"></i>
+                  </div>
+                </div>
+                
+                <!-- Storage per file average -->
+                <div class="pt-4 border-t border-gray-200">
+                  <p class="text-sm text-gray-600">Average File Size</p>
+                  <p class="text-lg font-semibold text-gray-700">
+                    {{ statistics().total_files > 0 ? (statistics().total_storage_mb / statistics().total_files).toFixed(2) : '0.00' }} MB
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Files by Status -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-6">Files by Status</h3>
+              <div class="space-y-4">
+                <!-- Pending -->
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center">
+                      <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                      <span class="text-sm font-medium text-gray-700">Pending Review</span>
+                    </div>
+                    <span class="text-sm font-semibold text-yellow-600">
+                      {{ statistics().files_by_status.pending.toLocaleString() }}
+                    </span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      class="bg-yellow-500 h-full rounded-full transition-all duration-500"
+                      [style.width.%]="
+                        statistics().total_files > 0 ? (statistics().files_by_status.pending / statistics().total_files) * 100 : 0
+                      "
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Returned -->
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center">
+                      <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                      <span class="text-sm font-medium text-gray-700">Returned</span>
+                    </div>
+                    <span class="text-sm font-semibold text-red-600">
+                      {{ statistics().files_by_status.returned.toLocaleString() }}
+                    </span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      class="bg-red-500 h-full rounded-full transition-all duration-500"
+                      [style.width.%]="
+                        statistics().total_files > 0 ? (statistics().files_by_status.returned / statistics().total_files) * 100 : 0
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-yellow-800 mb-1">Pending Review</h3>
+                  <p class="text-3xl font-bold text-yellow-600">
+                    {{ statistics().files_by_status.pending.toLocaleString() }}
+                  </p>
+                  <p class="text-xs text-yellow-700 mt-2">
+                    {{ statistics().total_files > 0 ? ((statistics().files_by_status.pending / statistics().total_files) * 100).toFixed(1) : '0.0' }}% of total
+                  </p>
+                </div>
+                <div class="text-4xl text-yellow-300">
+                  <i class="fas fa-clock"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-red-800 mb-1">Returned</h3>
+                  <p class="text-3xl font-bold text-red-600">
+                    {{ statistics().files_by_status.returned.toLocaleString() }}
+                  </p>
+                  <p class="text-xs text-red-700 mt-2">
+                    {{ statistics().total_files > 0 ? ((statistics().files_by_status.returned / statistics().total_files) * 100).toFixed(1) : '0.0' }}% of total
+                  </p>
+                </div>
+                <div class="text-4xl text-red-300">
+                  <i class="fas fa-redo"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       }
       @if (activeTab() === 'college-department') {
@@ -343,12 +521,47 @@ import { SuperadminFacultyView } from '../../superadmin/faculty-view/faculty-vie
   `,
   styles: [],
 })
-export class SuperadminDashboard {
+export class SuperadminDashboard implements OnInit {
   isSidebarOpen = signal(true);
   activeTab = signal<string>('dashboard');
   isUserMenuOpen = signal(false);
+  statistics = signal<SuperadminStatistics>({
+    total_faculty: 0,
+    total_deans: 0,
+    total_departments: 0,
+    total_files: 0,
+    total_storage_bytes: 0,
+    total_storage_mb: 0,
+    total_storage_gb: 0,
+    files_by_status: {
+      pending: 0,
+      returned: 0,
+    },
+  });
+  loading = signal(false);
 
-  constructor(public authService: Auth) {}
+  constructor(
+    public authService: Auth,
+    private dashboardService: SuperadminDashboardService
+  ) {}
+
+  ngOnInit() {
+    this.loadDashboardStatistics();
+  }
+
+  loadDashboardStatistics() {
+    this.loading.set(true);
+    this.dashboardService.getDashboardStatistics().subscribe({
+      next: (response) => {
+        this.statistics.set(response.statistics);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading dashboard statistics:', error);
+        this.loading.set(false);
+      },
+    });
+  }
 
   toggleSidebar() {
     this.isSidebarOpen.set(!this.isSidebarOpen());

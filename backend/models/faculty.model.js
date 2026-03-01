@@ -43,6 +43,21 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       unique: true,
     },
+    clearance_status: {
+      type: Sequelize.ENUM("pending", "cleared", "withholding"),
+      defaultValue: "pending",
+      comment: "pending=incomplete requirements, cleared=all requirements approved, withholding=has returned requirements",
+    },
+    clearance_remarks: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+      comment: "Dean's remarks on faculty clearance status",
+    },
+    clearance_date: {
+      type: Sequelize.DATE,
+      allowNull: true,
+      comment: "Date when faculty was cleared or status changed",
+    },
   });
 
   return Faculty;

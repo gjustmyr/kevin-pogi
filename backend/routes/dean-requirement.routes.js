@@ -37,4 +37,16 @@ router.get(
   requirementController.downloadRequirement
 );
 
+// Set faculty clearance status (manual)
+router.put(
+  "/faculty/:faculty_id/clearance-status",
+  requirementController.setFacultyClearanceStatus
+);
+
+// Auto-calculate and update faculty clearance status
+router.post(
+  "/faculty/:faculty_id/calculate-clearance",
+  requirementController.updateFacultyClearanceStatus
+);
+
 module.exports = router;

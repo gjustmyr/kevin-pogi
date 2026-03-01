@@ -40,9 +40,11 @@ const deanProgramRoutes = require("./routes/dean-program.routes");
 const deanOrganizationRoutes = require("./routes/dean-organization.routes");
 const deanCourseAssignmentRoutes = require("./routes/dean-course-assignment.routes");
 const deanRequirementRoutes = require("./routes/dean-requirement.routes");
+const deanFacultyCredentialsRoutes = require("./routes/dean-faculty-credentials.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
+const facultyCredentialsRoutes = require("./routes/faculty-credentials.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/superadmin/dashboard", superadminRoutes);
@@ -71,9 +73,11 @@ app.use("/api/dean/programs", deanProgramRoutes);
 app.use("/api/dean/organizations", deanOrganizationRoutes);
 app.use("/api/dean/course-assignments", deanCourseAssignmentRoutes);
 app.use("/api/dean/requirements", deanRequirementRoutes);
+app.use("/api/dean/faculty-credentials", deanFacultyCredentialsRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
+app.use("/api/faculty/credentials", facultyCredentialsRoutes);
 
 app.get("/api/hello", (req, res) => {
 	res.json({ message: "Hello from the backend!" });

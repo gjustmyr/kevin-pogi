@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProgramService, Program, CreateProgramData } from '../../../services/program.service';
 import { DropdownService, DropdownDepartment } from '../../../services/dropdown.service';
+import { SweetAlertService } from '../../../shared/services/sweetalert.service';
 
 @Component({
   selector: 'app-program-management',
@@ -37,10 +38,14 @@ export class ProgramManagement implements OnInit {
     department_id: 0,
   };
   deleteTarget: Program | null = null;
+  
+  // Expose Math for template
+  Math = Math;
 
   constructor(
     private programService: ProgramService,
     private dropdownService: DropdownService,
+    private sweetAlert: SweetAlertService
   ) {}
 
   ngOnInit() {
@@ -79,7 +84,7 @@ export class ProgramManagement implements OnInit {
         error: (error) => {
           console.error('Error loading programs:', error);
           this.loading.set(false);
-          alert('Failed to load programs');
+          this.sweetAlert.error('Failed to load programs');
         },
       });
   }
@@ -143,11 +148,11 @@ export class ProgramManagement implements OnInit {
 
   submitCreateForm() {
     if (!this.createForm.program_name.trim()) {
-      alert('Please enter program name');
+      this.sweetAlert.warning('Please enter program name');
       return;
     }
     if (!this.createForm.department_id || this.createForm.department_id === 0) {
-      alert('Please select a department');
+      this.sweetAlert.warning('Please select a department');
       return;
     }
 
@@ -156,12 +161,12 @@ export class ProgramManagement implements OnInit {
       next: () => {
         this.loading.set(false);
         this.closeCreateModal();
-        alert('Program created successfully!');
+        this.sweetAlert.success('Program created successfully!');
         this.loadPrograms();
       },
       error: (error) => {
         this.loading.set(false);
-        alert(error.error?.message || 'Failed to create program');
+        this.sweetAlert.error(error.error?.message || 'Failed to create program');
       },
     });
   }
@@ -186,11 +191,11 @@ export class ProgramManagement implements OnInit {
 
   submitEditForm() {
     if (!this.editForm.program_name.trim()) {
-      alert('Please enter program name');
+      this.sweetAlert.warning('Please enter program name');
       return;
     }
     if (!this.editForm.department_id || this.editForm.department_id === 0) {
-      alert('Please select a department');
+      this.sweetAlert.warning('Please select a department');
       return;
     }
 
@@ -204,12 +209,12 @@ export class ProgramManagement implements OnInit {
         next: () => {
           this.loading.set(false);
           this.closeEditModal();
-          alert('Program updated successfully!');
+          this.sweetAlert.success('Program updated successfully!');
           this.loadPrograms();
         },
         error: (error) => {
           this.loading.set(false);
-          alert(error.error?.message || 'Failed to update program');
+          this.sweetAlert.error(error.error?.message || 'Failed to update program');
         },
       });
   }
@@ -232,12 +237,12 @@ export class ProgramManagement implements OnInit {
       next: () => {
         this.loading.set(false);
         this.closeDeleteModal();
-        alert('Program deleted successfully!');
+        this.sweetAlert.success('Program deleted successfully!');
         this.loadPrograms();
       },
       error: (error) => {
         this.loading.set(false);
-        alert(error.error?.message || 'Failed to delete program');
+        this.sweetAlert.error(error.error?.message || 'Failed to delete program');
       },
     });
   }

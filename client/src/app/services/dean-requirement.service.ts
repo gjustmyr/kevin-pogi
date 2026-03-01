@@ -19,6 +19,9 @@ export interface FacultyAccomplishment {
     middle_name?: string;
     last_name: string;
     email: string;
+    clearance_status?: 'pending' | 'cleared' | 'withholding';
+    clearance_remarks?: string;
+    clearance_date?: string;
   };
   assignments: Assignment[];
   statistics: {
@@ -35,6 +38,9 @@ export interface FacultyAccomplishment {
 
 export interface DepartmentStatistics {
   total_faculty: number;
+  cleared_faculties: number;
+  withholding_faculties: number;
+  pending_faculties: number;
   total_courses: number;
   total_requirements: number;
   submitted: number;
@@ -43,6 +49,7 @@ export interface DepartmentStatistics {
   returned: number;
   not_submitted: number;
   completion_rate: string;
+  faculty_clearance_rate: string;
 }
 
 export interface RequirementStatus {
@@ -163,5 +170,44 @@ export class DeanRequirementService {
   // Download a requirement file
   downloadRequirement(submission_id: number): void {
     window.open(this.getDownloadUrl(submission_id), '_blank');
+  }
+
+  // Set faculty clearance status (manual)
+  setFacultyClearanceStatus(
+    faculty_id: number,
+    status: 'pending' | 'cleared' | 'withholding',
+    remarks?: string,
+    academic_year_id?: number,
+    semester?: string
+  ): Observable<any> {
+    return this.http.put(`${this.apiUrl}/faculty/${faculty_id}/clearance-status`, {
+      status,
+      remarks,
+      academic_year_id,
+      semester,
+    });
+  }
+
+  // Auto-calculate and update faculty clearance status
+  calculateFacultyClearanceStatus(
+    faculty_id: number,
+    academic_year_id?: number,
+    semester?: string
+  ): Observable<any> {
+    let params = new HttpParams();
+
+    if (academic_year_id) {
+      params = params.set('academic_year_id', academic_year_id.toString());
+    }
+
+    if (semester) {
+      params = params.set('semester', semester);
+    }
+
+    return this.http.post(
+      `${this.apiUrl}/faculty/${faculty_id}/calculate-clearance`,
+      {},
+      { params }
+    );
   }
 }

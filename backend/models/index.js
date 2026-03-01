@@ -29,6 +29,8 @@ const Course = require("./course.model")(sequelize, Sequelize);
 const AcademicYear = require("./academic-year.model")(sequelize, Sequelize);
 const CourseAssignment = require("./course-assignment.model")(sequelize, Sequelize);
 const RequirementSubmission = require("./requirement-submission.model")(sequelize, Sequelize);
+const FacultyCredential = require("./faculty-credential.model")(sequelize, Sequelize);
+const CredentialCertificate = require("./credential-certificate.model")(sequelize, Sequelize);
 
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
@@ -155,6 +157,23 @@ RequirementSubmission.belongsTo(CourseAssignment, {
 	foreignKey: "assignment_id",
 });
 
+/* FacultyCredential Relationships */
+Faculty.hasOne(FacultyCredential, {
+	foreignKey: "faculty_id",
+});
+FacultyCredential.belongsTo(Faculty, {
+	foreignKey: "faculty_id",
+});
+
+/* CredentialCertificate Relationships */
+FacultyCredential.hasMany(CredentialCertificate, {
+	foreignKey: "credential_id",
+	as: "credential_certificates",
+});
+CredentialCertificate.belongsTo(FacultyCredential, {
+	foreignKey: "credential_id",
+});
+
 db.Department = Department;
 db.Program = Programs;
 db.Programs = Programs;
@@ -168,5 +187,7 @@ db.Course = Course;
 db.AcademicYear = AcademicYear;
 db.CourseAssignment = CourseAssignment;
 db.RequirementSubmission = RequirementSubmission;
+db.FacultyCredential = FacultyCredential;
+db.CredentialCertificate = CredentialCertificate;
 
 module.exports = db;

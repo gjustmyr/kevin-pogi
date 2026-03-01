@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import { loginGuard } from './guards/login.guard';
 import { SuperadminDashboard } from './features/dashboards/superadmin/superadmin';
 import { DeanDashboard } from './features/dashboards/dean/dean';
 import { FacultyDashboard } from './features/dashboards/faculty/faculty';
@@ -22,6 +23,7 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login,
+    canActivate: [loginGuard], // Prevents logged-in users from accessing login page
   },
   {
     path: 'superadmin/dashboard',

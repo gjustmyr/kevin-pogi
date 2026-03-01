@@ -253,6 +253,7 @@ exports.getProfile = async (req, res) => {
         if (profile) {
           profileData = {
             faculty_id: profile.faculty_id,
+            employee_id: profile.employee_id,
             first_name: profile.first_name,
             middle_name: profile.middle_name,
             last_name: profile.last_name,
@@ -260,6 +261,9 @@ exports.getProfile = async (req, res) => {
             contact_number: profile.contact_number,
             department_id: profile.department_id,
             department_name: profile.department?.department_name,
+            clearance_status: profile.clearance_status,
+            clearance_remarks: profile.clearance_remarks,
+            clearance_date: profile.clearance_date,
           };
         }
         break;

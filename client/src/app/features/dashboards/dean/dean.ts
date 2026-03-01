@@ -9,12 +9,13 @@ import { DeanCourseManagement } from '../../dean/course-management/course-manage
 import { DeanSectionManagement } from '../../dean/section-management/section-management';
 import { DeanProgramManagement } from '../../dean/program-management/program-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
+import { DeanFacultyCredentialsView } from '../../dean/faculty-credentials-view/faculty-credentials-view';
 import { DeanRequirementService, DepartmentStatistics } from '../../../services/dean-requirement.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
 
 @Component({
   selector: 'app-dean-dashboard',
-  imports: [CommonModule, FormsModule, RouterModule, DeanFacultyManagement, DeanOrganizationManagement, DeanCourseManagement, DeanSectionManagement, DeanProgramManagement, DeanRequirementsMonitoring],
+  imports: [CommonModule, FormsModule, RouterModule, DeanFacultyManagement, DeanOrganizationManagement, DeanCourseManagement, DeanSectionManagement, DeanProgramManagement, DeanRequirementsMonitoring, DeanFacultyCredentialsView],
   template: `
     <!-- Sidebar -->
     <aside
@@ -114,6 +115,26 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                 />
               </svg>
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Accomplishments</span>
+            </button>
+          </li>
+
+          <!-- Faculty Credentials -->
+          <li>
+            <button
+              (click)="selectTab('credentials')"
+              [class.bg-blue-50]="activeTab() === 'credentials'"
+              [class.text-blue-600]="activeTab() === 'credentials'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Faculty Credentials</span>
             </button>
           </li>
 
@@ -346,6 +367,18 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                   </div>
                 </div>
               </div>
+              <div class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-sm font-medium opacity-90 mb-1">Cleared Faculties</h3>
+                    <p class="text-4xl font-bold">{{ departmentStats()!.cleared_faculties }}</p>
+                    <p class="text-xs opacity-90 mt-1">{{ departmentStats()!.faculty_clearance_rate }}% of total</p>
+                  </div>
+                  <div class="text-5xl opacity-30">
+                    <i class="fas fa-user-check"></i>
+                  </div>
+                </div>
+              </div>
               <div class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
                 <div class="flex items-center justify-between">
                   <div>
@@ -357,25 +390,15 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                   </div>
                 </div>
               </div>
-              <div class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Cleared</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.cleared }}</p>
-                  </div>
-                  <div class="text-5xl opacity-30">
-                    <i class="fas fa-check-circle"></i>
-                  </div>
-                </div>
-              </div>
               <div class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Completion Rate</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.completion_rate }}%</p>
+                    <h3 class="text-sm font-medium opacity-90 mb-1">Requirements Cleared</h3>
+                    <p class="text-4xl font-bold">{{ departmentStats()!.cleared }}</p>
+                    <p class="text-xs opacity-90 mt-1">{{ departmentStats()!.completion_rate }}% complete</p>
                   </div>
                   <div class="text-5xl opacity-30">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-check-circle"></i>
                   </div>
                 </div>
               </div>
@@ -524,6 +547,71 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
               </div>
             </div>
 
+            <!-- Faculty Clearance Status -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-6">Faculty Clearance Status</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Cleared Faculties -->
+                <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                  <div class="shrink-0">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white">
+                      <i class="fas fa-user-check text-2xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-3xl font-bold text-green-700">{{ departmentStats()!.cleared_faculties }}</p>
+                    <p class="text-sm text-green-600 font-medium">Cleared Faculties</p>
+                    <p class="text-xs text-gray-600 mt-1">All requirements approved</p>
+                  </div>
+                </div>
+
+                <!-- Pending Faculties -->
+                <div class="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                  <div class="shrink-0">
+                    <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center text-white">
+                      <i class="fas fa-clock text-2xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-3xl font-bold text-yellow-700">{{ departmentStats()!.pending_faculties }}</p>
+                    <p class="text-sm text-yellow-600 font-medium">Pending Faculties</p>
+                    <p class="text-xs text-gray-600 mt-1">Incomplete requirements</p>
+                  </div>
+                </div>
+
+                <!-- Withholding Faculties -->
+                <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                  <div class="shrink-0">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white">
+                      <i class="fas fa-exclamation-triangle text-2xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-3xl font-bold text-red-700">{{ departmentStats()!.withholding_faculties }}</p>
+                    <p class="text-sm text-red-600 font-medium">Withholding</p>
+                    <p class="text-xs text-gray-600 mt-1">Has returned requirements</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Faculty Clearance Progress Bar -->
+              <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-gray-700">Faculty Clearance Rate</span>
+                  <span class="text-sm font-semibold text-green-600">
+                    {{ departmentStats()!.cleared_faculties }} / {{ departmentStats()!.total_faculty }}
+                    ({{ departmentStats()!.faculty_clearance_rate }}%)
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
+                  <div class="bg-linear-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-3"
+                    [style.width.%]="departmentStats()!.faculty_clearance_rate">
+                    <span class="text-xs font-semibold text-white">{{ departmentStats()!.faculty_clearance_rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Status Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -597,6 +685,9 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
       }
       @if (activeTab() === 'accomplishments') {
         <app-dean-requirements-monitoring />
+      }
+      @if (activeTab() === 'credentials') {
+        <app-dean-faculty-credentials-view />
       }
       @if (activeTab() === 'sections') {
         <app-dean-section-management />
