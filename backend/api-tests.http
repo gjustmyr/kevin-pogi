@@ -1,0 +1,130 @@
+### Authentication API Tests
+### Base URL
+@baseUrl = http://localhost:3000/api
+
+### Login as Superadmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "superadmin@test.com",
+  "password": "password123"
+}
+
+###
+
+### Login as Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password123"
+}
+
+###
+
+### Login as Dean
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "dean@test.com",
+  "password": "password123"
+}
+
+###
+
+### Login as Faculty
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "faculty@test.com",
+  "password": "password123"
+}
+
+###
+
+### Login as Organization
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "org@test.com",
+  "password": "password123"
+}
+
+###
+
+### Get Profile (Replace YOUR_TOKEN with actual token from login response)
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Test Superadmin Dashboard (Replace YOUR_TOKEN)
+GET {{baseUrl}}/superadmin/dashboard
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Test Admin Dashboard (Replace YOUR_TOKEN)
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Test Dean Dashboard (Replace YOUR_TOKEN)
+GET {{baseUrl}}/dean/dashboard
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Test Faculty Dashboard (Replace YOUR_TOKEN)
+GET {{baseUrl}}/faculty/dashboard
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Test Organization Dashboard (Replace YOUR_TOKEN)
+GET {{baseUrl}}/organization/dashboard
+Authorization: Bearer YOUR_TOKEN
+
+###
+
+### Register New User (Example)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@test.com",
+  "password": "password123",
+  "role": "admin"
+}
+
+###
+
+### Create Superadmin
+POST {{baseUrl}}/auth/create-superadmin
+Content-Type: application/json
+
+{
+  "email": "superadmin@example.com",
+  "password": "SecurePassword123!"
+}
+
+###
+
+### Create Admin
+POST {{baseUrl}}/auth/create-admin
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "first_name": "John",
+  "middle_name": "M",
+  "last_name": "Doe",
+  "contact_number": "09123456789"
+}
+

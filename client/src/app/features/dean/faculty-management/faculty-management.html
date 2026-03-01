@@ -1,0 +1,470 @@
+<div class="p-4">
+  <!-- Action Bar -->
+  <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
+    <div class="flex gap-2">
+      <button
+        (click)="openCreateModal()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+      >
+        + Add Faculty
+      </button>
+    </div>
+    <div class="flex gap-2">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="searchFaculty()"
+        placeholder="Search faculty..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+      />
+      <button
+        (click)="searchFaculty()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+      >
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">Employee ID</th>
+          <th scope="col" class="px-6 py-3">Name</th>
+          <th scope="col" class="px-6 py-3">Email</th>
+          <th scope="col" class="px-6 py-3">Contact</th>
+          <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-sm">Loading...</td>
+          </tr>
+        } @else if (facultyList().length === 0) {
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-sm">No faculty found</td>
+          </tr>
+        } @else {
+          @for (faculty of facultyList(); track faculty.faculty_id) {
+            <tr class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4 font-semibold text-gray-900 text-sm">
+                {{ faculty.employee_id }}
+              </td>
+              <td class="px-6 py-4 font-medium text-gray-900 text-sm">
+                {{ getFullName(faculty) }}
+              </td>
+              <td class="px-6 py-4 text-sm">{{ faculty.email }}</td>
+              <td class="px-6 py-4 text-sm">{{ faculty.contact_number || 'N/A' }}</td>
+              <td class="px-6 py-4 text-sm">
+                <button
+                  (click)="openAssignCoursesModal(faculty)"
+                  class="text-green-600 hover:underline mr-3"
+                >
+                  Assign Courses
+                </button>
+                <button (click)="openEditModal(faculty)" class="text-blue-600 hover:underline mr-3">
+                  Edit
+                </button>
+                <button (click)="openDeleteModal(faculty)" class="text-red-600 hover:underline">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-sm text-gray-700">
+      Showing {{ (currentPage() - 1) * pageSize + 1 }} to
+      {{ Math.min(currentPage() * pageSize, totalItems()) }} of {{ totalItems() }} results
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="changePage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+      >
+        Previous
+      </button>
+      @for (page of getPageNumbers(); track page) {
+        @if (page === -1) {
+          <span class="px-3 py-1 text-sm">...</span>
+        } @else {
+          <button
+            (click)="changePage(page)"
+            [class.bg-blue-600]="page === currentPage()"
+            [class.text-white]="page === currentPage()"
+            class="px-3 py-1 border rounded hover:bg-gray-100 text-sm"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+      <button
+        (click)="changePage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+@if (showCreateModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
+      <h2 class="text-xl font-bold mb-4">Add New Faculty</h2>
+      <form (submit)="submitCreateForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Employee ID</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.employee_id"
+            name="employee_id"
+            maxlength="5"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="5-digit code"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.first_name"
+            name="first_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Name (Optional)</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.middle_name"
+            name="middle_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.last_name"
+            name="last_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="createForm.email"
+            name="email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+          <p class="text-xs text-gray-500 mt-1">Login credentials will be sent to this email</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Contact Number (Optional)</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="createForm.contact_number"
+            name="contact_number"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          />
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+          >
+            Create
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Modal -->
+@if (showEditModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
+      <h2 class="text-xl font-bold mb-4">Edit Faculty</h2>
+      <form (submit)="submitEditForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Employee ID</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.employee_id"
+            name="employee_id"
+            maxlength="5"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="5-digit code"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.first_name"
+            name="first_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Name (Optional)</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.middle_name"
+            name="middle_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.last_name"
+            name="last_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="editForm.email"
+            name="email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Contact Number (Optional)</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="editForm.contact_number"
+            name="contact_number"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          />
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+          >
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Assign Courses Modal -->
+@if (showAssignCoursesModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div
+      class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-3xl border-2 border-gray-200 max-h-[90vh] overflow-y-auto"
+    >
+      <h2 class="text-xl font-bold mb-4">
+        Assign Courses to {{ selectedFaculty()?.first_name }} {{ selectedFaculty()?.last_name }}
+      </h2>
+      <p class="text-sm text-gray-600 mb-4">Employee ID: {{ selectedFaculty()?.employee_id }}</p>
+
+      <form (submit)="submitAssignCourses(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+          <select
+            [(ngModel)]="assignCoursesForm.academic_year_id"
+            name="academic_year_id"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          >
+            <option value="0">Select Academic Year</option>
+            @for (year of academicYearsList(); track year.academic_year_id) {
+              <option [value]="year.academic_year_id">
+                {{ year.year_start }}-{{ year.year_end }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+          <select
+            [(ngModel)]="assignCoursesForm.semester"
+            name="semester"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          >
+            <option value="">Select Semester</option>
+            @for (sem of semesters; track sem) {
+              <option [value]="sem">{{ sem }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-medium text-gray-700">Section Assignments</label>
+            <button
+              type="button"
+              (click)="addSectionAssignment()"
+              class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-xs"
+            >
+              Add Section
+            </button>
+          </div>
+
+          @if (sectionAssignments().length === 0) {
+            <div class="border border-gray-300 rounded-lg p-4 text-center text-gray-500 text-sm">
+              Click "Add Section" to assign courses to a section
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @for (assignment of sectionAssignments(); track $index; let idx = $index) {
+                <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="text-sm font-medium text-gray-700">Section Assignment {{ $index + 1 }}</h3>
+                    <button
+                      type="button"
+                      (click)="removeSectionAssignment(idx)"
+                      class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Select Section</label>
+                    <select
+                      [(ngModel)]="assignment.section_id"
+                      [name]="'section_' + idx"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                      required
+                    >
+                      <option [value]="0">Choose a section</option>
+                      @for (section of sectionsList(); track section.section_id) {
+                        <option [value]="section.section_id">
+                          {{ section.section_name }} ({{ getYearLevelDisplay(section.year_level) }}) - {{ section.semester }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+
+                  @if (assignment.section_id > 0) {
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-2">Select Courses for this Section</label>
+                      
+                      <div class="mb-2">
+                        <input
+                          type="text"
+                          [value]="courseSearchTerms()[idx] || ''"
+                          (input)="updateCourseSearch(idx, $any($event.target).value)"
+                          placeholder="Search courses by code or name..."
+                          class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-xs"
+                        />
+                      </div>
+                      
+                      <div class="border border-gray-200 rounded-lg p-3 max-h-40 overflow-y-auto bg-white">
+                        @if (getCoursesForSection(assignment.section_id, idx).length === 0) {
+                          <p class="text-xs text-gray-500">
+                            @if (courseSearchTerms()[idx]) {
+                              No courses found matching "{{ courseSearchTerms()[idx] }}"
+                            } @else {
+                              No courses available
+                            }
+                          </p>
+                        } @else {
+                          @for (course of getCoursesForSection(assignment.section_id, idx); track course.course_id) {
+                            <label class="flex items-center py-1.5 hover:bg-gray-50 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                [checked]="isCourseSelectedForSection(idx, course.course_id)"
+                                (change)="toggleCourseForSection(idx, course.course_id)"
+                                class="mr-2"
+                              />
+                              <span class="text-xs">{{ course.course_code }} - {{ course.course_name }}</span>
+                            </label>
+                          }
+                        }
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">
+                        {{ assignment.course_ids.length }} course(s) selected
+                      </p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (sectionAssignments().length > 0) {
+          <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-4">
+            <p class="text-sm text-blue-700">
+              <strong>Total Assignments:</strong> 
+              @for (assignment of sectionAssignments(); track $index) {
+                @if ($index > 0) { + }
+                {{ assignment.course_ids.length }}
+              }
+              = <strong>{{ getTotalAssignments() }}</strong> assignments
+            </p>
+          </div>
+        }
+
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeAssignCoursesModal()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+            [disabled]="sectionAssignments().length === 0"
+          >
+            Assign Courses
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,300 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  DeanRequirementService,
+  DepartmentStatistics,
+  FacultyAccomplishment,
+} from '../../../services/dean-requirement.service';
+import { DeanFacultyService, Faculty } from '../../../services/dean-faculty.service';
+import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
+import { RequirementSubmission, Assignment } from '../../../services/faculty-requirement.service';
+import Swal from 'sweetalert2';
+
+@Component({
+  selector: 'app-dean-requirements-monitoring',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './requirements-monitoring.html',
+  styleUrl: './requirements-monitoring.css',
+})
+export class DeanRequirementsMonitoring implements OnInit {
+  loading = signal(false);
+
+  // Filters
+  academicYearsList = signal<DropdownAcademicYear[]>([]);
+  facultyList = signal<Faculty[]>([]);
+  selectedAcademicYear = signal<number>(0);
+  selectedSemester = signal<string>('');
+  selectedFacultyId = signal<number>(0);
+  searchQuery = signal<string>('');
+
+  // Pagination
+  currentPage = signal(1);
+  totalPages = signal(1);
+  totalItems = signal(0);
+  pageSize = 10;
+
+  // Faculty accomplishments
+  selectedFacultyAccomplishment = signal<FacultyAccomplishment | null>(null);
+
+  // View modal
+  showViewModal = signal(false);
+  selectedSubmission = signal<any>(null);
+
+  Math = Math;
+
+  constructor(
+    private requirementService: DeanRequirementService,
+    private facultyService: DeanFacultyService,
+    private dropdownService: DropdownService,
+  ) {}
+
+  ngOnInit() {
+    this.loadAcademicYears();
+    this.loadFacultyList();
+  }
+
+  loadAcademicYears() {
+    this.dropdownService.getAcademicYears().subscribe({
+      next: (years) => {
+        this.academicYearsList.set(years);
+        const currentYear = years.find((y) => y.is_active === 1);
+        if (currentYear) {
+          this.selectedAcademicYear.set(currentYear.academic_year_id);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading academic years:', error);
+      },
+    });
+  }
+
+  loadFacultyList() {
+    this.facultyService.getFaculty(1, 1000, '').subscribe({
+      next: (response) => {
+        this.facultyList.set(response.faculty);
+      },
+      error: (error) => {
+        console.error('Error loading faculty:', error);
+      },
+    });
+  }
+
+  // loadSubmissions method removed - no longer needed without submissions tab
+
+  filterData() {
+    this.currentPage.set(1);
+    if (this.selectedFacultyId()) {
+      this.loadFacultyAccomplishment();
+    }
+  }
+
+  loadFacultyAccomplishment() {
+    if (!this.selectedFacultyId()) {
+      this.selectedFacultyAccomplishment.set(null);
+      return;
+    }
+
+    this.loading.set(true);
+    this.requirementService
+      .getFacultyAccomplishment(
+        this.selectedFacultyId(),
+        this.selectedAcademicYear() || undefined,
+        this.selectedSemester() || undefined,
+      )
+      .subscribe({
+        next: (accomplishment) => {
+          this.selectedFacultyAccomplishment.set(accomplishment);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading faculty accomplishment:', error);
+          this.loading.set(false);
+        },
+      });
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      if (this.selectedFacultyId()) {
+        this.loadFacultyAccomplishment();
+      }
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages();
+    const current = this.currentPage();
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (current <= 4) {
+        for (let i = 1; i <= 5; i++) pages.push(i);
+        pages.push(-1);
+        pages.push(total);
+      } else if (current >= total - 3) {
+        pages.push(1);
+        pages.push(-1);
+        for (let i = total - 4; i <= total; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push(-1);
+        for (let i = current - 1; i <= current + 1; i++) pages.push(i);
+        pages.push(-1);
+        pages.push(total);
+      }
+    }
+
+    return pages;
+  }
+
+  openViewModal(submission: any) {
+    this.selectedSubmission.set(submission);
+    this.showViewModal.set(true);
+  }
+
+  closeViewModal() {
+    this.showViewModal.set(false);
+    this.selectedSubmission.set(null);
+  }
+
+  clearRequirement() {
+    if (!this.selectedSubmission()) return;
+
+    Swal.fire({
+      title: 'Clear Requirement?',
+      text: 'Mark this requirement as cleared/approved?',
+      input: 'textarea',
+      inputLabel: 'Remarks (optional)',
+      inputPlaceholder: 'Enter any remarks...',
+      showCancelButton: true,
+      confirmButtonText: 'Clear',
+      confirmButtonColor: '#10b981',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.requirementService
+          .clearRequirement(this.selectedSubmission()!.submission_id, result.value || undefined)
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Cleared',
+                text: 'Requirement cleared successfully',
+                confirmButtonColor: '#2563eb',
+              });
+              this.closeViewModal();
+              this.loadFacultyAccomplishment();
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error?.message || 'Failed to clear requirement',
+                confirmButtonColor: '#2563eb',
+              });
+            },
+          });
+      }
+    });
+  }
+
+  returnRequirement() {
+    if (!this.selectedSubmission()) return;
+
+    Swal.fire({
+      title: 'Return Requirement?',
+      text: 'Return this requirement for revision',
+      input: 'textarea',
+      inputLabel: 'Remarks (required)',
+      inputPlaceholder: 'Enter reason for returning...',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter remarks!';
+        }
+        return null;
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Return',
+      confirmButtonColor: '#dc2626',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.requirementService
+          .returnRequirement(this.selectedSubmission()!.submission_id, result.value)
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Returned',
+                text: 'Requirement returned successfully',
+                confirmButtonColor: '#2563eb',
+              });
+              this.closeViewModal();
+              this.loadFacultyAccomplishment();
+            },
+            error: (error) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error?.message || 'Failed to return requirement',
+                confirmButtonColor: '#2563eb',
+              });
+            },
+          });
+      }
+    });
+  }
+
+  downloadFile(submission_id: number) {
+    this.requirementService.downloadRequirement(submission_id);
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'cleared':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'returned':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  getFacultyName(faculty: any): string {
+    if (!faculty) return '';
+    return faculty.middle_name
+      ? `${faculty.first_name} ${faculty.middle_name} ${faculty.last_name}`
+      : `${faculty.first_name} ${faculty.last_name}`;
+  }
+
+  getYearLevelDisplay(yearLevel: number): string {
+    const yearNames = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+    return yearNames[yearLevel - 1] || `Year ${yearLevel}`;
+  }
+
+  getCompletionStats(assignment: Assignment) {
+    const submissions = assignment.requirement_submissions || [];
+    const total = 9;
+    const submitted = submissions.length;
+    const cleared = submissions.filter((s) => s.status === 'cleared').length;
+    const pending = submissions.filter((s) => s.status === 'pending').length;
+    const returned = submissions.filter((s) => s.status === 'returned').length;
+
+    return {
+      total,
+      submitted,
+      cleared,
+      pending,
+      returned,
+      percentage: Math.round((cleared / total) * 100),
+    };
+  }
+}

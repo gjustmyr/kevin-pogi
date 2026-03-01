@@ -1,0 +1,269 @@
+<div class="p-4">
+  <!-- Action Bar -->
+  <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
+    <div class="flex gap-2">
+      <button
+        (click)="openCreateModal()"
+        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition"
+      >
+        + Add Program
+      </button>
+      <select
+        (change)="filterByDepartment($any($event.target).value)"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+      >
+        <option value="">All Departments</option>
+        @for (dept of departmentsList(); track dept.department_id) {
+          <option [value]="dept.department_id">{{ dept.department_name }}</option>
+        }
+      </select>
+    </div>
+    <div class="flex gap-2">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="searchPrograms()"
+        placeholder="Search programs..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+      />
+      <button
+        (click)="searchPrograms()"
+        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition"
+      >
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">ID</th>
+          <th scope="col" class="px-6 py-3">Program Name</th>
+          <th scope="col" class="px-6 py-3">Department</th>
+          <th scope="col" class="px-6 py-3">Status</th>
+          <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center">Loading...</td>
+          </tr>
+        } @else if (programsList().length === 0) {
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center">No programs found</td>
+          </tr>
+        } @else {
+          @for (program of programsList(); track program.program_id) {
+            <tr class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4">{{ program.program_id }}</td>
+              <td class="px-6 py-4 font-medium text-gray-900">{{ program.program_name }}</td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">
+                  {{ program.department?.department_acronym }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <span
+                  [class.bg-green-100]="program.status === 'enabled'"
+                  [class.text-green-800]="program.status === 'enabled'"
+                  [class.bg-red-100]="program.status === 'disabled'"
+                  [class.text-red-800]="program.status === 'disabled'"
+                  class="px-2 py-1 rounded text-xs font-semibold"
+                >
+                  {{ program.status || 'enabled' }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <button (click)="openEditModal(program)" class="text-blue-600 hover:underline mr-3">
+                  Edit
+                </button>
+                <button (click)="openDeleteModal(program)" class="text-red-600 hover:underline">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-sm text-gray-700">
+      Showing {{ (currentPage() - 1) * pageSize + 1 }} to
+      {{ Math.min(currentPage() * pageSize, totalItems()) }} of {{ totalItems() }} results
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="changePage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      @for (page of getPageNumbers(); track page) {
+        @if (page === -1) {
+          <span class="px-3 py-1">...</span>
+        } @else {
+          <button
+            (click)="changePage(page)"
+            [class.bg-red-600]="page === currentPage()"
+            [class.text-white]="page === currentPage()"
+            class="px-3 py-1 border rounded hover:bg-gray-100"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+      <button
+        (click)="changePage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+@if (showCreateModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
+      <h2 class="text-xl font-bold mb-4">Add New Program</h2>
+      <form (submit)="submitCreateForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Program Name</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.program_name"
+            name="program_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Program Acronym</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.program_acronym"
+            name="program_acronym"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            placeholder="e.g., BSCS, BSIT, BSBA"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+          <select
+            [(ngModel)]="createForm.department_id"
+            name="department_id"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            required
+          >
+            <option value="0">Select Department</option>
+            @for (dept of departmentsList(); track dept.department_id) {
+              <option [value]="dept.department_id">{{ dept.department_name }}</option>
+            }
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <select
+            [(ngModel)]="createForm.status"
+            name="status"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+          >
+            <option value="enabled">Enabled</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+            Create
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Modal -->
+@if (showEditModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
+      <h2 class="text-xl font-bold mb-4">Edit Program</h2>
+      <form (submit)="submitEditForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Program Name</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.program_name"
+            name="program_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Program Acronym</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.program_acronym"
+            name="program_acronym"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+          <select
+            [(ngModel)]="editForm.department_id"
+            name="department_id"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+            required
+          >
+            <option value="0">Select Department</option>
+            @for (dept of departmentsList(); track dept.department_id) {
+              <option [value]="dept.department_id">{{ dept.department_name }}</option>
+            }
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <select
+            [(ngModel)]="editForm.status"
+            name="status"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+          >
+            <option value="enabled">Enabled</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

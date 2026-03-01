@@ -1,0 +1,245 @@
+<div class="p-4">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Course Management</h1>
+    <p class="text-sm text-gray-600 mt-1">Manage courses for your department</p>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="mb-4 flex flex-col lg:flex-row justify-between gap-4">
+    <div class="flex gap-2">
+      <button
+        (click)="openCreateModal()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+      >
+        + Add Course
+      </button>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <!-- Search -->
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="searchCourses()"
+        placeholder="Search courses..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+      />
+      <button
+        (click)="searchCourses()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+      >
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">Course Code</th>
+          <th scope="col" class="px-6 py-3">Course Name</th>
+          <th scope="col" class="px-6 py-3">Description</th>
+          <th scope="col" class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="4" class="px-6 py-4 text-center text-sm">Loading...</td>
+          </tr>
+        } @else if (courseList().length === 0) {
+          <tr>
+            <td colspan="4" class="px-6 py-4 text-center text-sm">No courses found</td>
+          </tr>
+        } @else {
+          @for (course of courseList(); track course.course_id) {
+            <tr class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4 font-semibold text-gray-900 text-sm">
+                {{ course.course_code }}
+              </td>
+              <td class="px-6 py-4 font-medium text-gray-900 text-sm">
+                {{ course.course_name }}
+              </td>
+              <td class="px-6 py-4 text-sm">
+                {{ course.description || 'N/A' }}
+              </td>
+              <td class="px-6 py-4 text-sm">
+                <button (click)="openEditModal(course)" class="text-blue-600 hover:underline mr-3">
+                  Edit
+                </button>
+                <button (click)="openDeleteModal(course)" class="text-red-600 hover:underline">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-sm text-gray-700">
+      Showing {{ (currentPage() - 1) * pageSize + 1 }} to
+      {{ Math.min(currentPage() * pageSize, totalItems()) }} of {{ totalItems() }} results
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="changePage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+      >
+        Previous
+      </button>
+      @for (page of getPageNumbers(); track page) {
+        @if (page === -1) {
+          <span class="px-3 py-1 text-sm">...</span>
+        } @else {
+          <button
+            (click)="changePage(page)"
+            [class.bg-blue-600]="page === currentPage()"
+            [class.text-white]="page === currentPage()"
+            class="px-3 py-1 border rounded hover:bg-gray-100 text-sm"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+      <button
+        (click)="changePage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+@if (showCreateModal()) {
+  <div
+    class="fixed inset-0 flex items-center justify-center z-50"
+    (click)="closeCreateModal()"
+  >
+    <div
+      class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 class="text-xl font-bold mb-4">Add New Course</h2>
+      <form (submit)="submitCreateForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Course Code *</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.course_code"
+            name="course_code"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="e.g., CS101"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Course Name *</label>
+          <input
+            type="text"
+            [(ngModel)]="createForm.course_name"
+            name="course_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="e.g., Introduction to Computer Science"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea
+            [(ngModel)]="createForm.description"
+            name="description"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            placeholder="Course description (optional)"
+          ></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeCreateModal()"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+          >
+            Create Course
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Modal -->
+@if (showEditModal()) {
+  <div
+    class="fixed inset-0 flex items-center justify-center z-50"
+    (click)="closeEditModal()"
+  >
+    <div
+      class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 class="text-xl font-bold mb-4">Edit Course</h2>
+      <form (submit)="submitEditForm(); $event.preventDefault()">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Course Code *</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.course_code"
+            name="course_code"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Course Name *</label>
+          <input
+            type="text"
+            [(ngModel)]="editForm.course_name"
+            name="course_name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea
+            [(ngModel)]="editForm.description"
+            name="description"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+          ></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="closeEditModal()"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+          >
+            Update Course
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

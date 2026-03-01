@@ -1,0 +1,364 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProgramService, Program, CreateProgramData } from '../../../services/program.service';
+import {
+  DropdownService,
+  DropdownDepartment,
+} from '../../../services/dropdown.service';
+
+@Component({
+  selector: 'app-program-management',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './program-management.html',
+  styleUrl: './program-management.css',
+})
+export class ProgramManagement implements OnInit {
+  programsList = signal<Program[]>([]);
+  departmentsList = signal<DropdownDepartment[]>([]);
+  loading = signal(false);
+  currentPage = signal(1);
+  totalPages = signal(1);
+  totalItems = signal(0);
+  searchQuery = signal('');
+  selectedDepartmentId = signal<number | undefined>(undefined);
+  pageSize = 10;
+
+  // Modal states
+  showCreateModal = signal(false);
+  showEditModal = signal(false);
+  showDeleteModal = signal(false);
+  
+  // Form data
+  createForm = { program_name: '', program_code: '', department_id: 0, status: 'enabled' as 'enabled' | 'disabled' };
+  editForm = { program_id: 0, program_name: '', program_code: '', department_id: 0, status: 'enabled' as 'enabled' | 'disabled' };
+  deleteTarget: Program | null = null;
+
+  constructor(
+    private programService: ProgramService,
+    private dropdownService: DropdownService
+  ) {}
+
+  ngOnInit() {
+    this.loadDepartments();
+    this.loadPrograms();
+  }
+
+  loadDepartments() {
+    this.dropdownService.getDepartments().subscribe({
+      next: (departments) => {
+        this.departmentsList.set(departments);
+      },
+      error: (error) => {
+        console.error('Error loading departments:', error);
+      },
+    });
+  }
+
+  loadPrograms() {
+    this.loading.set(true);
+    this.programService
+      .getPrograms(
+        this.currentPage(),
+        this.pageSize,
+        this.searchQuery(),
+        this.selectedDepartmentId()
+      )
+      .subscribe({
+        next: (response) => {
+          this.programsList.set(response.programs);
+          this.currentPage.set(response.currentPage);
+          this.totalPages.set(response.totalPages);
+          this.totalItems.set(response.totalItems);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading programs:', error);
+          this.loading.set(false);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load programs',
+            confirmButtonColor: '#dc2626',
+          });
+        },
+      });
+  }
+
+  searchPrograms() {
+    this.currentPage.set(1);
+    this.loadPrograms();
+  }
+
+  filterByDepartment(departmentId: string) {
+    this.selectedDepartmentId.set(departmentId ? parseInt(departmentId) : undefined);
+    this.currentPage.set(1);
+    this.loadPrograms();
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      this.loadPrograms();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages();
+    const current = this.currentPage();
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (current <= 4) {
+        for (let i = 1; i <= 5; i++) pages.push(i);
+        pages.push(-1);
+        pages.push(total);
+      } else if (current >= total - 3) {
+        pages.push(1);
+        pages.push(-1);
+        for (let i = total - 4; i <= total; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push(-1);
+        for (let i = current - 1; i <= current + 1; i++) pages.push(i);
+        pages.push(-1);
+        pages.push(total);
+      }
+    }
+
+    return pages;
+  }
+
+  async openCreateModal() {
+    const departmentsOptions = this.departmentsList()
+      .map(
+        (dept) =>
+          `<option value="${dept.department_id}">${dept.department_name}</option>`
+      )
+      .join('');
+
+    await Swal.fire({
+      title: `
+        <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+          <h3 class="text-lg font-medium text-gray-900">Create New Program</h3>
+        </div>
+      `,
+      html: `
+        <div class="text-left" style="padding: 1.5rem 0;">
+          <div class="grid gap-4 grid-cols-1">
+            <div class="col-span-1">
+              <label for="program_name" class="block mb-2.5 text-sm font-medium text-gray-900">Program Name</label>
+              <input
+                type="text"
+                id="program_name"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition shadow-xs"
+                placeholder="Type program name"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label for="department_id" class="block mb-2.5 text-sm font-medium text-gray-900">Department</label>
+              <select
+                id="department_id"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition shadow-xs"
+                required
+              >
+                <option value="">Select Department</option>
+                ${departmentsOptions}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-center space-x-4 border-t border-gray-200 pt-4" style="margin-top: 1.5rem;">
+          <button type="button" id="confirm-btn" class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 box-border border border-transparent focus:ring-4 focus:ring-red-300 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+            <svg class="w-4 h-4 me-1.5 -ms-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/></svg>
+            Add Program
+          </button>
+          <button type="button" id="cancel-btn" class="text-gray-700 bg-gray-100 box-border border border-gray-300 hover:bg-gray-200 hover:text-gray-900 focus:ring-4 focus:ring-gray-200 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+        </div>
+      `,
+      showConfirmButton: false,
+      showCancelButton: false,
+      showCloseButton: true,
+      didOpen: () => {
+        const confirmBtn = document.getElementById('confirm-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        confirmBtn?.addEventListener('click', () => {
+          const program_name = (document.getElementById('program_name') as HTMLInputElement).value;
+          const department_id = parseInt((document.getElementById('department_id') as HTMLSelectElement).value);
+          if (!program_name) {
+            Swal.showValidationMessage('Please enter program name');
+            return;
+          }
+          if (!department_id) {
+            Swal.showValidationMessage('Please select a department');
+            return;
+          }
+          Swal.close();
+          this.createProgram({ program_name, department_id });
+        });
+        cancelBtn?.addEventListener('click', () => {
+          Swal.close();
+        });
+      },
+    });
+  }
+
+  createProgram(data: CreateProgramData) {
+    this.programService.createProgram(data).subscribe({
+      next: (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: response.message,
+          confirmButtonColor: '#dc2626',
+        });
+        this.loadPrograms();
+      },
+      error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.error?.message || 'Failed to create program',
+          confirmButtonColor: '#dc2626',
+        });
+      },
+    });
+  }
+
+  async openEditModal(program: Program) {
+    const departmentsOptions = this.departmentsList()
+      .map(
+        (dept) =>
+          `<option value="${dept.department_id}" ${dept.department_id === program.department_id ? 'selected' : ''}>${dept.department_name}</option>`
+      )
+      .join('');
+
+    await Swal.fire({
+      title: `
+        <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+          <h3 class="text-lg font-medium text-gray-900">Edit Program</h3>
+        </div>
+      `,
+      html: `
+        <div class="text-left" style="padding: 1.5rem 0;">
+          <div class="grid gap-4 grid-cols-1">
+            <div class="col-span-1">
+              <label for="program_name" class="block mb-2.5 text-sm font-medium text-gray-900">Program Name</label>
+              <input
+                type="text"
+                id="program_name"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition shadow-xs"
+                placeholder="Type program name"
+                value="${program.program_name}"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label for="department_id" class="block mb-2.5 text-sm font-medium text-gray-900">Department</label>
+              <select
+                id="department_id"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition shadow-xs"
+                required
+              >
+                <option value="">Select Department</option>
+                ${departmentsOptions}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-center space-x-4 border-t border-gray-200 pt-4" style="margin-top: 1.5rem;">
+          <button type="button" id="confirm-btn" class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 box-border border border-transparent focus:ring-4 focus:ring-red-300 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+            Update Program
+          </button>
+          <button type="button" id="cancel-btn" class="text-gray-700 bg-gray-100 box-border border border-gray-300 hover:bg-gray-200 hover:text-gray-900 focus:ring-4 focus:ring-gray-200 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">Cancel</button>
+        </div>
+      `,
+      showConfirmButton: false,
+      showCancelButton: false,
+      showCloseButton: true,
+      didOpen: () => {
+        const confirmBtn = document.getElementById('confirm-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        confirmBtn?.addEventListener('click', () => {
+          const program_name = (document.getElementById('program_name') as HTMLInputElement).value;
+          const department_id = parseInt((document.getElementById('department_id') as HTMLSelectElement).value);
+          if (!program_name) {
+            Swal.showValidationMessage('Please enter program name');
+            return;
+          }
+          if (!department_id) {
+            Swal.showValidationMessage('Please select a department');
+            return;
+          }
+          Swal.close();
+          this.updateProgram(program.program_id, { program_name, department_id });
+        });
+        cancelBtn?.addEventListener('click', () => {
+          Swal.close();
+        });
+      },
+    });
+  }
+
+  updateProgram(id: number, data: CreateProgramData) {
+    this.programService.updateProgram(id, data).subscribe({
+      next: (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: response.message,
+          confirmButtonColor: '#dc2626',
+        });
+        this.loadPrograms();
+      },
+      error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.error?.message || 'Failed to update program',
+          confirmButtonColor: '#dc2626',
+        });
+      },
+    });
+  }
+
+  deleteProgram(program: Program) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to delete "${program.program_name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.programService.deleteProgram(program.program_id).subscribe({
+          next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: response.message,
+              confirmButtonColor: '#dc2626',
+            });
+            this.loadPrograms();
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to delete program',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
+    });
+  }
+}

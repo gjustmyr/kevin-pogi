@@ -1,0 +1,475 @@
+const db = require("../models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { sendAdminCredentials } = require("../utils/email");
+
+const User = db.User;
+const Admin = db.Admin;
+const Dean = db.Dean;
+const Faculty = db.Faculty;
+const Organization = db.Organization;
+
+// Generate random password
+const generateRandomPassword = (length = 12) => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+};
+
+// Generate JWT Token
+const generateToken = (user) => {
+  return jwt.sign(
+    { user_id: user.user_id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || "your-secret-key",
+    { expiresIn: "24h" },
+  );
+};
+
+// Login
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Get user profile based on role
+    let profile = null;
+    let profileData = {};
+
+    switch (user.role) {
+      case "admin":
+        profile = await Admin.findOne({ where: { user_id: user.user_id } });
+        if (profile) {
+          profileData = {
+            admin_id: profile.admin_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+          };
+        }
+        break;
+
+      case "dean":
+        profile = await Dean.findOne({
+          where: { user_id: user.user_id },
+          include: [{ model: db.Department }],
+        });
+        if (profile) {
+          profileData = {
+            dean_id: profile.dean_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+          };
+        }
+        break;
+
+      case "faculty":
+        profile = await Faculty.findOne({
+          where: { user_id: user.user_id },
+          include: [{ model: db.Department }],
+        });
+        if (profile) {
+          profileData = {
+            faculty_id: profile.faculty_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+          };
+        }
+        break;
+
+      case "organization":
+        profile = await Organization.findOne({
+          where: { user_id: user.user_id },
+          include: [{ model: db.Department }, { model: db.Faculty }],
+        });
+        if (profile) {
+          profileData = {
+            organization_id: profile.organization_id,
+            organization_name: profile.organization_name,
+            description: profile.description,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+            faculty_id: profile.faculty_id,
+          };
+        }
+        break;
+
+      case "superadmin":
+        profileData = { name: "Super Admin" };
+        break;
+    }
+
+    // Generate token
+    const token = generateToken(user);
+
+    // Determine redirect path
+    const redirectPath = `/${user.role}/dashboard`;
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+        profile: profileData,
+      },
+      redirectPath,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Register (for initial setup)
+exports.register = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get current user profile
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const role = req.user.role;
+
+    const user = await User.findOne({ where: { user_id: userId } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let profile = null;
+    let profileData = {};
+
+    switch (role) {
+      case "admin":
+        profile = await Admin.findOne({ where: { user_id: userId } });
+        if (profile) {
+          profileData = {
+            admin_id: profile.admin_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+          };
+        }
+        break;
+
+      case "dean":
+        profile = await Dean.findOne({
+          where: { user_id: userId },
+          include: [{ model: db.Department }],
+        });
+        if (profile) {
+          profileData = {
+            dean_id: profile.dean_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+          };
+        }
+        break;
+
+      case "faculty":
+        profile = await Faculty.findOne({
+          where: { user_id: userId },
+          include: [{ model: db.Department }],
+        });
+        if (profile) {
+          profileData = {
+            faculty_id: profile.faculty_id,
+            first_name: profile.first_name,
+            middle_name: profile.middle_name,
+            last_name: profile.last_name,
+            email: profile.email,
+            contact_number: profile.contact_number,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+          };
+        }
+        break;
+
+      case "organization":
+        profile = await Organization.findOne({
+          where: { user_id: userId },
+          include: [{ model: db.Department }, { model: db.Faculty }],
+        });
+        if (profile) {
+          profileData = {
+            organization_id: profile.organization_id,
+            organization_name: profile.organization_name,
+            description: profile.description,
+            department_id: profile.department_id,
+            department_name: profile.department?.department_name,
+            faculty_id: profile.faculty_id,
+          };
+        }
+        break;
+
+      case "superadmin":
+        profileData = { name: "Super Admin" };
+        break;
+    }
+
+    res.json({
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+        profile: profileData,
+      },
+    });
+  } catch (error) {
+    console.error("Get profile error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Create Admin
+exports.createAdmin = async (req, res) => {
+  try {
+    const { email, first_name, middle_name, last_name, contact_number } =
+      req.body;
+
+    // Validate required fields
+    if (!email || !first_name || !last_name) {
+      return res.status(400).json({
+        message: "Email, first name, and last name are required",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    // Generate random password
+    const generatedPassword = generateRandomPassword(12);
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    // Create user with admin role
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role: "admin",
+    });
+
+    // Create admin profile
+    const admin = await Admin.create({
+      first_name,
+      middle_name: middle_name || null,
+      last_name,
+      email,
+      contact_number: contact_number || null,
+      user_id: user.user_id,
+    });
+
+    // Send credentials email
+    const emailResult = await sendAdminCredentials(
+      email,
+      first_name,
+      generatedPassword,
+    );
+
+    if (!emailResult.success) {
+      console.error("Failed to send email:", emailResult.error);
+      // Still return success but notify about email failure
+      return res.status(201).json({
+        message:
+          "Admin created successfully, but email notification failed. Please provide credentials manually.",
+        admin: {
+          admin_id: admin.admin_id,
+          first_name: admin.first_name,
+          middle_name: admin.middle_name,
+          last_name: admin.last_name,
+          email: admin.email,
+          contact_number: admin.contact_number,
+          user_id: user.user_id,
+        },
+        generatedPassword: generatedPassword, // Only sent when email fails
+      });
+    }
+
+    res.status(201).json({
+      message:
+        "Admin created successfully. Credentials have been sent via email.",
+      admin: {
+        admin_id: admin.admin_id,
+        first_name: admin.first_name,
+        middle_name: admin.middle_name,
+        last_name: admin.last_name,
+        email: admin.email,
+        contact_number: admin.contact_number,
+        user_id: user.user_id,
+      },
+    });
+  } catch (error) {
+    console.error("Create admin error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Create Superadmin
+exports.createSuperadmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with superadmin role
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role: "superadmin",
+    });
+
+    res.status(201).json({
+      message: "Superadmin created successfully",
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Create superadmin error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Create Superadmin
+exports.createSuperadmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user with superadmin role
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role: "superadmin",
+    });
+
+    res.status(201).json({
+      message: "Superadmin created successfully",
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Create superadmin error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

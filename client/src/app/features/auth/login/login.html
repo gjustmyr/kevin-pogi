@@ -1,0 +1,94 @@
+<section
+  class="login-section min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-emerald-100"
+>
+  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+    <div class="text-center mb-8">
+      <img src="/assets/logo.png" alt="Logo" class="mx-auto mb-6 w-32 h-auto" />
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+      <p class="text-gray-600">Sign in to access your dashboard</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium mb-2 text-gray-700">Email Address</label>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+        />
+
+        @if (loginData['email'].touched && loginData['email'].errors?.['required']) {
+          <small class="text-red-500 text-xs mt-1 block">Email is required</small>
+        }
+        @if (loginData['email'].touched && loginData['email'].errors?.['email']) {
+          <small class="text-red-500 text-xs mt-1 block">Invalid email format</small>
+        }
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-sm font-medium mb-2 text-gray-700">Password</label>
+        <div class="relative">
+          <input
+            [type]="isPasswordVisible ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+          />
+        </div>
+
+        @if (loginData['password'].touched && loginData['password'].errors?.['required']) {
+          <small class="text-red-500 text-xs mt-1 block">Password is required</small>
+        }
+      </div>
+
+      <!-- Show Password -->
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          (change)="togglePasswordVisibility()"
+          id="showPassword"
+          class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+        />
+        <label for="showPassword" class="ml-2 text-sm text-gray-700 cursor-pointer"
+          >Show Password</label
+        >
+      </div>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid || isLoading()"
+        class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 flex items-center justify-center"
+      >
+        @if (isLoading()) {
+          <svg
+            class="animate-spin h-5 w-5 mr-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <span>Signing in...</span>
+        } @else {
+          <span>Sign In</span>
+        }
+      </button>
+    </form>
+  </div>
+</section>
