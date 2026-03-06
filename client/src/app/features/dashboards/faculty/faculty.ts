@@ -96,6 +96,24 @@ import { FormsModule } from '@angular/forms';
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Credentials</span>
             </button>
           </li>
+
+          <!-- Personal Data Sheet -->
+          <li>
+            <a
+              routerLink="/faculty/personal-data-sheet"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Personal Data Sheet</span>
+            </a>
+          </li>
         </ul>
       </div>
     </aside>
