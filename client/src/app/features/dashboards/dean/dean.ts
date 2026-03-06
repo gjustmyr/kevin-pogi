@@ -10,12 +10,26 @@ import { DeanSectionManagement } from '../../dean/section-management/section-man
 import { DeanProgramManagement } from '../../dean/program-management/program-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
 import { DeanFacultyCredentialsView } from '../../dean/faculty-credentials-view/faculty-credentials-view';
-import { DeanRequirementService, DepartmentStatistics } from '../../../services/dean-requirement.service';
+import {
+  DeanRequirementService,
+  DepartmentStatistics,
+} from '../../../services/dean-requirement.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
 
 @Component({
   selector: 'app-dean-dashboard',
-  imports: [CommonModule, FormsModule, RouterModule, DeanFacultyManagement, DeanOrganizationManagement, DeanCourseManagement, DeanSectionManagement, DeanProgramManagement, DeanRequirementsMonitoring, DeanFacultyCredentialsView],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    DeanFacultyManagement,
+    DeanOrganizationManagement,
+    DeanCourseManagement,
+    DeanSectionManagement,
+    DeanProgramManagement,
+    DeanRequirementsMonitoring,
+    DeanFacultyCredentialsView,
+  ],
   template: `
     <!-- Sidebar -->
     <aside
@@ -348,7 +362,9 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
 
           @if (loading()) {
             <div class="text-center py-12">
-              <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+              <div
+                class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+              ></div>
               <p class="mt-4 text-gray-600">Loading dashboard...</p>
             </div>
           }
@@ -356,7 +372,9 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
           @if (!loading() && departmentStats()) {
             <!-- Key Metrics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+              <div
+                class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
@@ -367,19 +385,25 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                   </div>
                 </div>
               </div>
-              <div class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+              <div
+                class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium opacity-90 mb-1">Cleared Faculties</h3>
                     <p class="text-4xl font-bold">{{ departmentStats()!.cleared_faculties }}</p>
-                    <p class="text-xs opacity-90 mt-1">{{ departmentStats()!.faculty_clearance_rate }}% of total</p>
+                    <p class="text-xs opacity-90 mt-1">
+                      {{ departmentStats()!.faculty_clearance_rate }}% of total
+                    </p>
                   </div>
                   <div class="text-5xl opacity-30">
                     <i class="fas fa-user-check"></i>
                   </div>
                 </div>
               </div>
-              <div class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+              <div
+                class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium opacity-90 mb-1">Total Requirements</h3>
@@ -390,12 +414,16 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                   </div>
                 </div>
               </div>
-              <div class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+              <div
+                class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium opacity-90 mb-1">Requirements Cleared</h3>
                     <p class="text-4xl font-bold">{{ departmentStats()!.cleared }}</p>
-                    <p class="text-xs opacity-90 mt-1">{{ departmentStats()!.completion_rate }}% complete</p>
+                    <p class="text-xs opacity-90 mt-1">
+                      {{ departmentStats()!.completion_rate }}% complete
+                    </p>
                   </div>
                   <div class="text-5xl opacity-30">
                     <i class="fas fa-check-circle"></i>
@@ -408,23 +436,54 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <!-- Status Distribution Chart -->
               <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-6">Requirements Status Distribution</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-6">
+                  Requirements Status Distribution
+                </h3>
                 <div class="flex items-center justify-center mb-6">
                   <div class="relative w-64 h-64">
                     <!-- Donut Chart using conic-gradient -->
-                    <div class="absolute inset-0 rounded-full" 
-                      [style.background]="'conic-gradient(' +
+                    <div
+                      class="absolute inset-0 rounded-full"
+                      [style.background]="
+                        'conic-gradient(' +
                         'from 0deg, ' +
-                        'rgb(34, 197, 94) 0deg ' + (departmentStats()!.cleared / departmentStats()!.total_requirements * 360) + 'deg, ' +
-                        'rgb(234, 179, 8) ' + (departmentStats()!.cleared / departmentStats()!.total_requirements * 360) + 'deg ' + 
-                        ((departmentStats()!.cleared + departmentStats()!.pending) / departmentStats()!.total_requirements * 360) + 'deg, ' +
-                        'rgb(239, 68, 68) ' + ((departmentStats()!.cleared + departmentStats()!.pending) / departmentStats()!.total_requirements * 360) + 'deg ' +
-                        ((departmentStats()!.cleared + departmentStats()!.pending + departmentStats()!.returned) / departmentStats()!.total_requirements * 360) + 'deg, ' +
-                        'rgb(156, 163, 175) ' + ((departmentStats()!.cleared + departmentStats()!.pending + departmentStats()!.returned) / departmentStats()!.total_requirements * 360) + 'deg 360deg)'">
-                    </div>
+                        'rgb(34, 197, 94) 0deg ' +
+                        (departmentStats()!.cleared / departmentStats()!.total_requirements) * 360 +
+                        'deg, ' +
+                        'rgb(234, 179, 8) ' +
+                        (departmentStats()!.cleared / departmentStats()!.total_requirements) * 360 +
+                        'deg ' +
+                        ((departmentStats()!.cleared + departmentStats()!.pending) /
+                          departmentStats()!.total_requirements) *
+                          360 +
+                        'deg, ' +
+                        'rgb(239, 68, 68) ' +
+                        ((departmentStats()!.cleared + departmentStats()!.pending) /
+                          departmentStats()!.total_requirements) *
+                          360 +
+                        'deg ' +
+                        ((departmentStats()!.cleared +
+                          departmentStats()!.pending +
+                          departmentStats()!.returned) /
+                          departmentStats()!.total_requirements) *
+                          360 +
+                        'deg, ' +
+                        'rgb(156, 163, 175) ' +
+                        ((departmentStats()!.cleared +
+                          departmentStats()!.pending +
+                          departmentStats()!.returned) /
+                          departmentStats()!.total_requirements) *
+                          360 +
+                        'deg 360deg)'
+                      "
+                    ></div>
                     <!-- Center white circle for donut effect -->
-                    <div class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col">
-                      <div class="text-3xl font-bold text-gray-800">{{ departmentStats()!.total_requirements }}</div>
+                    <div
+                      class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col"
+                    >
+                      <div class="text-3xl font-bold text-gray-800">
+                        {{ departmentStats()!.total_requirements }}
+                      </div>
                       <div class="text-sm text-gray-600">Total</div>
                     </div>
                   </div>
@@ -471,14 +530,22 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                     <div class="flex justify-between items-center mb-2">
                       <span class="text-sm font-medium text-gray-700">Cleared Requirements</span>
                       <span class="text-sm font-semibold text-green-600">
-                        {{ departmentStats()!.cleared }} / {{ departmentStats()!.total_requirements }}
-                        ({{ (departmentStats()!.cleared / departmentStats()!.total_requirements * 100).toFixed(1) }}%)
+                        {{ departmentStats()!.cleared }} /
+                        {{ departmentStats()!.total_requirements }} ({{
+                          (
+                            (departmentStats()!.cleared / departmentStats()!.total_requirements) *
+                            100
+                          ).toFixed(1)
+                        }}%)
                       </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="(departmentStats()!.cleared / departmentStats()!.total_requirements * 100)">
-                      </div>
+                      <div
+                        class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
+                        [style.width.%]="
+                          (departmentStats()!.cleared / departmentStats()!.total_requirements) * 100
+                        "
+                      ></div>
                     </div>
                   </div>
 
@@ -487,14 +554,22 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                     <div class="flex justify-between items-center mb-2">
                       <span class="text-sm font-medium text-gray-700">Pending Reviews</span>
                       <span class="text-sm font-semibold text-yellow-600">
-                        {{ departmentStats()!.pending }} / {{ departmentStats()!.total_requirements }}
-                        ({{ (departmentStats()!.pending / departmentStats()!.total_requirements * 100).toFixed(1) }}%)
+                        {{ departmentStats()!.pending }} /
+                        {{ departmentStats()!.total_requirements }} ({{
+                          (
+                            (departmentStats()!.pending / departmentStats()!.total_requirements) *
+                            100
+                          ).toFixed(1)
+                        }}%)
                       </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div class="bg-linear-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="(departmentStats()!.pending / departmentStats()!.total_requirements * 100)">
-                      </div>
+                      <div
+                        class="bg-linear-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-500"
+                        [style.width.%]="
+                          (departmentStats()!.pending / departmentStats()!.total_requirements) * 100
+                        "
+                      ></div>
                     </div>
                   </div>
 
@@ -503,14 +578,23 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                     <div class="flex justify-between items-center mb-2">
                       <span class="text-sm font-medium text-gray-700">Returned for Revision</span>
                       <span class="text-sm font-semibold text-red-600">
-                        {{ departmentStats()!.returned }} / {{ departmentStats()!.total_requirements }}
-                        ({{ (departmentStats()!.returned / departmentStats()!.total_requirements * 100).toFixed(1) }}%)
+                        {{ departmentStats()!.returned }} /
+                        {{ departmentStats()!.total_requirements }} ({{
+                          (
+                            (departmentStats()!.returned / departmentStats()!.total_requirements) *
+                            100
+                          ).toFixed(1)
+                        }}%)
                       </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div class="bg-linear-to-r from-red-400 to-red-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="(departmentStats()!.returned / departmentStats()!.total_requirements * 100)">
-                      </div>
+                      <div
+                        class="bg-linear-to-r from-red-400 to-red-600 h-full rounded-full transition-all duration-500"
+                        [style.width.%]="
+                          (departmentStats()!.returned / departmentStats()!.total_requirements) *
+                          100
+                        "
+                      ></div>
                     </div>
                   </div>
 
@@ -519,14 +603,25 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                     <div class="flex justify-between items-center mb-2">
                       <span class="text-sm font-medium text-gray-700">Not Yet Submitted</span>
                       <span class="text-sm font-semibold text-gray-600">
-                        {{ departmentStats()!.not_submitted }} / {{ departmentStats()!.total_requirements }}
-                        ({{ (departmentStats()!.not_submitted / departmentStats()!.total_requirements * 100).toFixed(1) }}%)
+                        {{ departmentStats()!.not_submitted }} /
+                        {{ departmentStats()!.total_requirements }} ({{
+                          (
+                            (departmentStats()!.not_submitted /
+                              departmentStats()!.total_requirements) *
+                            100
+                          ).toFixed(1)
+                        }}%)
                       </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div class="bg-linear-to-r from-gray-400 to-gray-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="(departmentStats()!.not_submitted / departmentStats()!.total_requirements * 100)">
-                      </div>
+                      <div
+                        class="bg-linear-to-r from-gray-400 to-gray-600 h-full rounded-full transition-all duration-500"
+                        [style.width.%]="
+                          (departmentStats()!.not_submitted /
+                            departmentStats()!.total_requirements) *
+                          100
+                        "
+                      ></div>
                     </div>
                   </div>
 
@@ -534,12 +629,18 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                   <div class="pt-4 border-t border-gray-200">
                     <div class="flex justify-between items-center mb-2">
                       <span class="text-base font-bold text-gray-800">Overall Completion</span>
-                      <span class="text-base font-bold text-blue-600">{{ departmentStats()!.completion_rate }}%</span>
+                      <span class="text-base font-bold text-blue-600"
+                        >{{ departmentStats()!.completion_rate }}%</span
+                      >
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                      <div class="bg-linear-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-2"
-                        [style.width.%]="departmentStats()!.completion_rate">
-                        <span class="text-xs font-semibold text-white">{{ departmentStats()!.completion_rate }}%</span>
+                      <div
+                        class="bg-linear-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-2"
+                        [style.width.%]="departmentStats()!.completion_rate"
+                      >
+                        <span class="text-xs font-semibold text-white"
+                          >{{ departmentStats()!.completion_rate }}%</span
+                        >
                       </div>
                     </div>
                   </div>
@@ -552,42 +653,60 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
               <h3 class="text-lg font-bold text-gray-800 mb-6">Faculty Clearance Status</h3>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Cleared Faculties -->
-                <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                <div
+                  class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-2 border-green-200"
+                >
                   <div class="shrink-0">
-                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white">
+                    <div
+                      class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white"
+                    >
                       <i class="fas fa-user-check text-2xl"></i>
                     </div>
                   </div>
                   <div class="flex-1">
-                    <p class="text-3xl font-bold text-green-700">{{ departmentStats()!.cleared_faculties }}</p>
+                    <p class="text-3xl font-bold text-green-700">
+                      {{ departmentStats()!.cleared_faculties }}
+                    </p>
                     <p class="text-sm text-green-600 font-medium">Cleared Faculties</p>
                     <p class="text-xs text-gray-600 mt-1">All requirements approved</p>
                   </div>
                 </div>
 
                 <!-- Pending Faculties -->
-                <div class="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                <div
+                  class="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200"
+                >
                   <div class="shrink-0">
-                    <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center text-white">
+                    <div
+                      class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center text-white"
+                    >
                       <i class="fas fa-clock text-2xl"></i>
                     </div>
                   </div>
                   <div class="flex-1">
-                    <p class="text-3xl font-bold text-yellow-700">{{ departmentStats()!.pending_faculties }}</p>
+                    <p class="text-3xl font-bold text-yellow-700">
+                      {{ departmentStats()!.pending_faculties }}
+                    </p>
                     <p class="text-sm text-yellow-600 font-medium">Pending Faculties</p>
                     <p class="text-xs text-gray-600 mt-1">Incomplete requirements</p>
                   </div>
                 </div>
 
                 <!-- Withholding Faculties -->
-                <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                <div
+                  class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200"
+                >
                   <div class="shrink-0">
-                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white">
+                    <div
+                      class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white"
+                    >
                       <i class="fas fa-exclamation-triangle text-2xl"></i>
                     </div>
                   </div>
                   <div class="flex-1">
-                    <p class="text-3xl font-bold text-red-700">{{ departmentStats()!.withholding_faculties }}</p>
+                    <p class="text-3xl font-bold text-red-700">
+                      {{ departmentStats()!.withholding_faculties }}
+                    </p>
                     <p class="text-sm text-red-600 font-medium">Withholding</p>
                     <p class="text-xs text-gray-600 mt-1">Has returned requirements</p>
                   </div>
@@ -599,14 +718,20 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                 <div class="flex justify-between items-center mb-2">
                   <span class="text-sm font-medium text-gray-700">Faculty Clearance Rate</span>
                   <span class="text-sm font-semibold text-green-600">
-                    {{ departmentStats()!.cleared_faculties }} / {{ departmentStats()!.total_faculty }}
-                    ({{ departmentStats()!.faculty_clearance_rate }}%)
+                    {{ departmentStats()!.cleared_faculties }} /
+                    {{ departmentStats()!.total_faculty }} ({{
+                      departmentStats()!.faculty_clearance_rate
+                    }}%)
                   </span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                  <div class="bg-linear-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-3"
-                    [style.width.%]="departmentStats()!.faculty_clearance_rate">
-                    <span class="text-xs font-semibold text-white">{{ departmentStats()!.faculty_clearance_rate }}%</span>
+                  <div
+                    class="bg-linear-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-3"
+                    [style.width.%]="departmentStats()!.faculty_clearance_rate"
+                  >
+                    <span class="text-xs font-semibold text-white"
+                      >{{ departmentStats()!.faculty_clearance_rate }}%</span
+                    >
                   </div>
                 </div>
               </div>
@@ -614,13 +739,22 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
 
             <!-- Status Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div
+                class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-green-800 mb-1">Cleared</h3>
-                    <p class="text-3xl font-bold text-green-600">{{ departmentStats()!.cleared }}</p>
+                    <p class="text-3xl font-bold text-green-600">
+                      {{ departmentStats()!.cleared }}
+                    </p>
                     <p class="text-xs text-green-700 mt-2">
-                      {{ (departmentStats()!.cleared / departmentStats()!.total_requirements * 100).toFixed(1) }}% of total
+                      {{
+                        (
+                          (departmentStats()!.cleared / departmentStats()!.total_requirements) *
+                          100
+                        ).toFixed(1)
+                      }}% of total
                     </p>
                   </div>
                   <div class="text-4xl text-green-300">
@@ -629,13 +763,22 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                 </div>
               </div>
 
-              <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div
+                class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-yellow-800 mb-1">Pending Review</h3>
-                    <p class="text-3xl font-bold text-yellow-600">{{ departmentStats()!.pending }}</p>
+                    <p class="text-3xl font-bold text-yellow-600">
+                      {{ departmentStats()!.pending }}
+                    </p>
                     <p class="text-xs text-yellow-700 mt-2">
-                      {{ (departmentStats()!.pending / departmentStats()!.total_requirements * 100).toFixed(1) }}% of total
+                      {{
+                        (
+                          (departmentStats()!.pending / departmentStats()!.total_requirements) *
+                          100
+                        ).toFixed(1)
+                      }}% of total
                     </p>
                   </div>
                   <div class="text-4xl text-yellow-300">
@@ -644,13 +787,20 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                 </div>
               </div>
 
-              <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div
+                class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-red-800 mb-1">Returned</h3>
                     <p class="text-3xl font-bold text-red-600">{{ departmentStats()!.returned }}</p>
                     <p class="text-xs text-red-700 mt-2">
-                      {{ (departmentStats()!.returned / departmentStats()!.total_requirements * 100).toFixed(1) }}% of total
+                      {{
+                        (
+                          (departmentStats()!.returned / departmentStats()!.total_requirements) *
+                          100
+                        ).toFixed(1)
+                      }}% of total
                     </p>
                   </div>
                   <div class="text-4xl text-red-300">
@@ -659,13 +809,23 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
                 </div>
               </div>
 
-              <div class="bg-gray-50 border-l-4 border-gray-500 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div
+                class="bg-gray-50 border-l-4 border-gray-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              >
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-gray-800 mb-1">Not Submitted</h3>
-                    <p class="text-3xl font-bold text-gray-600">{{ departmentStats()!.not_submitted }}</p>
+                    <p class="text-3xl font-bold text-gray-600">
+                      {{ departmentStats()!.not_submitted }}
+                    </p>
                     <p class="text-xs text-gray-700 mt-2">
-                      {{ (departmentStats()!.not_submitted / departmentStats()!.total_requirements * 100).toFixed(1) }}% of total
+                      {{
+                        (
+                          (departmentStats()!.not_submitted /
+                            departmentStats()!.total_requirements) *
+                          100
+                        ).toFixed(1)
+                      }}% of total
                     </p>
                   </div>
                   <div class="text-4xl text-gray-300">
@@ -717,7 +877,7 @@ export class DeanDashboard implements OnInit {
   constructor(
     public authService: Auth,
     private requirementService: DeanRequirementService,
-    private dropdownService: DropdownService
+    private dropdownService: DropdownService,
   ) {}
 
   ngOnInit() {

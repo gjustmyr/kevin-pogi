@@ -17,7 +17,7 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     if (!authService.isAuthenticated() || !user) {
       console.warn('Role Guard: User not authenticated');
       router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url }
+        queryParams: { returnUrl: state.url },
       });
       return false;
     }
@@ -35,7 +35,9 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     }
 
     // User doesn't have required role, redirect to their own dashboard
-    console.warn(`Role Guard: User role '${user.role}' not in allowed roles [${allowedRoles.join(', ')}]`);
+    console.warn(
+      `Role Guard: User role '${user.role}' not in allowed roles [${allowedRoles.join(', ')}]`,
+    );
     const dashboardPath = getDashboardPathByRole(user.role);
     router.navigate([dashboardPath]);
     return false;

@@ -141,14 +141,14 @@ export class DeanRequirementService {
 
     return this.http.get<FacultyAccomplishment>(
       `${this.apiUrl}/faculty/${faculty_id}/accomplishment`,
-      { params }
+      { params },
     );
   }
 
   // Get requirements for a specific assignment
   getAssignmentRequirements(assignment_id: number): Observable<AssignmentWithRequirements> {
     return this.http.get<AssignmentWithRequirements>(
-      `${this.apiUrl}/assignments/${assignment_id}/requirements`
+      `${this.apiUrl}/assignments/${assignment_id}/requirements`,
     );
   }
 
@@ -178,7 +178,7 @@ export class DeanRequirementService {
     status: 'pending' | 'cleared' | 'withholding',
     remarks?: string,
     academic_year_id?: number,
-    semester?: string
+    semester?: string,
   ): Observable<any> {
     return this.http.put(`${this.apiUrl}/faculty/${faculty_id}/clearance-status`, {
       status,
@@ -192,7 +192,7 @@ export class DeanRequirementService {
   calculateFacultyClearanceStatus(
     faculty_id: number,
     academic_year_id?: number,
-    semester?: string
+    semester?: string,
   ): Observable<any> {
     let params = new HttpParams();
 
@@ -207,7 +207,7 @@ export class DeanRequirementService {
     return this.http.post(
       `${this.apiUrl}/faculty/${faculty_id}/calculate-clearance`,
       {},
-      { params }
+      { params },
     );
   }
 }

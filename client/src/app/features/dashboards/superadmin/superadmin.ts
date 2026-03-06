@@ -398,12 +398,17 @@ import {
                     <i class="fas fa-database"></i>
                   </div>
                 </div>
-                
+
                 <!-- Storage per file average -->
                 <div class="pt-4 border-t border-gray-200">
                   <p class="text-sm text-gray-600">Average File Size</p>
                   <p class="text-lg font-semibold text-gray-700">
-                    {{ statistics().total_files > 0 ? (statistics().total_storage_mb / statistics().total_files).toFixed(2) : '0.00' }} MB
+                    {{
+                      statistics().total_files > 0
+                        ? (statistics().total_storage_mb / statistics().total_files).toFixed(2)
+                        : '0.00'
+                    }}
+                    MB
                   </p>
                 </div>
               </div>
@@ -428,7 +433,9 @@ import {
                     <div
                       class="bg-yellow-500 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
-                        statistics().total_files > 0 ? (statistics().files_by_status.pending / statistics().total_files) * 100 : 0
+                        statistics().total_files > 0
+                          ? (statistics().files_by_status.pending / statistics().total_files) * 100
+                          : 0
                       "
                     ></div>
                   </div>
@@ -449,7 +456,9 @@ import {
                     <div
                       class="bg-red-500 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
-                        statistics().total_files > 0 ? (statistics().files_by_status.returned / statistics().total_files) * 100 : 0
+                        statistics().total_files > 0
+                          ? (statistics().files_by_status.returned / statistics().total_files) * 100
+                          : 0
                       "
                     ></div>
                   </div>
@@ -468,7 +477,14 @@ import {
                     {{ statistics().files_by_status.pending.toLocaleString() }}
                   </p>
                   <p class="text-xs text-yellow-700 mt-2">
-                    {{ statistics().total_files > 0 ? ((statistics().files_by_status.pending / statistics().total_files) * 100).toFixed(1) : '0.0' }}% of total
+                    {{
+                      statistics().total_files > 0
+                        ? (
+                            (statistics().files_by_status.pending / statistics().total_files) *
+                            100
+                          ).toFixed(1)
+                        : '0.0'
+                    }}% of total
                   </p>
                 </div>
                 <div class="text-4xl text-yellow-300">
@@ -485,7 +501,14 @@ import {
                     {{ statistics().files_by_status.returned.toLocaleString() }}
                   </p>
                   <p class="text-xs text-red-700 mt-2">
-                    {{ statistics().total_files > 0 ? ((statistics().files_by_status.returned / statistics().total_files) * 100).toFixed(1) : '0.0' }}% of total
+                    {{
+                      statistics().total_files > 0
+                        ? (
+                            (statistics().files_by_status.returned / statistics().total_files) *
+                            100
+                          ).toFixed(1)
+                        : '0.0'
+                    }}% of total
                   </p>
                 </div>
                 <div class="text-4xl text-red-300">
@@ -542,7 +565,7 @@ export class SuperadminDashboard implements OnInit {
 
   constructor(
     public authService: Auth,
-    private dashboardService: SuperadminDashboardService
+    private dashboardService: SuperadminDashboardService,
   ) {}
 
   ngOnInit() {

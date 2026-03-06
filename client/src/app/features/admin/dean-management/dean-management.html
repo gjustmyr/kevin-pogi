@@ -39,7 +39,8 @@
           @for (dean of deans(); track dean.dean_id) {
             <tr class="bg-white border-b hover:bg-gray-50">
               <td class="px-6 py-4 font-semibold text-gray-900 text-sm">
-                {{ dean.first_name }} {{ dean.middle_name ? dean.middle_name + ' ' : '' }}{{ dean.last_name }}
+                {{ dean.first_name }} {{ dean.middle_name ? dean.middle_name + ' ' : ''
+                }}{{ dean.last_name }}
               </td>
               <td class="px-6 py-4 text-sm">
                 {{ dean.user.email }}

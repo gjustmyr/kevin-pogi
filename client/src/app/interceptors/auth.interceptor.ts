@@ -31,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         console.warn('Auth Interceptor: 401 Unauthorized - logging out user');
         authService.logout();
         router.navigate(['/login'], {
-          queryParams: { sessionExpired: 'true' }
+          queryParams: { sessionExpired: 'true' },
         });
       }
 
@@ -49,7 +49,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       return throwError(() => error);
-    })
+    }),
   );
 };
 

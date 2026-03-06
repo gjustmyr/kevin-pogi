@@ -49,31 +49,25 @@ export class DeanCourseManagement implements OnInit {
 
   loadCourses() {
     this.loading.set(true);
-    this.courseService
-      .getCourses(
-        this.currentPage(),
-        this.pageSize,
-        this.searchQuery(),
-      )
-      .subscribe({
-        next: (response) => {
-          this.courseList.set(response.courses);
-          this.currentPage.set(response.currentPage);
-          this.totalPages.set(response.totalPages);
-          this.totalItems.set(response.totalItems);
-          this.loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading courses:', error);
-          this.loading.set(false);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to load courses',
-            confirmButtonColor: '#2563eb',
-          });
-        },
-      });
+    this.courseService.getCourses(this.currentPage(), this.pageSize, this.searchQuery()).subscribe({
+      next: (response) => {
+        this.courseList.set(response.courses);
+        this.currentPage.set(response.currentPage);
+        this.totalPages.set(response.totalPages);
+        this.totalItems.set(response.totalItems);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading courses:', error);
+        this.loading.set(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load courses',
+          confirmButtonColor: '#2563eb',
+        });
+      },
+    });
   }
 
   searchCourses() {
@@ -138,10 +132,7 @@ export class DeanCourseManagement implements OnInit {
   }
 
   submitCreateForm() {
-    if (
-      !this.createForm.course_code ||
-      !this.createForm.course_name
-    ) {
+    if (!this.createForm.course_code || !this.createForm.course_name) {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
@@ -189,10 +180,7 @@ export class DeanCourseManagement implements OnInit {
   }
 
   submitEditForm() {
-    if (
-      !this.editForm.course_code ||
-      !this.editForm.course_name
-    ) {
+    if (!this.editForm.course_code || !this.editForm.course_name) {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',

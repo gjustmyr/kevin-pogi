@@ -27,18 +27,18 @@ export class DepartmentManagementComponent implements OnInit {
   showCreateModal = signal(false);
   showEditModal = signal(false);
   showDeleteModal = signal(false);
-  
+
   // Form data
   createForm = { department_name: '', status: 'enabled' as 'enabled' | 'disabled' };
   editForm = { department_id: 0, department_name: '', status: 'enabled' as 'enabled' | 'disabled' };
   deleteTarget: Department | null = null;
-  
+
   // Expose Math for template
   Math = Math;
 
   constructor(
     private departmentService: DepartmentService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
   ) {}
 
   ngOnInit() {
@@ -122,7 +122,7 @@ export class DepartmentManagementComponent implements OnInit {
       this.sweetAlert.warning('Please enter department name');
       return;
     }
-    
+
     this.loading.set(true);
     this.departmentService.createDepartment(this.createForm).subscribe({
       next: () => {
@@ -142,7 +142,7 @@ export class DepartmentManagementComponent implements OnInit {
     this.editForm = {
       department_id: dept.department_id,
       department_name: dept.department_name,
-      status: dept.status
+      status: dept.status,
     };
     this.showEditModal.set(true);
   }
@@ -157,23 +157,25 @@ export class DepartmentManagementComponent implements OnInit {
       this.sweetAlert.warning('Please enter department name');
       return;
     }
-    
+
     this.loading.set(true);
-    this.departmentService.updateDepartment(this.editForm.department_id, {
-      department_name: this.editForm.department_name,
-      status: this.editForm.status
-    }).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.closeEditModal();
-        this.sweetAlert.success('Department updated successfully!');
-        this.loadDepartments();
-      },
-      error: (error) => {
-        this.loading.set(false);
-        this.sweetAlert.error(error.error?.message || 'Failed to update department');
-      },
-    });
+    this.departmentService
+      .updateDepartment(this.editForm.department_id, {
+        department_name: this.editForm.department_name,
+        status: this.editForm.status,
+      })
+      .subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.closeEditModal();
+          this.sweetAlert.success('Department updated successfully!');
+          this.loadDepartments();
+        },
+        error: (error) => {
+          this.loading.set(false);
+          this.sweetAlert.error(error.error?.message || 'Failed to update department');
+        },
+      });
   }
 
   openDeleteModal(dept: Department) {
@@ -188,7 +190,7 @@ export class DepartmentManagementComponent implements OnInit {
 
   confirmDelete() {
     if (!this.deleteTarget) return;
-    
+
     this.loading.set(true);
     this.departmentService.deleteDepartment(this.deleteTarget.department_id).subscribe({
       next: () => {

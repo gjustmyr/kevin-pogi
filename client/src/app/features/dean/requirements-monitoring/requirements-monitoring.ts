@@ -325,7 +325,8 @@ export class DeanRequirementsMonitoring implements OnInit {
   setFacultyClearanceStatus(status: 'pending' | 'cleared' | 'withholding') {
     if (!this.selectedFacultyAccomplishment()) return;
 
-    const statusText = status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'Withholding' : 'Pending';
+    const statusText =
+      status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'Withholding' : 'Pending';
 
     Swal.fire({
       title: `Set Faculty Status to ${statusText}?`,
@@ -335,7 +336,8 @@ export class DeanRequirementsMonitoring implements OnInit {
       inputPlaceholder: 'Enter any remarks...',
       showCancelButton: true,
       confirmButtonText: `Set to ${statusText}`,
-      confirmButtonColor: status === 'cleared' ? '#10b981' : status === 'withholding' ? '#dc2626' : '#f59e0b',
+      confirmButtonColor:
+        status === 'cleared' ? '#10b981' : status === 'withholding' ? '#dc2626' : '#f59e0b',
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -345,7 +347,7 @@ export class DeanRequirementsMonitoring implements OnInit {
             status,
             result.value || undefined,
             this.selectedAcademicYear() || undefined,
-            this.selectedSemester() || undefined
+            this.selectedSemester() || undefined,
           )
           .subscribe({
             next: () => {
@@ -386,7 +388,7 @@ export class DeanRequirementsMonitoring implements OnInit {
           .calculateFacultyClearanceStatus(
             this.selectedFacultyAccomplishment()!.faculty.faculty_id,
             this.selectedAcademicYear() || undefined,
-            this.selectedSemester() || undefined
+            this.selectedSemester() || undefined,
           )
           .subscribe({
             next: () => {

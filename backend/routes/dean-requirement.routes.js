@@ -15,14 +15,14 @@ router.get("/statistics", requirementController.getDepartmentStatistics);
 
 // Get faculty accomplishment summary
 router.get(
-  "/faculty/:faculty_id/accomplishment",
-  requirementController.getFacultyAccomplishment
+	"/faculty/:faculty_id/accomplishment",
+	requirementController.getFacultyAccomplishment,
 );
 
 // Get requirements for a specific assignment
 router.get(
-  "/assignments/:assignment_id/requirements",
-  requirementController.getAssignmentRequirements
+	"/assignments/:assignment_id/requirements",
+	requirementController.getAssignmentRequirements,
 );
 
 // Clear a requirement (approve)
@@ -33,20 +33,20 @@ router.put("/:submission_id/return", requirementController.returnRequirement);
 
 // Download a requirement file
 router.get(
-  "/:submission_id/download",
-  requirementController.downloadRequirement
+	"/:submission_id/download",
+	requirementController.downloadRequirement,
 );
 
 // Set faculty clearance status (manual)
 router.put(
-  "/faculty/:faculty_id/clearance-status",
-  requirementController.setFacultyClearanceStatus
+	"/faculty/:faculty_id/clearance-status",
+	requirementController.setFacultyClearanceStatus,
 );
 
 // Auto-calculate and update faculty clearance status
 router.post(
-  "/faculty/:faculty_id/calculate-clearance",
-  requirementController.updateFacultyClearanceStatus
+	"/faculty/:faculty_id/calculate-clearance",
+	requirementController.updateFacultyClearanceStatus,
 );
 
 module.exports = router;

@@ -11,18 +11,21 @@ router.use(checkRole("dean"));
 router.get("/", deanFacultyCredentialsController.getAllFacultyCredentials);
 
 // Get single faculty credential details
-router.get("/:facultyId", deanFacultyCredentialsController.getFacultyCredential);
+router.get(
+	"/:facultyId",
+	deanFacultyCredentialsController.getFacultyCredential,
+);
 
 // Download faculty's credential file (tor, pds, diploma)
 router.get(
-  "/:facultyId/download/:fileType",
-  deanFacultyCredentialsController.downloadFacultyCredentialFile
+	"/:facultyId/download/:fileType",
+	deanFacultyCredentialsController.downloadFacultyCredentialFile,
 );
 
 // Download faculty's certificate
 router.get(
-  "/:facultyId/certificate/:certificateId/download",
-  deanFacultyCredentialsController.downloadFacultyCertificate
+	"/:facultyId/certificate/:certificateId/download",
+	deanFacultyCredentialsController.downloadFacultyCertificate,
 );
 
 module.exports = router;

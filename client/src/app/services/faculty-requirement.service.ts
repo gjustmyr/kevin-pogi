@@ -92,7 +92,7 @@ export class FacultyRequirementService {
   // Get requirements for a specific assignment
   getRequirementsByAssignment(assignment_id: number): Observable<AssignmentWithRequirements> {
     return this.http.get<AssignmentWithRequirements>(
-      `${this.apiUrl}/assignments/${assignment_id}/requirements`
+      `${this.apiUrl}/assignments/${assignment_id}/requirements`,
     );
   }
 

@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
 
 export interface CourseAssignment {
   assignment_id: number;
@@ -10,10 +9,9 @@ export interface CourseAssignment {
   section_id: number;
   academic_year_id: number;
   semester: string;
-  assigned_by: number;
-  assigned_date: string;
-  status: string;
-  faculty?: {
+  created_at: string;
+  updated_at: string;
+  Faculty?: {
     faculty_id: number;
     employee_id: string;
     first_name: string;
@@ -21,17 +19,19 @@ export interface CourseAssignment {
     last_name: string;
     email: string;
   };
-  course?: {
+  Course?: {
     course_id: number;
     course_code: string;
     course_name: string;
+    year_level: number;
   };
-  section?: {
+  Section?: {
     section_id: number;
     section_name: string;
     year_level: number;
+    semester: string;
   };
-  academic_year?: {
+  AcademicYear?: {
     academic_year_id: number;
     year_start: number;
     year_end: number;
@@ -46,85 +46,111 @@ export interface CreateCourseAssignmentData {
   semester: string;
 }
 
-export interface BulkCreateAssignmentData {
+export interface BulkCreateAssignmentsData {
   assignments: CreateCourseAssignmentData[];
 }
 
 export interface BulkCreateResponse {
-  message: string;
   created: number;
   errors: number;
-  errorDetails: Array<{
-    assignment: CreateCourseAssignmentData;
-    error: string;
+  results: Array<{
+    success: boolean;
+    assignment?: CourseAssignment;
+    error?: string;
   }>;
 }
 
-export interface CourseAssignmentResponse {
+export interface GetAssignmentsResponse {
   assignments: CourseAssignment[];
   currentPage: number;
   totalPages: number;
   totalItems: number;
 }
 
+export interface FacultyWorkload {
+  faculty_id: number;
+  employee_id: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  email: string;
+  total_assignments: number;
+  assignments_by_semester: Array<{
+    semester: string;
+    count: number;
+  }>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class DeanCourseAssignmentService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/dean/course-assignments`;
+  private apiUrl = 'http://localhost:3000/api/dean/course-assignments';
 
-  getCourseAssignments(
+  constructor(private http: HttpClient) {}
+
+  getAssignments(
     page: number = 1,
     limit: number = 10,
     search: string = '',
-    faculty_id?: number,
-    academic_year_id?: number,
+    facultyId?: number,
+    academicYearId?: number,
     semester?: string,
-    status?: string,
-  ): Observable<CourseAssignmentResponse> {
+  ): Observable<GetAssignmentsResponse> {
     let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
 
     if (search) {
       params = params.set('search', search);
     }
-
-    if (faculty_id) {
-      params = params.set('faculty_id', faculty_id.toString());
+    if (facultyId) {
+      params = params.set('faculty_id', facultyId.toString());
     }
-
-    if (academic_year_id) {
-      params = params.set('academic_year_id', academic_year_id.toString());
+    if (academicYearId) {
+      params = params.set('academic_year_id', academicYearId.toString());
     }
-
     if (semester) {
       params = params.set('semester', semester);
     }
 
-    if (status) {
-      params = params.set('status', status);
-    }
-
-    return this.http.get<CourseAssignmentResponse>(this.apiUrl, { params });
+    return this.http.get<GetAssignmentsResponse>(this.apiUrl, { params });
   }
 
-  createCourseAssignment(data: CreateCourseAssignmentData): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  getAssignmentById(assignmentId: number): Observable<CourseAssignment> {
+    return this.http.get<CourseAssignment>(`${this.apiUrl}/${assignmentId}`);
   }
 
-  bulkCreateAssignments(data: BulkCreateAssignmentData): Observable<BulkCreateResponse> {
+  createAssignment(data: CreateCourseAssignmentData): Observable<CourseAssignment> {
+    return this.http.post<CourseAssignment>(this.apiUrl, data);
+  }
+
+  bulkCreateAssignments(data: BulkCreateAssignmentsData): Observable<BulkCreateResponse> {
     return this.http.post<BulkCreateResponse>(`${this.apiUrl}/bulk`, data);
   }
 
-  updateCourseAssignment(id: number, data: Partial<CreateCourseAssignmentData>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  updateAssignment(
+    assignmentId: number,
+    data: Partial<CreateCourseAssignmentData>,
+  ): Observable<CourseAssignment> {
+    return this.http.put<CourseAssignment>(`${this.apiUrl}/${assignmentId}`, data);
   }
 
-  deleteCourseAssignment(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteAssignment(assignmentId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${assignmentId}`);
   }
 
-  getFacultyWorkload(faculty_id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/faculty/${faculty_id}/workload`);
+  getFacultyWorkload(facultyId: number): Observable<{
+    faculty: {
+      faculty_id: number;
+      employee_id: string;
+      name: string;
+    };
+    workload: {
+      totalCourses: number;
+      bySemester: { [key: string]: number };
+      byAcademicYear: { [key: string]: number };
+    };
+    assignments: CourseAssignment[];
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/faculty/${facultyId}/workload`);
   }
 }

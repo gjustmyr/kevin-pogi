@@ -205,9 +205,7 @@ import { FormsModule } from '@angular/forms';
           <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Academic Year</label
-                >
+                <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
                 <select
                   [(ngModel)]="selectedAcademicYear"
                   (change)="filterData()"
@@ -361,9 +359,7 @@ import { FormsModule } from '@angular/forms';
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Status Distribution -->
             <div class="bg-white rounded-lg shadow-sm p-6">
-              <h3 class="text-lg font-bold text-gray-800 mb-6">
-                Requirements Status Distribution
-              </h3>
+              <h3 class="text-lg font-bold text-gray-800 mb-6">Requirements Status Distribution</h3>
               <div class="flex items-center justify-center mb-6">
                 <div class="relative w-64 h-64">
                   <!-- Donut Chart -->
@@ -471,8 +467,8 @@ import { FormsModule } from '@angular/forms';
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-sm font-medium text-gray-700">Submitted</span>
                     <span class="text-sm font-semibold text-blue-600">
-                      {{ dashboardStats().submitted }} / {{ dashboardStats().totalRequirements }}
-                      ({{
+                      {{ dashboardStats().submitted }} /
+                      {{ dashboardStats().totalRequirements }} ({{
                         (
                           (dashboardStats().submitted / dashboardStats().totalRequirements) *
                           100
@@ -673,7 +669,7 @@ export class FacultyDashboard implements OnInit {
     this.authService.getProfile().subscribe({
       error: (error) => {
         console.error('Error refreshing profile:', error);
-      }
+      },
     });
   }
 

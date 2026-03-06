@@ -39,7 +39,7 @@ export class FacultyRequirements implements OnInit {
 
   constructor(
     private requirementService: FacultyRequirementService,
-    private dropdownService: DropdownService
+    private dropdownService: DropdownService,
   ) {}
 
   ngOnInit() {
@@ -70,7 +70,7 @@ export class FacultyRequirements implements OnInit {
         this.currentPage(),
         this.pageSize,
         this.selectedAcademicYear() || undefined,
-        this.selectedSemester() || undefined
+        this.selectedSemester() || undefined,
       )
       .subscribe({
         next: (response) => {

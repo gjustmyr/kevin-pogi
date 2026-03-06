@@ -48,12 +48,18 @@ exports.getSections = async (req, res) => {
 
 		const sections = await db.Section.findAll({
 			where: whereClause,
-			attributes: ["section_id", "section_name", "year_level", "semester", "program_id"],
+			attributes: [
+				"section_id",
+				"section_name",
+				"year_level",
+				"semester",
+				"program_id",
+			],
 			include: [
 				{
 					model: db.Program,
 					attributes: ["program_name", "program_acronym"],
-				}
+				},
 			],
 			order: [["section_name", "ASC"]],
 		});

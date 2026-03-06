@@ -63,36 +63,30 @@ export class DeanFacultyCredentialsService {
   async getAllFacultyCredentials(
     page: number = 1,
     limit: number = 10,
-    search: string = ''
+    search: string = '',
   ): Promise<FacultyCredentialsResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
 
     if (search) {
       params = params.set('search', search);
     }
 
-    return firstValueFrom(
-      this.http.get<FacultyCredentialsResponse>(this.apiUrl, { params })
-    );
+    return firstValueFrom(this.http.get<FacultyCredentialsResponse>(this.apiUrl, { params }));
   }
 
   async getFacultyCredential(facultyId: number): Promise<FacultyWithCredentials> {
-    return firstValueFrom(
-      this.http.get<FacultyWithCredentials>(`${this.apiUrl}/${facultyId}`)
-    );
+    return firstValueFrom(this.http.get<FacultyWithCredentials>(`${this.apiUrl}/${facultyId}`));
   }
 
   async downloadFile(
     facultyId: number,
     fileType: 'tor' | 'pds' | 'diploma',
-    fileName: string
+    fileName: string,
   ): Promise<void> {
     const blob = await firstValueFrom(
       this.http.get(`${this.apiUrl}/${facultyId}/download/${fileType}`, {
         responseType: 'blob',
-      })
+      }),
     );
 
     // Create download link
@@ -109,15 +103,12 @@ export class DeanFacultyCredentialsService {
   async downloadCertificate(
     facultyId: number,
     certificateId: number,
-    fileName: string
+    fileName: string,
   ): Promise<void> {
     const blob = await firstValueFrom(
-      this.http.get(
-        `${this.apiUrl}/${facultyId}/certificate/${certificateId}/download`,
-        {
-          responseType: 'blob',
-        }
-      )
+      this.http.get(`${this.apiUrl}/${facultyId}/certificate/${certificateId}/download`, {
+        responseType: 'blob',
+      }),
     );
 
     // Create download link

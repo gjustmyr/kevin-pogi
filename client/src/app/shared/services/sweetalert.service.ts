@@ -2,17 +2,16 @@ import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SweetAlertService {
-
   success(message: string, title: string = 'Success!') {
     return Swal.fire({
       title: title,
       text: message,
       icon: 'success',
       confirmButtonColor: '#3b82f6',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -22,7 +21,7 @@ export class SweetAlertService {
       text: message,
       icon: 'error',
       confirmButtonColor: '#ef4444',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -32,7 +31,7 @@ export class SweetAlertService {
       text: message,
       icon: 'warning',
       confirmButtonColor: '#f59e0b',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -42,7 +41,7 @@ export class SweetAlertService {
       text: message,
       icon: 'info',
       confirmButtonColor: '#3b82f6',
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
     });
   }
 
@@ -55,7 +54,7 @@ export class SweetAlertService {
       confirmButtonColor: '#3b82f6',
       cancelButtonColor: '#6b7280',
       confirmButtonText: 'Yes',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
     });
   }
 
@@ -67,7 +66,7 @@ export class SweetAlertService {
       title: message,
       showConfirmButton: false,
       timer: 3000,
-      timerProgressBar: true
+      timerProgressBar: true,
     });
   }
 }

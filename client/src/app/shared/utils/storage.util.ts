@@ -12,7 +12,9 @@ export function encrypt(data: string): string {
   try {
     let result = '';
     for (let i = 0; i < data.length; i++) {
-      result += String.fromCharCode(data.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+      result += String.fromCharCode(
+        data.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length),
+      );
     }
     return btoa(result);
   } catch (error) {
@@ -29,7 +31,9 @@ export function decrypt(encryptedData: string): string {
     const data = atob(encryptedData);
     let result = '';
     for (let i = 0; i < data.length; i++) {
-      result += String.fromCharCode(data.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+      result += String.fromCharCode(
+        data.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length),
+      );
     }
     return result;
   } catch (error) {

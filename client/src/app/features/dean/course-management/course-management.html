@@ -115,10 +115,7 @@
 
 <!-- Create Modal -->
 @if (showCreateModal()) {
-  <div
-    class="fixed inset-0 flex items-center justify-center z-50"
-    (click)="closeCreateModal()"
-  >
+  <div class="fixed inset-0 flex items-center justify-center z-50" (click)="closeCreateModal()">
     <div
       class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200"
       (click)="$event.stopPropagation()"
@@ -179,10 +176,7 @@
 
 <!-- Edit Modal -->
 @if (showEditModal()) {
-  <div
-    class="fixed inset-0 flex items-center justify-center z-50"
-    (click)="closeEditModal()"
-  >
+  <div class="fixed inset-0 flex items-center justify-center z-50" (click)="closeEditModal()">
     <div
       class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200"
       (click)="$event.stopPropagation()"

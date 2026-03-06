@@ -103,15 +103,22 @@ interface Certificate {
           </div>
 
           <!-- Additional Certificates -->
-          @if (savedCredentials()?.credential_certificates && savedCredentials()!.credential_certificates!.length > 0) {
+          @if (
+            savedCredentials()?.credential_certificates &&
+            savedCredentials()!.credential_certificates!.length > 0
+          ) {
             <div class="mt-6 pt-6 border-t border-gray-200">
               <p class="text-sm font-medium text-gray-600 mb-3">Additional Certificates:</p>
               <div class="space-y-2">
                 @for (cert of savedCredentials()?.credential_certificates; track cert.id) {
-                  <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div
+                    class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg"
+                  >
                     <div class="flex items-center gap-2">
                       <i class="fas fa-certificate text-green-600"></i>
-                      <span class="text-sm font-medium text-gray-900">{{ cert.certificate_name }}</span>
+                      <span class="text-sm font-medium text-gray-900">{{
+                        cert.certificate_name
+                      }}</span>
                     </div>
                     <button
                       type="button"
@@ -131,382 +138,395 @@ interface Certificate {
 
       <!-- Form -->
       @if (!savedCredentials() || isEditing()) {
-      <form (ngSubmit)="saveCredentials()" class="space-y-6">
-        <!-- Personal Information Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Education -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Education <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="formData.education"
-                name="education"
-                required
-                placeholder="e.g., Master of Science in Computer Science"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Education Obtained Where -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Education Obtained Where <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="formData.educationObtainedWhere"
-                name="educationObtainedWhere"
-                required
-                placeholder="e.g., University of the Philippines"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Education Obtained When -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Education Obtained When <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="formData.educationObtainedWhen"
-                name="educationObtainedWhen"
-                required
-                placeholder="e.g., 2020 or June 2020"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Professional License -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Professional License Number and PRC ID Expiration Date
-                <span class="text-gray-500 text-xs">(if applicable)</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="formData.professionalLicense"
-                name="professionalLicense"
-                placeholder="e.g., License No: 123456, PRC ID Exp: 12/31/2025"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Field of Specialization -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Field of Specialization <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="formData.specialization"
-                name="specialization"
-                required
-                placeholder="e.g., Software Engineering, Data Science"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-
-            <!-- Subjects to be taught -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Subjects to be Taught <span class="text-red-500">*</span>
-              </label>
-              <textarea
-                [(ngModel)]="formData.subjectsToTeach"
-                name="subjectsToTeach"
-                required
-                rows="3"
-                placeholder="List subjects separated by commas"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              ></textarea>
-            </div>
-
-            <!-- Nature of Appointment -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nature of Appointment <span class="text-red-500">*</span>
-              </label>
-              <select
-                [(ngModel)]="formData.appointmentNature"
-                name="appointmentNature"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option value="">Select...</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contractual">Contractual</option>
-                <option value="Visiting">Visiting</option>
-              </select>
-            </div>
-
-            <!-- Status -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Status <span class="text-red-500">*</span>
-              </label>
-              <select
-                [(ngModel)]="formData.status"
-                name="status"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option value="">Select...</option>
-                <option value="Active">Active</option>
-                <option value="On Leave">On Leave</option>
-                <option value="Retired">Retired</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Documents Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <!-- Transcript of Records -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Transcript of Records (TOR) 
-              @if (!isEditing()) {
-                <span class="text-red-500">* PDF only</span>
-              } @else {
-                <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
-              }
-            </label>
-            @if (isEditing() && savedCredentials()?.tor_file_path) {
-              <div class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
-                <div class="flex items-center gap-2 text-blue-700">
-                  <i class="fas fa-file-pdf"></i>
-                  <span class="text-sm">Current file uploaded</span>
-                </div>
-                <button
-                  type="button"
-                  (click)="downloadDocument('tor')"
-                  class="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  <i class="fas fa-download mr-1"></i>View
-                </button>
+        <form (ngSubmit)="saveCredentials()" class="space-y-6">
+          <!-- Personal Information Section -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Education -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Education <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.education"
+                  name="education"
+                  required
+                  placeholder="e.g., Master of Science in Computer Science"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
               </div>
-            }
-            <input
-              type="file"
-              (change)="onTORUpload($event)"
-              accept=".pdf"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-            />
-            @if (formData.torFile) {
-              <p class="mt-2 text-sm text-green-600">
-                <i class="fas fa-check-circle mr-1"></i>
-                New file selected: {{ formData.torFile.name }}
-              </p>
-            }
-          </div>
 
-          <!-- PDS -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Personal Data Sheet (PDS) 
-              @if (!isEditing()) {
-                <span class="text-red-500">*</span>
-              } @else {
-                <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
-              }
-            </label>
-            @if (isEditing() && savedCredentials()?.pds_file_path) {
-              <div class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
-                <div class="flex items-center gap-2 text-blue-700">
-                  <i class="fas fa-file-alt"></i>
-                  <span class="text-sm">Current file uploaded</span>
-                </div>
-                <button
-                  type="button"
-                  (click)="downloadDocument('pds')"
-                  class="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  <i class="fas fa-download mr-1"></i>View
-                </button>
+              <!-- Education Obtained Where -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Education Obtained Where <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.educationObtainedWhere"
+                  name="educationObtainedWhere"
+                  required
+                  placeholder="e.g., University of the Philippines"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
               </div>
-            }
-            <input
-              type="file"
-              (change)="onPDSUpload($event)"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-            />
-            @if (formData.pdsFile) {
-              <p class="mt-2 text-sm text-green-600">
-                <i class="fas fa-check-circle mr-1"></i>
-                New file selected: {{ formData.pdsFile.name }}
-              </p>
-            }
-          </div>
 
-          <!-- Diploma -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Photocopy of Diploma 
-              @if (!isEditing()) {
-                <span class="text-red-500">*</span>
-              } @else {
-                <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
-              }
-            </label>
-            @if (isEditing() && savedCredentials()?.diploma_file_path) {
-              <div class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
-                <div class="flex items-center gap-2 text-blue-700">
-                  <i class="fas fa-file-image"></i>
-                  <span class="text-sm">Current file uploaded</span>
-                </div>
-                <button
-                  type="button"
-                  (click)="downloadDocument('diploma')"
-                  class="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  <i class="fas fa-download mr-1"></i>View
-                </button>
+              <!-- Education Obtained When -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Education Obtained When <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.educationObtainedWhen"
+                  name="educationObtainedWhen"
+                  required
+                  placeholder="e.g., 2020 or June 2020"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
               </div>
-            }
-            <input
-              type="file"
-              (change)="onDiplomaUpload($event)"
-              accept=".pdf,.jpg,.jpeg,.png"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-            />
-            @if (formData.diplomaFile) {
-              <p class="mt-2 text-sm text-green-600">
-                <i class="fas fa-check-circle mr-1"></i>
-                New file selected: {{ formData.diplomaFile.name }}
-              </p>
-            }
-          </div>
-        </div>
 
-        <!-- Certificates Section -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-sm text-gray-600">Certificates of Trainings/Seminars Attended (optional)</p>
-            <button
-              type="button"
-              (click)="addCertificate()"
-              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-            >
-              <i class="fas fa-plus"></i>
-              Add Certificate
-            </button>
-          </div>
+              <!-- Professional License -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Professional License Number and PRC ID Expiration Date
+                  <span class="text-gray-500 text-xs">(if applicable)</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.professionalLicense"
+                  name="professionalLicense"
+                  placeholder="e.g., License No: 123456, PRC ID Exp: 12/31/2025"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
 
-          @if (certificates().length === 0) {
-            <div class="text-center py-8 text-gray-500">
-              <i class="fas fa-certificate text-4xl mb-3"></i>
-              <p>No certificates added yet. Click "Add Certificate" to begin.</p>
+              <!-- Field of Specialization -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Field of Specialization <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  [(ngModel)]="formData.specialization"
+                  name="specialization"
+                  required
+                  placeholder="e.g., Software Engineering, Data Science"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              <!-- Subjects to be taught -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Subjects to be Taught <span class="text-red-500">*</span>
+                </label>
+                <textarea
+                  [(ngModel)]="formData.subjectsToTeach"
+                  name="subjectsToTeach"
+                  required
+                  rows="3"
+                  placeholder="List subjects separated by commas"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                ></textarea>
+              </div>
+
+              <!-- Nature of Appointment -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Nature of Appointment <span class="text-red-500">*</span>
+                </label>
+                <select
+                  [(ngModel)]="formData.appointmentNature"
+                  name="appointmentNature"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select...</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contractual">Contractual</option>
+                  <option value="Visiting">Visiting</option>
+                </select>
+              </div>
+
+              <!-- Status -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Status <span class="text-red-500">*</span>
+                </label>
+                <select
+                  [(ngModel)]="formData.status"
+                  name="status"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select...</option>
+                  <option value="Active">Active</option>
+                  <option value="On Leave">On Leave</option>
+                  <option value="Retired">Retired</option>
+                </select>
+              </div>
             </div>
-          }
+          </div>
 
-          @for (cert of certificates(); track cert.id) {
-            <div class="border border-gray-300 rounded-lg p-4 mb-4">
-              <div class="flex items-start gap-4">
-                <div class="flex-1 space-y-3">
-                  <!-- Certificate Name -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Certificate Name/Title
-                    </label>
-                    <input
-                      type="text"
-                      [(ngModel)]="cert.name"
-                      [name]="'certName_' + cert.id"
-                      placeholder="e.g., Web Development Training Certificate"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
+          <!-- Documents Section -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <!-- Transcript of Records -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Transcript of Records (TOR)
+                @if (!isEditing()) {
+                  <span class="text-red-500">* PDF only</span>
+                } @else {
+                  <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
+                }
+              </label>
+              @if (isEditing() && savedCredentials()?.tor_file_path) {
+                <div
+                  class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
+                >
+                  <div class="flex items-center gap-2 text-blue-700">
+                    <i class="fas fa-file-pdf"></i>
+                    <span class="text-sm">Current file uploaded</span>
                   </div>
+                  <button
+                    type="button"
+                    (click)="downloadDocument('tor')"
+                    class="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    <i class="fas fa-download mr-1"></i>View
+                  </button>
+                </div>
+              }
+              <input
+                type="file"
+                (change)="onTORUpload($event)"
+                accept=".pdf"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+              />
+              @if (formData.torFile) {
+                <p class="mt-2 text-sm text-green-600">
+                  <i class="fas fa-check-circle mr-1"></i>
+                  New file selected: {{ formData.torFile.name }}
+                </p>
+              }
+            </div>
 
-                  <!-- Certificate File -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Certificate File @if (cert.filePath) {(Optional - file already uploaded)}
-                    </label>
-                    
-                    @if (cert.filePath && !cert.file) {
-                      <div class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                          <i class="fas fa-file-pdf text-blue-600"></i>
-                          <span class="text-sm text-blue-800">Current certificate uploaded</span>
-                        </div>
-                        <button
-                          type="button"
-                          (click)="downloadCertificate(cert.id)"
-                          class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition flex items-center gap-1"
+            <!-- PDS -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Personal Data Sheet (PDS)
+                @if (!isEditing()) {
+                  <span class="text-red-500">*</span>
+                } @else {
+                  <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
+                }
+              </label>
+              @if (isEditing() && savedCredentials()?.pds_file_path) {
+                <div
+                  class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
+                >
+                  <div class="flex items-center gap-2 text-blue-700">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="text-sm">Current file uploaded</span>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="downloadDocument('pds')"
+                    class="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    <i class="fas fa-download mr-1"></i>View
+                  </button>
+                </div>
+              }
+              <input
+                type="file"
+                (change)="onPDSUpload($event)"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+              />
+              @if (formData.pdsFile) {
+                <p class="mt-2 text-sm text-green-600">
+                  <i class="fas fa-check-circle mr-1"></i>
+                  New file selected: {{ formData.pdsFile.name }}
+                </p>
+              }
+            </div>
+
+            <!-- Diploma -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Photocopy of Diploma
+                @if (!isEditing()) {
+                  <span class="text-red-500">*</span>
+                } @else {
+                  <span class="text-gray-500 text-sm">(Upload new file to replace existing)</span>
+                }
+              </label>
+              @if (isEditing() && savedCredentials()?.diploma_file_path) {
+                <div
+                  class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
+                >
+                  <div class="flex items-center gap-2 text-blue-700">
+                    <i class="fas fa-file-image"></i>
+                    <span class="text-sm">Current file uploaded</span>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="downloadDocument('diploma')"
+                    class="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    <i class="fas fa-download mr-1"></i>View
+                  </button>
+                </div>
+              }
+              <input
+                type="file"
+                (change)="onDiplomaUpload($event)"
+                accept=".pdf,.jpg,.jpeg,.png"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+              />
+              @if (formData.diplomaFile) {
+                <p class="mt-2 text-sm text-green-600">
+                  <i class="fas fa-check-circle mr-1"></i>
+                  New file selected: {{ formData.diplomaFile.name }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Certificates Section -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-sm text-gray-600">
+                Certificates of Trainings/Seminars Attended (optional)
+              </p>
+              <button
+                type="button"
+                (click)="addCertificate()"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+              >
+                <i class="fas fa-plus"></i>
+                Add Certificate
+              </button>
+            </div>
+
+            @if (certificates().length === 0) {
+              <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-certificate text-4xl mb-3"></i>
+                <p>No certificates added yet. Click "Add Certificate" to begin.</p>
+              </div>
+            }
+
+            @for (cert of certificates(); track cert.id) {
+              <div class="border border-gray-300 rounded-lg p-4 mb-4">
+                <div class="flex items-start gap-4">
+                  <div class="flex-1 space-y-3">
+                    <!-- Certificate Name -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Certificate Name/Title
+                      </label>
+                      <input
+                        type="text"
+                        [(ngModel)]="cert.name"
+                        [name]="'certName_' + cert.id"
+                        placeholder="e.g., Web Development Training Certificate"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <!-- Certificate File -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Certificate File
+                        @if (cert.filePath) {
+                          (Optional - file already uploaded)
+                        }
+                      </label>
+
+                      @if (cert.filePath && !cert.file) {
+                        <div
+                          class="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between"
                         >
-                          <i class="fas fa-eye"></i>
-                          View
-                        </button>
-                      </div>
-                    }
-                    
-                    <input
-                      type="file"
-                      (change)="onCertificateFileChange($event, cert.id)"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    />
-                    @if (cert.file) {
-                      <p class="mt-1 text-sm text-blue-600">
-                        <i class="fas fa-check-circle mr-1"></i>
-                        New file selected: {{ cert.file.name }}
-                      </p>
-                    }
+                          <div class="flex items-center gap-2">
+                            <i class="fas fa-file-pdf text-blue-600"></i>
+                            <span class="text-sm text-blue-800">Current certificate uploaded</span>
+                          </div>
+                          <button
+                            type="button"
+                            (click)="downloadCertificate(cert.id)"
+                            class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition flex items-center gap-1"
+                          >
+                            <i class="fas fa-eye"></i>
+                            View
+                          </button>
+                        </div>
+                      }
+
+                      <input
+                        type="file"
+                        (change)="onCertificateFileChange($event, cert.id)"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      @if (cert.file) {
+                        <p class="mt-1 text-sm text-blue-600">
+                          <i class="fas fa-check-circle mr-1"></i>
+                          New file selected: {{ cert.file.name }}
+                        </p>
+                      }
+                    </div>
                   </div>
+
+                  <!-- Remove Button -->
+                  <button
+                    type="button"
+                    (click)="removeCertificate(cert.id)"
+                    class="px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </div>
-
-                <!-- Remove Button -->
-                <button
-                  type="button"
-                  (click)="removeCertificate(cert.id)"
-                  class="px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
               </div>
-            </div>
-          }
-        </div>
+            }
+          </div>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-end gap-3">
-          @if (isEditing()) {
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3">
+            @if (isEditing()) {
+              <button
+                type="button"
+                (click)="cancelEditing()"
+                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+            }
             <button
               type="button"
-              (click)="cancelEditing()"
+              (click)="resetForm()"
               class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
-              Cancel
+              Reset
             </button>
-          }
-          <button
-            type="button"
-            (click)="resetForm()"
-            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-          >
-            Reset
-          </button>
-          <button
-            type="submit"
-            [disabled]="isSubmitting()"
-            class="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            @if (isSubmitting()) {
-              <i class="fas fa-spinner fa-spin"></i>
-              <span>{{ isEditing() ? 'Updating...' : 'Submitting...' }}</span>
-            } @else {
-              <i class="fas fa-save"></i>
-              <span>{{ isEditing() ? 'Update Credentials' : 'Save Credentials' }}</span>
-            }
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              [disabled]="isSubmitting()"
+              class="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              @if (isSubmitting()) {
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>{{ isEditing() ? 'Updating...' : 'Submitting...' }}</span>
+              } @else {
+                <i class="fas fa-save"></i>
+                <span>{{ isEditing() ? 'Update Credentials' : 'Save Credentials' }}</span>
+              }
+            </button>
+          </div>
+        </form>
       }
 
       <!-- Success/Error Messages -->
@@ -598,7 +618,7 @@ export class FacultyCredentials implements OnInit {
           id: cert.id.toString(),
           name: cert.certificate_name,
           file: null,
-          filePath: cert.file_path
+          filePath: cert.file_path,
         }));
         this.certificates.set(existingCerts);
       }
@@ -654,24 +674,30 @@ export class FacultyCredentials implements OnInit {
   onCertificateFileChange(event: any, certId: string) {
     const file = event.target.files[0];
     if (file) {
-      this.certificates.update((certs) =>
-        certs.map((c) => (c.id === certId ? { ...c, file } : c))
-      );
+      this.certificates.update((certs) => certs.map((c) => (c.id === certId ? { ...c, file } : c)));
     }
   }
 
   async saveCredentials() {
     // Validate required fields
-    if (!this.formData.education || !this.formData.educationObtainedWhere || 
-        !this.formData.educationObtainedWhen || !this.formData.specialization || 
-        !this.formData.subjectsToTeach || !this.formData.appointmentNature || 
-        !this.formData.status) {
+    if (
+      !this.formData.education ||
+      !this.formData.educationObtainedWhere ||
+      !this.formData.educationObtainedWhen ||
+      !this.formData.specialization ||
+      !this.formData.subjectsToTeach ||
+      !this.formData.appointmentNature ||
+      !this.formData.status
+    ) {
       this.sweetAlert.warning('Please fill in all required fields');
       return;
     }
 
     // Only require files if not editing (creating new)
-    if (!this.isEditing() && (!this.formData.torFile || !this.formData.pdsFile || !this.formData.diplomaFile)) {
+    if (
+      !this.isEditing() &&
+      (!this.formData.torFile || !this.formData.pdsFile || !this.formData.diplomaFile)
+    ) {
       this.sweetAlert.warning('Please upload all required documents (TOR, PDS, Diploma)');
       return;
     }
@@ -682,7 +708,7 @@ export class FacultyCredentials implements OnInit {
 
     try {
       const formData = new FormData();
-      
+
       // Add text fields
       formData.append('education', this.formData.education);
       formData.append('educationObtainedWhere', this.formData.educationObtainedWhere);
@@ -705,7 +731,7 @@ export class FacultyCredentials implements OnInit {
       }
 
       // Add certificates
-      const allCerts = this.certificates().filter(c => c.name);
+      const allCerts = this.certificates().filter((c) => c.name);
       allCerts.forEach((cert, index) => {
         formData.append(`certificate_${index}_name`, cert.name);
         // If cert has filePath, it's an existing certificate - send the ID
@@ -720,7 +746,7 @@ export class FacultyCredentials implements OnInit {
       formData.append('certificateCount', allCerts.length.toString());
 
       await this.credentialsService.saveCredentials(formData);
-      
+
       this.sweetAlert.success('Credentials saved successfully!');
       this.isEditing.set(false);
       await this.loadExistingCredentials();
@@ -757,7 +783,7 @@ export class FacultyCredentials implements OnInit {
       const fileNames = {
         tor: 'Transcript_of_Records.pdf',
         pds: 'Personal_Data_Sheet.pdf',
-        diploma: 'Diploma.pdf'
+        diploma: 'Diploma.pdf',
       };
       await this.credentialsService.downloadFile(fileType, fileNames[fileType]);
     } catch (error: any) {
@@ -768,7 +794,9 @@ export class FacultyCredentials implements OnInit {
 
   async downloadCertificate(certificateId: string) {
     try {
-      const cert = this.savedCredentials()?.credential_certificates?.find((c: any) => c.id.toString() === certificateId);
+      const cert = this.savedCredentials()?.credential_certificates?.find(
+        (c: any) => c.id.toString() === certificateId,
+      );
       if (!cert) {
         this.sweetAlert.error('Certificate not found');
         return;

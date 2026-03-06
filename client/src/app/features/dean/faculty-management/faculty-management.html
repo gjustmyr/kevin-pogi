@@ -360,7 +360,9 @@
               @for (assignment of sectionAssignments(); track $index; let idx = $index) {
                 <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
                   <div class="flex justify-between items-start mb-3">
-                    <h3 class="text-sm font-medium text-gray-700">Section Assignment {{ $index + 1 }}</h3>
+                    <h3 class="text-sm font-medium text-gray-700">
+                      Section Assignment {{ $index + 1 }}
+                    </h3>
                     <button
                       type="button"
                       (click)="removeSectionAssignment(idx)"
@@ -371,7 +373,9 @@
                   </div>
 
                   <div class="mb-3">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Select Section</label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1"
+                      >Select Section</label
+                    >
                     <select
                       [(ngModel)]="assignment.section_id"
                       [name]="'section_' + idx"
@@ -381,7 +385,8 @@
                       <option [value]="0">Choose a section</option>
                       @for (section of sectionsList(); track section.section_id) {
                         <option [value]="section.section_id">
-                          {{ section.section_name }} ({{ getYearLevelDisplay(section.year_level) }}) - {{ section.semester }}
+                          {{ section.section_name }} ({{ getYearLevelDisplay(section.year_level) }})
+                          - {{ section.semester }}
                         </option>
                       }
                     </select>
@@ -389,8 +394,10 @@
 
                   @if (assignment.section_id > 0) {
                     <div>
-                      <label class="block text-xs font-medium text-gray-600 mb-2">Select Courses for this Section</label>
-                      
+                      <label class="block text-xs font-medium text-gray-600 mb-2"
+                        >Select Courses for this Section</label
+                      >
+
                       <div class="mb-2">
                         <input
                           type="text"
@@ -400,8 +407,10 @@
                           class="w-full px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-xs"
                         />
                       </div>
-                      
-                      <div class="border border-gray-200 rounded-lg p-3 max-h-40 overflow-y-auto bg-white">
+
+                      <div
+                        class="border border-gray-200 rounded-lg p-3 max-h-40 overflow-y-auto bg-white"
+                      >
                         @if (getCoursesForSection(assignment.section_id, idx).length === 0) {
                           <p class="text-xs text-gray-500">
                             @if (courseSearchTerms()[idx]) {
@@ -411,7 +420,10 @@
                             }
                           </p>
                         } @else {
-                          @for (course of getCoursesForSection(assignment.section_id, idx); track course.course_id) {
+                          @for (
+                            course of getCoursesForSection(assignment.section_id, idx);
+                            track course.course_id
+                          ) {
                             <label class="flex items-center py-1.5 hover:bg-gray-50 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -419,7 +431,9 @@
                                 (change)="toggleCourseForSection(idx, course.course_id)"
                                 class="mr-2"
                               />
-                              <span class="text-xs">{{ course.course_code }} - {{ course.course_name }}</span>
+                              <span class="text-xs"
+                                >{{ course.course_code }} - {{ course.course_name }}</span
+                              >
                             </label>
                           }
                         }
@@ -438,9 +452,11 @@
         @if (sectionAssignments().length > 0) {
           <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-4">
             <p class="text-sm text-blue-700">
-              <strong>Total Assignments:</strong> 
+              <strong>Total Assignments:</strong>
               @for (assignment of sectionAssignments(); track $index) {
-                @if ($index > 0) { + }
+                @if ($index > 0) {
+                  +
+                }
                 {{ assignment.course_ids.length }}
               }
               = <strong>{{ getTotalAssignments() }}</strong> assignments

@@ -52,10 +52,10 @@ export class FacultyCredentialsService {
   async downloadFile(fileType: 'tor' | 'pds' | 'diploma', fileName: string): Promise<void> {
     const blob = await firstValueFrom(
       this.http.get(`${this.apiUrl}/download/${fileType}`, {
-        responseType: 'blob'
-      })
+        responseType: 'blob',
+      }),
     );
-    
+
     // Create download link
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -70,10 +70,10 @@ export class FacultyCredentialsService {
   async downloadCertificate(certificateId: string, fileName: string): Promise<void> {
     const blob = await firstValueFrom(
       this.http.get(`${this.apiUrl}/download/certificate/${certificateId}`, {
-        responseType: 'blob'
-      })
+        responseType: 'blob',
+      }),
     );
-    
+
     // Create download link
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

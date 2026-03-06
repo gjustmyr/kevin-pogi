@@ -27,7 +27,7 @@ export class SuperadminDashboardService {
 
   getDashboardStatistics(): Observable<{ success: boolean; statistics: SuperadminStatistics }> {
     return this.http.get<{ success: boolean; statistics: SuperadminStatistics }>(
-      `${this.apiUrl}/statistics`
+      `${this.apiUrl}/statistics`,
     );
   }
 }

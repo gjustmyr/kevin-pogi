@@ -1,5 +1,4 @@
 <div class="p-4">
-
   <!-- Action Bar -->
   <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
     <div class="flex gap-2">
@@ -11,9 +10,7 @@
       >
         <option [value]="0">All Academic Years</option>
         @for (year of academicYearsList(); track year.academic_year_id) {
-          <option [value]="year.academic_year_id">
-            {{ year.year_start }}-{{ year.year_end }}
-          </option>
+          <option [value]="year.academic_year_id">{{ year.year_start }}-{{ year.year_end }}</option>
         }
       </select>
 
@@ -90,9 +87,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 text-sm">
-                {{ assignment.academic_year?.year_start }}-{{
-                  assignment.academic_year?.year_end
-                }}
+                {{ assignment.academic_year?.year_start }}-{{ assignment.academic_year?.year_end }}
               </td>
               <td class="px-6 py-4 text-sm">{{ assignment.semester }}</td>
               <td class="px-6 py-4 text-center">
@@ -224,13 +219,16 @@
 </div>
 @if (showSubmitModal()) {
   <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div
+      class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+    >
       <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-gray-200">
         <h2 class="text-2xl font-bold text-gray-800">Accomplishments</h2>
         @if (selectedAssignment()) {
           <p class="text-gray-600 mt-1">
-            {{ selectedAssignment()!.course?.course_code }} - {{ selectedAssignment()!.course?.course_name }}
+            {{ selectedAssignment()!.course?.course_code }} -
+            {{ selectedAssignment()!.course?.course_name }}
           </p>
         }
       </div>
@@ -239,7 +237,9 @@
       <div class="flex-1 overflow-y-auto p-6">
         <div class="space-y-4">
           @for (req of requirements(); track req.requirement_number) {
-            <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+            <div
+              class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+            >
               <div class="flex justify-between items-start">
                 <div class="flex-1">
                   <h3 class="font-medium text-gray-800">
@@ -251,17 +251,25 @@
                         <strong>File:</strong> {{ req.submission.file_name }}
                       </p>
                       <p class="text-sm text-gray-600">
-                        <strong>Submitted:</strong> {{ req.submission.submission_date | date: 'medium' }}
+                        <strong>Submitted:</strong>
+                        {{ req.submission.submission_date | date: 'medium' }}
                       </p>
                       <p>
-                        <span [class]="'inline-block px-3 py-1 rounded-full text-sm font-medium ' + getStatusClass(req.submission.status)">
+                        <span
+                          [class]="
+                            'inline-block px-3 py-1 rounded-full text-sm font-medium ' +
+                            getStatusClass(req.submission.status)
+                          "
+                        >
                           {{ req.submission.status | titlecase }}
                         </span>
                       </p>
                       @if (req.submission.dean_remarks) {
                         <div class="mt-2 bg-blue-50 border-l-4 border-blue-500 p-3">
                           <p class="text-sm font-medium text-blue-800">Dean Remarks:</p>
-                          <p class="text-sm text-blue-700 mt-1">{{ req.submission.dean_remarks }}</p>
+                          <p class="text-sm text-blue-700 mt-1">
+                            {{ req.submission.dean_remarks }}
+                          </p>
                         </div>
                       }
                     </div>
@@ -322,7 +330,8 @@
       <div class="px-6 py-4 border-b border-gray-200">
         <h3 class="text-xl font-bold text-gray-800">Upload File</h3>
         <p class="text-sm text-gray-600 mt-1">
-          {{ selectedRequirement()!.requirement_number }}. {{ selectedRequirement()!.requirement_type }}
+          {{ selectedRequirement()!.requirement_number }}.
+          {{ selectedRequirement()!.requirement_type }}
         </p>
       </div>
 
@@ -339,7 +348,10 @@
         />
         @if (selectedFile) {
           <p class="mt-2 text-sm text-gray-600">
-            Selected: {{ selectedFile.name }} ({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)
+            Selected: {{ selectedFile.name }} ({{
+              (selectedFile.size / 1024 / 1024).toFixed(2)
+            }}
+            MB)
           </p>
         }
         <p class="mt-2 text-xs text-gray-500">Maximum file size: 10MB</p>

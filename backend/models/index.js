@@ -27,10 +27,22 @@ const User = require("./user.model")(sequelize, Sequelize);
 const Admin = require("./admin.model")(sequelize, Sequelize);
 const Course = require("./course.model")(sequelize, Sequelize);
 const AcademicYear = require("./academic-year.model")(sequelize, Sequelize);
-const CourseAssignment = require("./course-assignment.model")(sequelize, Sequelize);
-const RequirementSubmission = require("./requirement-submission.model")(sequelize, Sequelize);
-const FacultyCredential = require("./faculty-credential.model")(sequelize, Sequelize);
-const CredentialCertificate = require("./credential-certificate.model")(sequelize, Sequelize);
+const CourseAssignment = require("./course-assignment.model")(
+	sequelize,
+	Sequelize,
+);
+const RequirementSubmission = require("./requirement-submission.model")(
+	sequelize,
+	Sequelize,
+);
+const FacultyCredential = require("./faculty-credential.model")(
+	sequelize,
+	Sequelize,
+);
+const CredentialCertificate = require("./credential-certificate.model")(
+	sequelize,
+	Sequelize,
+);
 
 /* User → Admin (1:1) */
 User.hasOne(Admin, {

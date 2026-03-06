@@ -13,15 +13,15 @@ router.get("/assignments", requirementController.getMyAssignments);
 
 // Get requirements for a specific assignment
 router.get(
-  "/assignments/:assignment_id/requirements",
-  requirementController.getRequirementsByAssignment
+	"/assignments/:assignment_id/requirements",
+	requirementController.getRequirementsByAssignment,
 );
 
 // Submit a requirement (with file upload)
 router.post(
-  "/submit",
-  upload.single("file"),
-  requirementController.submitRequirement
+	"/submit",
+	upload.single("file"),
+	requirementController.submitRequirement,
 );
 
 // Delete a requirement submission
@@ -29,8 +29,8 @@ router.delete("/:submission_id", requirementController.deleteRequirement);
 
 // Download a requirement file
 router.get(
-  "/:submission_id/download",
-  requirementController.downloadRequirement
+	"/:submission_id/download",
+	requirementController.downloadRequirement,
 );
 
 module.exports = router;

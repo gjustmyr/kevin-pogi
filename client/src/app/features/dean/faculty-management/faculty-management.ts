@@ -7,7 +7,10 @@ import {
   CreateFacultyData,
   UpdateFacultyData,
 } from '../../../services/dean-faculty.service';
-import { DeanCourseAssignmentService, CreateCourseAssignmentData } from '../../../services/dean-course-assignment.service';
+import {
+  DeanCourseAssignmentService,
+  CreateCourseAssignmentData,
+} from '../../../services/dean-course-assignment.service';
 import { DeanCourseService, Course } from '../../../services/dean-course.service';
 import { DeanSectionService, Section } from '../../../services/dean-section.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
@@ -61,13 +64,15 @@ export class DeanFacultyManagement implements OnInit {
   coursesList = signal<Course[]>([]);
   sectionsList = signal<Section[]>([]);
   semesters = ['1st Sem', '2nd Sem', 'Midterm 1', 'Midterm 2'];
-  
+
   // New structure: array of section assignments with their own courses
-  sectionAssignments = signal<Array<{
-    section_id: number;
-    course_ids: number[];
-  }>>([]);
-  
+  sectionAssignments = signal<
+    Array<{
+      section_id: number;
+      course_ids: number[];
+    }>
+  >([]);
+
   // Search terms for filtering courses per section
   courseSearchTerms = signal<{ [index: number]: string }>({});
 
@@ -76,7 +81,7 @@ export class DeanFacultyManagement implements OnInit {
     private courseAssignmentService: DeanCourseAssignmentService,
     private courseService: DeanCourseService,
     private sectionService: DeanSectionService,
-    private dropdownService: DropdownService
+    private dropdownService: DropdownService,
   ) {}
 
   ngOnInit() {
@@ -374,12 +379,12 @@ export class DeanFacultyManagement implements OnInit {
     this.courseSearchTerms.set({});
     this.coursesList.set([]);
     this.sectionsList.set([]);
-    
+
     // Load academic years, sections, and courses
     this.loadAcademicYears();
     this.loadAllSections();
     this.loadAllCourses();
-    
+
     this.showAssignCoursesModal.set(true);
   }
 
@@ -392,9 +397,9 @@ export class DeanFacultyManagement implements OnInit {
     this.dropdownService.getAcademicYears().subscribe({
       next: (years) => {
         this.academicYearsList.set(years);
-        
+
         // Auto-select current academic year if available
-        const currentYear = years.find(y => y.is_active === 1);
+        const currentYear = years.find((y) => y.is_active === 1);
         if (currentYear) {
           this.assignCoursesForm.academic_year_id = currentYear.academic_year_id;
         }
@@ -446,16 +451,13 @@ export class DeanFacultyManagement implements OnInit {
   }
 
   addSectionAssignment() {
-    this.sectionAssignments.set([
-      ...this.sectionAssignments(),
-      { section_id: 0, course_ids: [] }
-    ]);
+    this.sectionAssignments.set([...this.sectionAssignments(), { section_id: 0, course_ids: [] }]);
   }
 
   removeSectionAssignment(index: number) {
     const current = this.sectionAssignments();
     this.sectionAssignments.set(current.filter((_, i) => i !== index));
-    
+
     // Remove search term for this index
     const searchTerms = { ...this.courseSearchTerms() };
     delete searchTerms[index];
@@ -466,13 +468,13 @@ export class DeanFacultyManagement implements OnInit {
     const current = [...this.sectionAssignments()];
     const section = current[sectionIndex];
     const courseIndex = section.course_ids.indexOf(courseId);
-    
+
     if (courseIndex > -1) {
-      section.course_ids = section.course_ids.filter(id => id !== courseId);
+      section.course_ids = section.course_ids.filter((id) => id !== courseId);
     } else {
       section.course_ids = [...section.course_ids, courseId];
     }
-    
+
     this.sectionAssignments.set(current);
   }
 
@@ -483,25 +485,26 @@ export class DeanFacultyManagement implements OnInit {
   }
 
   getSelectedSection(sectionId: number): Section | undefined {
-    return this.sectionsList().find(s => s.section_id === sectionId);
+    return this.sectionsList().find((s) => s.section_id === sectionId);
   }
 
   getCoursesForSection(sectionId: number, sectionIndex: number): Course[] {
     // All courses are available since courses no longer have semester restrictions
     let filteredCourses = this.coursesList();
-    
+
     // Apply search filter if search term exists for this section
     const searchTerm = this.courseSearchTerms()[sectionIndex]?.toLowerCase().trim();
     if (searchTerm) {
-      filteredCourses = filteredCourses.filter(c => 
-        c.course_code.toLowerCase().includes(searchTerm) ||
-        c.course_name.toLowerCase().includes(searchTerm)
+      filteredCourses = filteredCourses.filter(
+        (c) =>
+          c.course_code.toLowerCase().includes(searchTerm) ||
+          c.course_name.toLowerCase().includes(searchTerm),
       );
     }
-    
+
     return filteredCourses;
   }
-  
+
   updateCourseSearch(sectionIndex: number, searchTerm: string) {
     const updated = { ...this.courseSearchTerms() };
     updated[sectionIndex] = searchTerm;
@@ -566,7 +569,7 @@ export class DeanFacultyManagement implements OnInit {
         });
         return;
       }
-      
+
       if (assignment.course_ids.length === 0) {
         Swal.fire({
           icon: 'warning',
@@ -583,7 +586,7 @@ export class DeanFacultyManagement implements OnInit {
 
     // Create assignments for each section-course combination
     const assignments: CreateCourseAssignmentData[] = [];
-    
+
     for (const sectionAssignment of this.sectionAssignments()) {
       for (const courseId of sectionAssignment.course_ids) {
         assignments.push({
@@ -603,7 +606,7 @@ export class DeanFacultyManagement implements OnInit {
       next: (response) => {
         this.loading.set(false);
         this.closeAssignCoursesModal();
-        
+
         if (response.errors > 0) {
           Swal.fire({
             icon: 'warning',

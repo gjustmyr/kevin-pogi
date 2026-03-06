@@ -29,7 +29,7 @@ export class DeanFacultyCredentialsView implements OnInit {
 
   constructor(
     private credentialsService: DeanFacultyCredentialsService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
   ) {}
 
   ngOnInit() {
@@ -42,7 +42,7 @@ export class DeanFacultyCredentialsView implements OnInit {
       const response = await this.credentialsService.getAllFacultyCredentials(
         this.currentPage(),
         this.pageSize,
-        this.searchQuery()
+        this.searchQuery(),
       );
       this.facultyList.set(response.credentials);
       this.currentPage.set(response.currentPage);
@@ -108,38 +108,23 @@ export class DeanFacultyCredentialsView implements OnInit {
     this.selectedFaculty.set(null);
   }
 
-  async downloadDocument(
-    facultyId: number,
-    fileType: 'tor' | 'pds' | 'diploma'
-  ) {
+  async downloadDocument(facultyId: number, fileType: 'tor' | 'pds' | 'diploma') {
     try {
       const fileNames = {
         tor: 'Transcript_of_Records.pdf',
         pds: 'Personal_Data_Sheet.pdf',
         diploma: 'Diploma.pdf',
       };
-      await this.credentialsService.downloadFile(
-        facultyId,
-        fileType,
-        fileNames[fileType]
-      );
+      await this.credentialsService.downloadFile(facultyId, fileType, fileNames[fileType]);
     } catch (error: any) {
       console.error('Download error:', error);
       this.sweetAlert.error('Failed to download file');
     }
   }
 
-  async downloadCertificate(
-    facultyId: number,
-    certificateId: number,
-    certificateName: string
-  ) {
+  async downloadCertificate(facultyId: number, certificateId: number, certificateName: string) {
     try {
-      await this.credentialsService.downloadCertificate(
-        facultyId,
-        certificateId,
-        certificateName
-      );
+      await this.credentialsService.downloadCertificate(facultyId, certificateId, certificateName);
     } catch (error: any) {
       console.error('Download certificate error:', error);
       this.sweetAlert.error('Failed to download certificate');

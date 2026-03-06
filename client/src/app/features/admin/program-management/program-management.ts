@@ -38,14 +38,14 @@ export class ProgramManagement implements OnInit {
     department_id: 0,
   };
   deleteTarget: Program | null = null;
-  
+
   // Expose Math for template
   Math = Math;
 
   constructor(
     private programService: ProgramService,
     private dropdownService: DropdownService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
   ) {}
 
   ngOnInit() {
