@@ -28,7 +28,7 @@ export interface FacultyAccomplishment {
     total_courses: number;
     total_requirements: number;
     submitted: number;
-    cleared: number;
+    validated: number;
     pending: number;
     returned: number;
     not_submitted: number;
@@ -44,7 +44,7 @@ export interface DepartmentStatistics {
   total_courses: number;
   total_requirements: number;
   submitted: number;
-  cleared: number;
+  validated: number;
   pending: number;
   returned: number;
   not_submitted: number;
@@ -152,8 +152,8 @@ export class DeanRequirementService {
     );
   }
 
-  // Clear a requirement (approve)
-  clearRequirement(submission_id: number, remarks?: string): Observable<any> {
+  // Validate a requirement (approve)
+  validateRequirement(submission_id: number, remarks?: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${submission_id}/clear`, { remarks });
   }
 

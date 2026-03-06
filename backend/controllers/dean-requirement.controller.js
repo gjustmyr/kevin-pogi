@@ -215,14 +215,14 @@ exports.getFacultyAccomplishment = async (req, res) => {
 
 		const totalRequirements = assignments.length * requirementTypes.length;
 		let submittedCount = 0;
-		let clearedCount = 0;
+		let validatedCount = 0;
 		let pendingCount = 0;
 		let returnedCount = 0;
 
 		assignments.forEach((assignment) => {
 			assignment.requirement_submissions.forEach((submission) => {
 				submittedCount++;
-				if (submission.status === "cleared") clearedCount++;
+				if (submission.status === "validated") validatedCount++;
 				else if (submission.status === "pending") pendingCount++;
 				else if (submission.status === "returned") returnedCount++;
 			});
@@ -235,13 +235,13 @@ exports.getFacultyAccomplishment = async (req, res) => {
 				total_courses: assignments.length,
 				total_requirements: totalRequirements,
 				submitted: submittedCount,
-				cleared: clearedCount,
+				validated: validatedCount,
 				pending: pendingCount,
 				returned: returnedCount,
 				not_submitted: totalRequirements - submittedCount,
 				completion_rate:
 					totalRequirements > 0
-						? ((clearedCount / totalRequirements) * 100).toFixed(2)
+						? ((validatedCount / totalRequirements) * 100).toFixed(2)
 						: 0,
 			},
 		});
@@ -376,15 +376,16 @@ exports.clearRequirement = async (req, res) => {
 		}
 
 		// Update submission status
-		submission.status = "cleared";
+		submission.status = "validated";
 		submission.dean_remarks = remarks || "Approved";
 		submission.validated_by = deanUserId;
 		submission.validated_date = new Date();
 		await submission.save();
 
-		// Auto-update faculty clearance status
+		// Auto-update faculty clearance status after dean validation
 		const faculty_id = submission.course_assignment.faculty_id;
 		const calculatedStatus = await calculateFacultyClearanceStatus(faculty_id);
+		
 		await db.Faculty.update(
 			{
 				clearance_status: calculatedStatus,
@@ -394,12 +395,12 @@ exports.clearRequirement = async (req, res) => {
 		);
 
 		res.json({
-			message: "Requirement cleared successfully",
+			message: "Requirement validated successfully",
 			submission,
 		});
 	} catch (error) {
-		console.error("Clear requirement error:", error);
-		res.status(500).json({ message: "Error clearing requirement" });
+		console.error("Validate requirement error:", error);
+		res.status(500).json({ message: "Error validating requirement" });
 	}
 };
 
@@ -452,9 +453,10 @@ exports.returnRequirement = async (req, res) => {
 		submission.validated_date = new Date();
 		await submission.save();
 
-		// Auto-update faculty clearance status (returned requirements = withholding)
+		// Auto-update faculty clearance status after dean validation
 		const faculty_id = submission.course_assignment.faculty_id;
 		const calculatedStatus = await calculateFacultyClearanceStatus(faculty_id);
+		
 		await db.Faculty.update(
 			{
 				clearance_status: calculatedStatus,
@@ -589,14 +591,14 @@ exports.getDepartmentStatistics = async (req, res) => {
 
 		const totalRequirements = assignments.length * requirementTypes.length;
 		let submittedCount = 0;
-		let clearedCount = 0;
+		let validatedCount = 0;
 		let pendingCount = 0;
 		let returnedCount = 0;
 
 		assignments.forEach((assignment) => {
 			assignment.requirement_submissions.forEach((submission) => {
 				submittedCount++;
-				if (submission.status === "cleared") clearedCount++;
+				if (submission.status === "validated") validatedCount++;
 				else if (submission.status === "pending") pendingCount++;
 				else if (submission.status === "returned") returnedCount++;
 			});
@@ -610,13 +612,13 @@ exports.getDepartmentStatistics = async (req, res) => {
 			total_courses: assignments.length,
 			total_requirements: totalRequirements,
 			submitted: submittedCount,
-			cleared: clearedCount,
+			validated: validatedCount,
 			pending: pendingCount,
 			returned: returnedCount,
 			not_submitted: totalRequirements - submittedCount,
 			completion_rate:
 				totalRequirements > 0
-					? ((clearedCount / totalRequirements) * 100).toFixed(2)
+					? ((validatedCount / totalRequirements) * 100).toFixed(2)
 					: 0,
 			faculty_clearance_rate:
 				facultyList.length > 0
@@ -629,7 +631,8 @@ exports.getDepartmentStatistics = async (req, res) => {
 	}
 };
 
-// Helper function to calculate faculty clearance status based on requirements
+// Helper function to auto-calculate faculty clearance status based on dean's validation
+// This runs after dean validates/returns requirements to automatically update faculty status
 async function calculateFacultyClearanceStatus(
 	faculty_id,
 	academic_year_id = null,
@@ -660,6 +663,7 @@ async function calculateFacultyClearanceStatus(
 			],
 		});
 
+		// Define required requirement types (9 types per assignment)
 		const requirementTypes = [
 			"Instructional Materials",
 			"Student Class Attendance Sheet",
@@ -673,36 +677,37 @@ async function calculateFacultyClearanceStatus(
 		];
 
 		const totalRequirements = assignments.length * requirementTypes.length;
+		
 		if (totalRequirements === 0) {
 			return "pending"; // No assignments yet
 		}
 
-		let clearedCount = 0;
-		let pendingCount = 0;
+		let validatedCount = 0;
 		let returnedCount = 0;
-		let submittedCount = 0;
 
+		// Check status of each requirement
 		assignments.forEach((assignment) => {
 			assignment.requirement_submissions.forEach((submission) => {
-				submittedCount++;
-				if (submission.status === "cleared") clearedCount++;
-				else if (submission.status === "pending") pendingCount++;
-				else if (submission.status === "returned") returnedCount++;
+				if (submission.status === "validated") {
+					validatedCount++;
+				} else if (submission.status === "returned") {
+					returnedCount++;
+				}
 			});
 		});
 
-		// Determine clearance status
-		// If there are returned requirements, status is "withholding"
+		// Determine clearance status based on dean's validation:
+		// 1. If ANY requirements are returned → "withholding"
 		if (returnedCount > 0) {
 			return "withholding";
 		}
 
-		// If all requirements are cleared, status is "cleared"
-		if (clearedCount === totalRequirements) {
+		// 2. If ALL requirements are validated by dean → "cleared"
+		if (validatedCount === totalRequirements) {
 			return "cleared";
 		}
 
-		// Otherwise, status is "pending" (incomplete or has pending submissions)
+		// 3. Otherwise (requirements not submitted or pending validation) → "pending"
 		return "pending";
 	} catch (error) {
 		console.error("Calculate faculty clearance status error:", error);
@@ -710,12 +715,32 @@ async function calculateFacultyClearanceStatus(
 	}
 }
 
-// Set faculty clearance status
+/**
+ * MANUAL Faculty Clearance Status Setting (Override)
+ * 
+ * This endpoint allows admin/dean to MANUALLY override a faculty's clearance status.
+ * 
+ * Note: Faculty clearance status is normally AUTO-CALCULATED after dean validates requirements:
+ * - "pending": Default status, requirements incomplete or awaiting validation
+ * - "cleared": All requirements validated/cleared by dean (auto-set when complete)
+ * - "withholding": Has returned/rejected requirements (auto-set when requirements returned)
+ * 
+ * Use this endpoint to manually override the automatic status if needed
+ * (e.g., special circumstances, exceptions, or corrections).
+ */
 exports.setFacultyClearanceStatus = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { faculty_id } = req.params;
 		const { status, remarks, academic_year_id, semester } = req.body;
+
+		// Validate that specific academic year and semester are provided
+		if (!academic_year_id || !semester) {
+			return res.status(400).json({
+				message:
+					"Academic year and semester are required. Please select a specific period to set clearance status.",
+			});
+		}
 
 		// Validate status
 		if (!["pending", "cleared", "withholding"].includes(status)) {
@@ -755,7 +780,7 @@ exports.setFacultyClearanceStatus = async (req, res) => {
 		await faculty.save();
 
 		res.json({
-			message: "Faculty clearance status updated successfully",
+			message: `Faculty clearance status updated successfully for ${semester} AY ${academic_year_id}`,
 			faculty: {
 				faculty_id: faculty.faculty_id,
 				clearance_status: faculty.clearance_status,
@@ -771,12 +796,29 @@ exports.setFacultyClearanceStatus = async (req, res) => {
 	}
 };
 
-// Auto-calculate and update faculty clearance status
+/**
+ * AUTO-CALCULATE Faculty Clearance Status
+ * 
+ * This endpoint automatically calculates faculty clearance status based on dean's validation:
+ * - "withholding": Faculty has returned/rejected requirements
+ * - "cleared": All requirements have been validated/cleared by dean
+ * - "pending": Requirements not submitted or still awaiting validation
+ * 
+ * Status is automatically updated after each dean validation action.
+ */
 exports.updateFacultyClearanceStatus = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { faculty_id } = req.params;
 		const { academic_year_id, semester } = req.query;
+
+		// Validate that specific academic year and semester are provided
+		if (!academic_year_id || !semester) {
+			return res.status(400).json({
+				message:
+					"Academic year and semester are required. Please select a specific period to calculate clearance status.",
+			});
+		}
 
 		// Get dean's department
 		const dean = await db.Dean.findOne({
@@ -801,7 +843,7 @@ exports.updateFacultyClearanceStatus = async (req, res) => {
 			});
 		}
 
-		// Calculate clearance status
+		// Calculate clearance status based on dean's validation
 		const calculatedStatus = await calculateFacultyClearanceStatus(
 			faculty_id,
 			academic_year_id,
@@ -812,9 +854,9 @@ exports.updateFacultyClearanceStatus = async (req, res) => {
 		faculty.clearance_status = calculatedStatus;
 		faculty.clearance_date = new Date();
 		await faculty.save();
-
+		
 		res.json({
-			message: "Faculty clearance status calculated and updated",
+			message: `Faculty clearance status calculated and updated to '${calculatedStatus}' for ${semester} AY ${academic_year_id}`,
 			faculty: {
 				faculty_id: faculty.faculty_id,
 				clearance_status: faculty.clearance_status,

@@ -44,15 +44,15 @@ module.exports = (sequelize, Sequelize) => {
 			defaultValue: Sequelize.NOW,
 		},
 		status: {
-			type: Sequelize.ENUM("pending", "cleared", "returned"),
+			type: Sequelize.ENUM("pending", "validated", "returned"),
 			defaultValue: "pending",
 			comment:
-				"pending=awaiting review, cleared=approved, returned=needs revision",
+				"pending=awaiting review, validated=approved by dean, returned=needs revision",
 		},
 		dean_remarks: {
 			type: Sequelize.TEXT,
 			allowNull: true,
-			comment: "Dean comments when clearing or returning",
+			comment: "Dean comments when validating or returning",
 		},
 		validated_by: {
 			type: Sequelize.INTEGER,

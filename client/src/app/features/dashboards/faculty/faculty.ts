@@ -717,27 +717,27 @@ export class FacultyDashboard implements OnInit {
     const totalRequirements = totalAssignments * requirementsPerAssignment;
 
     let submitted = 0;
-    let cleared = 0;
+    let validated = 0;
     let pending = 0;
     let returned = 0;
 
     assignments.forEach((assignment) => {
       const submissions = assignment.requirement_submissions || [];
       submitted += submissions.length;
-      cleared += submissions.filter((s) => s.status === 'cleared').length;
+      validated += submissions.filter((s) => s.status === 'validated').length;
       pending += submissions.filter((s) => s.status === 'pending').length;
       returned += submissions.filter((s) => s.status === 'returned').length;
     });
 
     const notSubmitted = totalRequirements - submitted;
     const completionRate =
-      totalRequirements > 0 ? Math.round((cleared / totalRequirements) * 100) : 0;
+      totalRequirements > 0 ? Math.round((validated / totalRequirements) * 100) : 0;
 
     this.dashboardStats.set({
       totalAssignments,
       totalRequirements,
       submitted,
-      cleared,
+      cleared: validated,
       pending,
       returned,
       notSubmitted,

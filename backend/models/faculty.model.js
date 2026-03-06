@@ -47,7 +47,7 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.ENUM("pending", "cleared", "withholding"),
 			defaultValue: "pending",
 			comment:
-				"pending=incomplete requirements, cleared=all requirements approved, withholding=has returned requirements",
+				"Faculty clearance status: 'pending'=incomplete/awaiting validation, 'cleared'=auto-set when all requirements validated by dean, 'withholding'=auto-set when requirements returned/rejected",
 		},
 		clearance_remarks: {
 			type: Sequelize.TEXT,

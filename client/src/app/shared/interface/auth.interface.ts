@@ -27,6 +27,12 @@ export interface UserProfile {
   department_name?: string;
   description?: string;
   name?: string;
+  /**
+   * Faculty clearance status (auto-calculated after dean validates requirements):
+   * - 'pending': Default status, requirements incomplete or awaiting validation
+   * - 'cleared': All requirements validated/cleared by dean (auto-set when all complete)
+   * - 'withholding': Has returned requirements needing revision (auto-set when requirements returned)
+   */
   clearance_status?: 'pending' | 'cleared' | 'withholding';
   clearance_remarks?: string;
   clearance_date?: string;

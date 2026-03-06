@@ -38,7 +38,13 @@ export interface RequirementSubmission {
   file_name: string;
   file_size: number;
   submission_date: string;
-  status: 'pending' | 'cleared' | 'returned';
+  /**
+   * Individual requirement submission status (different from faculty clearance status):
+   * - 'pending': Submitted and awaiting dean review
+   * - 'validated': Approved by dean
+   * - 'returned': Rejected by dean, needs revision
+   */
+  status: 'pending' | 'validated' | 'returned';
   dean_remarks?: string;
   validated_by?: number;
   validated_date?: string;

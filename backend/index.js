@@ -45,6 +45,7 @@ const deanFacultyCredentialsRoutes = require("./routes/dean-faculty-credentials.
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
 const facultyCredentialsRoutes = require("./routes/faculty-credentials.routes");
+const pdsRoutes = require("./routes/pds.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/superadmin/dashboard", superadminRoutes);
@@ -78,6 +79,7 @@ app.use("/api/dean/faculty-credentials", deanFacultyCredentialsRoutes);
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
 app.use("/api/faculty/credentials", facultyCredentialsRoutes);
+app.use("/api/faculty/pds", pdsRoutes);
 
 app.get("/api/hello", (req, res) => {
 	res.json({ message: "Hello from the backend!" });

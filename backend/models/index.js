@@ -43,6 +43,27 @@ const CredentialCertificate = require("./credential-certificate.model")(
 	sequelize,
 	Sequelize,
 );
+const PersonalDataSheet = require("./personal-data-sheet.model")(
+	sequelize,
+	Sequelize,
+);
+const PDSChild = require("./pds-child.model")(sequelize, Sequelize);
+const PDSEducation = require("./pds-education.model")(sequelize, Sequelize);
+const PDSEligibility = require("./pds-eligibility.model")(
+	sequelize,
+	Sequelize,
+);
+const PDSWorkExperience = require("./pds-work-experience.model")(
+	sequelize,
+	Sequelize,
+);
+const PDSVoluntaryWork = require("./pds-voluntary-work.model")(
+	sequelize,
+	Sequelize,
+);
+const PDSTraining = require("./pds-training.model")(sequelize, Sequelize);
+const PDSOtherInfo = require("./pds-other-info.model")(sequelize, Sequelize);
+const PDSReference = require("./pds-reference.model")(sequelize, Sequelize);
 
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
@@ -186,6 +207,86 @@ CredentialCertificate.belongsTo(FacultyCredential, {
 	foreignKey: "credential_id",
 });
 
+/* PersonalDataSheet Relationships */
+Faculty.hasOne(PersonalDataSheet, {
+	foreignKey: "faculty_id",
+});
+PersonalDataSheet.belongsTo(Faculty, {
+	foreignKey: "faculty_id",
+});
+
+/* PDS Children Relationships */
+PersonalDataSheet.hasMany(PDSChild, {
+	foreignKey: "pds_id",
+	as: "children",
+});
+PDSChild.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Education Relationships */
+PersonalDataSheet.hasMany(PDSEducation, {
+	foreignKey: "pds_id",
+	as: "education",
+});
+PDSEducation.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Eligibility Relationships */
+PersonalDataSheet.hasMany(PDSEligibility, {
+	foreignKey: "pds_id",
+	as: "eligibilities",
+});
+PDSEligibility.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Work Experience Relationships */
+PersonalDataSheet.hasMany(PDSWorkExperience, {
+	foreignKey: "pds_id",
+	as: "work_experiences",
+});
+PDSWorkExperience.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Voluntary Work Relationships */
+PersonalDataSheet.hasMany(PDSVoluntaryWork, {
+	foreignKey: "pds_id",
+	as: "voluntary_works",
+});
+PDSVoluntaryWork.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Training Relationships */
+PersonalDataSheet.hasMany(PDSTraining, {
+	foreignKey: "pds_id",
+	as: "trainings",
+});
+PDSTraining.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS Other Info Relationships */
+PersonalDataSheet.hasMany(PDSOtherInfo, {
+	foreignKey: "pds_id",
+	as: "other_info",
+});
+PDSOtherInfo.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
+/* PDS References Relationships */
+PersonalDataSheet.hasMany(PDSReference, {
+	foreignKey: "pds_id",
+	as: "references",
+});
+PDSReference.belongsTo(PersonalDataSheet, {
+	foreignKey: "pds_id",
+});
+
 db.Department = Department;
 db.Program = Programs;
 db.Programs = Programs;
@@ -201,5 +302,14 @@ db.CourseAssignment = CourseAssignment;
 db.RequirementSubmission = RequirementSubmission;
 db.FacultyCredential = FacultyCredential;
 db.CredentialCertificate = CredentialCertificate;
+db.PersonalDataSheet = PersonalDataSheet;
+db.PDSChild = PDSChild;
+db.PDSEducation = PDSEducation;
+db.PDSEligibility = PDSEligibility;
+db.PDSWorkExperience = PDSWorkExperience;
+db.PDSVoluntaryWork = PDSVoluntaryWork;
+db.PDSTraining = PDSTraining;
+db.PDSOtherInfo = PDSOtherInfo;
+db.PDSReference = PDSReference;
 
 module.exports = db;

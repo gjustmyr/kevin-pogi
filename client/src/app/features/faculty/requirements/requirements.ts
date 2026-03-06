@@ -256,7 +256,7 @@ export class FacultyRequirements implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'cleared':
+      case 'validated':
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
@@ -271,14 +271,14 @@ export class FacultyRequirements implements OnInit {
     const submissions = assignment.requirement_submissions || [];
     const total = 9; // Total requirements
     const submitted = submissions.length;
-    const cleared = submissions.filter((s) => s.status === 'cleared').length;
+    const validated = submissions.filter((s) => s.status === 'validated').length;
     const pending = submissions.filter((s) => s.status === 'pending').length;
     const returned = submissions.filter((s) => s.status === 'returned').length;
 
     return {
       total,
       submitted,
-      cleared,
+      cleared: validated,
       pending,
       returned,
       percentage: Math.round((submitted / total) * 100),

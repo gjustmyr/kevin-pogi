@@ -163,29 +163,29 @@ export class DeanRequirementsMonitoring implements OnInit {
     this.selectedSubmission.set(null);
   }
 
-  clearRequirement() {
+  validateRequirement() {
     if (!this.selectedSubmission()) return;
 
     Swal.fire({
-      title: 'Clear Requirement?',
-      text: 'Mark this requirement as cleared/approved?',
+      title: 'Validate Requirement?',
+      text: 'Mark this requirement as validated/approved?',
       input: 'textarea',
       inputLabel: 'Remarks (optional)',
       inputPlaceholder: 'Enter any remarks...',
       showCancelButton: true,
-      confirmButtonText: 'Clear',
+      confirmButtonText: 'Validate',
       confirmButtonColor: '#10b981',
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
         this.requirementService
-          .clearRequirement(this.selectedSubmission()!.submission_id, result.value || undefined)
+          .validateRequirement(this.selectedSubmission()!.submission_id, result.value || undefined)
           .subscribe({
             next: () => {
               Swal.fire({
                 icon: 'success',
-                title: 'Cleared',
-                text: 'Requirement cleared successfully',
+                title: 'Validated',
+                text: 'Requirement validated successfully',
                 confirmButtonColor: '#2563eb',
               });
               this.closeViewModal();
@@ -195,7 +195,7 @@ export class DeanRequirementsMonitoring implements OnInit {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: error.error?.message || 'Failed to clear requirement',
+                text: error.error?.message || 'Failed to validate requirement',
                 confirmButtonColor: '#2563eb',
               });
             },
@@ -257,7 +257,7 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'cleared':
+      case 'validated':
         return 'bg-green-100 text-green-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
@@ -284,18 +284,23 @@ export class DeanRequirementsMonitoring implements OnInit {
     const submissions = assignment.requirement_submissions || [];
     const total = 9;
     const submitted = submissions.length;
-    const cleared = submissions.filter((s) => s.status === 'cleared').length;
+    const validated = submissions.filter((s) => s.status === 'validated').length;
     const pending = submissions.filter((s) => s.status === 'pending').length;
     const returned = submissions.filter((s) => s.status === 'returned').length;
 
     return {
       total,
       submitted,
-      cleared,
+      validated,
       pending,
       returned,
-      percentage: Math.round((cleared / total) * 100),
+      percentage: Math.round((validated / total) * 100),
     };
+  }
+
+  // Check if specific academic year and semester are selected
+  isSpecificPeriodSelected(): boolean {
+    return this.selectedAcademicYear() !== 0 && this.selectedSemester() !== '';
   }
 
   getClearanceStatusClass(status?: string): string {
@@ -324,6 +329,17 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   setFacultyClearanceStatus(status: 'pending' | 'cleared' | 'withholding') {
     if (!this.selectedFacultyAccomplishment()) return;
+
+    // Validate that specific period is selected
+    if (!this.isSpecificPeriodSelected()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Period Required',
+        text: 'Please select a specific academic year and semester to set clearance status',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
 
     const statusText =
       status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'Withholding' : 'Pending';
@@ -374,6 +390,17 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   calculateFacultyClearanceStatus() {
     if (!this.selectedFacultyAccomplishment()) return;
+
+    // Validate that specific period is selected
+    if (!this.isSpecificPeriodSelected()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Period Required',
+        text: 'Please select a specific academic year and semester to calculate clearance status',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
 
     Swal.fire({
       title: 'Auto-Calculate Clearance Status?',
