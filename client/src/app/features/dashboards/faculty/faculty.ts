@@ -4,6 +4,7 @@ import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
 import { FacultyRequirements } from '../../faculty/requirements/requirements';
 import { FacultyCredentials } from '../../faculty/credentials/credentials';
+import { PersonalDataSheetComponent } from '../../faculty/personal-data-sheet/personal-data-sheet.component';
 import {
   FacultyRequirementService,
   Assignment,
@@ -13,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-faculty-dashboard',
-  imports: [CommonModule, RouterModule, FacultyRequirements, FacultyCredentials, FormsModule],
+  imports: [CommonModule, RouterModule, FacultyRequirements, FacultyCredentials, PersonalDataSheetComponent, FormsModule],
   template: `
     <!-- Sidebar -->
     <aside
@@ -99,8 +100,10 @@ import { FormsModule } from '@angular/forms';
 
           <!-- Personal Data Sheet -->
           <li>
-            <a
-              routerLink="/faculty/personal-data-sheet"
+            <button
+              (click)="selectTab('pds')"
+              [class.bg-green-50]="activeTab() === 'pds'"
+              [class.text-green-600]="activeTab() === 'pds'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +115,7 @@ import { FormsModule } from '@angular/forms';
                 />
               </svg>
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Personal Data Sheet</span>
-            </a>
+            </button>
           </li>
         </ul>
       </div>
@@ -643,6 +646,9 @@ import { FormsModule } from '@angular/forms';
       @if (activeTab() === 'credentials') {
         <app-faculty-credentials />
       }
+      @if (activeTab() === 'pds') {
+        <app-personal-data-sheet />
+      }
     </div>
   `,
   styles: [],
@@ -787,6 +793,8 @@ export class FacultyDashboard implements OnInit {
         return 'Accomplishments';
       case 'credentials':
         return 'Credentials';
+      case 'pds':
+        return 'Personal Data Sheet';
       default:
         return 'Faculty Portal';
     }

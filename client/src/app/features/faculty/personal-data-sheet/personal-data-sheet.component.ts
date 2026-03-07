@@ -70,7 +70,7 @@ export class PersonalDataSheetComponent implements OnInit {
     date_from: '',
     position_title: '',
     department_agency: '',
-    is_government_service: null,
+    is_government_service: undefined,
   };
   newVoluntaryWork: PDSVoluntaryWork = {
     organization_name: '',
@@ -304,8 +304,8 @@ export class PersonalDataSheetComponent implements OnInit {
         level: 'ELEMENTARY',
         school_name: '',
         degree_course: '',
-        period_from: '',
-        period_to: '',
+        period_from: undefined,
+        period_to: undefined,
         highest_level_earned: '',
       };
     }
@@ -344,7 +344,7 @@ export class PersonalDataSheetComponent implements OnInit {
         date_from: '',
         position_title: '',
         department_agency: '',
-        is_government_service: null,
+        is_government_service: undefined,
       };
     }
   }
@@ -513,5 +513,18 @@ export class PersonalDataSheetComponent implements OnInit {
       default:
         return 'DRAFT';
     }
+  }
+
+  // Helper methods for filtering other_info by type
+  hasSkills(): boolean {
+    return (this.pds().other_info || []).some(info => info.info_type === 'SKILL');
+  }
+
+  hasRecognitions(): boolean {
+    return (this.pds().other_info || []).some(info => info.info_type === 'RECOGNITION');
+  }
+
+  hasMemberships(): boolean {
+    return (this.pds().other_info || []).some(info => info.info_type === 'MEMBERSHIP');
   }
 }

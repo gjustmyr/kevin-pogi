@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const controller = require("../controllers/pds.controller");
-const { verifyToken } = require("../middleware/auth.middleware");
+const verifyToken = require("../middleware/auth.middleware");
 
 // All routes require authentication
 router.use(verifyToken);
