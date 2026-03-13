@@ -1,7 +1,7 @@
 <div class="p-4">
   <!-- Action Bar -->
   <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap">
       <button
         (click)="openCreateModal()"
         class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition"
@@ -15,6 +15,24 @@
         <option value="">All Programs</option>
         @for (program of programsList(); track program.program_id) {
           <option [value]="program.program_id">{{ program.program_name }}</option>
+        }
+      </select>
+      <select
+        (change)="filterByYearLevel($any($event.target).value)"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+      >
+        <option value="">All Year Levels</option>
+        @for (year of yearLevelOptions; track year) {
+          <option [value]="year">{{ getYearLevelDisplay(year) }}</option>
+        }
+      </select>
+      <select
+        (change)="filterBySemester($any($event.target).value)"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+      >
+        <option value="">All Semesters</option>
+        @for (sem of semesterOptions; track sem) {
+          <option [value]="sem">{{ sem }}</option>
         }
       </select>
     </div>

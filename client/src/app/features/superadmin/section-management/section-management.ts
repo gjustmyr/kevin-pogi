@@ -24,8 +24,13 @@ export class SuperadminSectionManagement implements OnInit {
   totalItems = signal(0);
   searchQuery = signal('');
   selectedProgramId = signal<number | undefined>(undefined);
+  selectedYearLevel = signal<number | undefined>(undefined);
+  selectedSemester = signal<string | undefined>(undefined);
   pageSize = 10;
   Math = Math;
+
+  semesterOptions = ['1st Sem', '2nd Sem', 'Midterm 1', 'Midterm 2'];
+  yearLevelOptions = [1, 2, 3, 4, 5];
 
   showCreateModal = signal(false);
   showEditModal = signal(false);
@@ -74,7 +79,14 @@ export class SuperadminSectionManagement implements OnInit {
   loadSections() {
     this.loading.set(true);
     this.sectionService
-      .getSections(this.currentPage(), this.pageSize, this.searchQuery(), this.selectedProgramId())
+      .getSections(
+        this.currentPage(),
+        this.pageSize,
+        this.searchQuery(),
+        this.selectedProgramId(),
+        this.selectedYearLevel(),
+        this.selectedSemester(),
+      )
       .subscribe({
         next: (response) => {
           this.sectionsList.set(response.sections);
@@ -103,6 +115,18 @@ export class SuperadminSectionManagement implements OnInit {
 
   filterByProgram(programId: string) {
     this.selectedProgramId.set(programId ? Number(programId) : undefined);
+    this.currentPage.set(1);
+    this.loadSections();
+  }
+
+  filterByYearLevel(yearLevel: string) {
+    this.selectedYearLevel.set(yearLevel ? Number(yearLevel) : undefined);
+    this.currentPage.set(1);
+    this.loadSections();
+  }
+
+  filterBySemester(semester: string) {
+    this.selectedSemester.set(semester || undefined);
     this.currentPage.set(1);
     this.loadSections();
   }

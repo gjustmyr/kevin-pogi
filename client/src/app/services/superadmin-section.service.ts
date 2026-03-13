@@ -56,6 +56,8 @@ export class SuperadminSectionService {
     limit: number = 10,
     search: string = '',
     program_id?: number,
+    year_level?: number,
+    semester?: string,
   ): Observable<SectionsResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -64,6 +66,14 @@ export class SuperadminSectionService {
 
     if (program_id) {
       params = params.set('program_id', program_id.toString());
+    }
+
+    if (year_level) {
+      params = params.set('year_level', year_level.toString());
+    }
+
+    if (semester) {
+      params = params.set('semester', semester);
     }
 
     return this.http.get<SectionsResponse>(this.apiUrl, { params });

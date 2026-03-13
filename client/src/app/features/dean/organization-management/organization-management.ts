@@ -2,10 +2,9 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  DeanOrganizationService,
   Organization,
   CreateOrganizationData,
-  UpdateOrganizationData,
+  DeanOrganizationService,
 } from '../../../services/dean-organization.service';
 import { DeanFacultyService, Faculty } from '../../../services/dean-faculty.service';
 import Swal from 'sweetalert2';

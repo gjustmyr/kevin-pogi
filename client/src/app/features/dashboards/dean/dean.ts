@@ -15,6 +15,12 @@ import {
   DepartmentStatistics,
 } from '../../../services/dean-requirement.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
+import {
+  DeanAnalyticsService,
+  FacultyDemographics,
+  EducationAnalytics,
+  ResearchAnalytics,
+} from '../../../services/dean-analytics.service';
 
 @Component({
   selector: 'app-dean-dashboard',
@@ -320,514 +326,1178 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
     <div class="pt-20 pl-4 pr-4 pb-4 transition-all duration-300" [class.ml-64]="isSidebarOpen()">
       @if (activeTab() === 'dashboard') {
         <div class="container mx-auto">
-          <!-- Filters -->
-          <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
-                <select
-                  [(ngModel)]="selectedAcademicYear"
-                  (change)="loadDepartmentStats()"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                >
-                  <option [value]="0">All Years</option>
-                  @for (year of academicYearsList(); track year.academic_year_id) {
-                    <option [value]="year.academic_year_id">
-                      {{ year.year_start }}-{{ year.year_end }}
-                    </option>
-                  }
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
-                <select
-                  [(ngModel)]="selectedSemester"
-                  (change)="loadDepartmentStats()"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                >
-                  <option value="">All Semesters</option>
-                  <option value="1st Sem">1st Semester</option>
-                  <option value="2nd Sem">2nd Semester</option>
-                </select>
-              </div>
-            </div>
+          <!-- Dashboard Sub-Tabs -->
+          <div class="mb-6 border-b border-gray-200">
+            <nav class="flex space-x-8">
+              <button
+                (click)="dashboardSubTab.set('overview')"
+                [class.border-blue-500]="dashboardSubTab() === 'overview'"
+                [class.text-blue-600]="dashboardSubTab() === 'overview'"
+                [class.border-transparent]="dashboardSubTab() !== 'overview'"
+                [class.text-gray-500]="dashboardSubTab() !== 'overview'"
+                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-blue-600 hover:border-blue-300 transition"
+              >
+                Requirements & Clearance
+              </button>
+              <button
+                (click)="selectDashboardSubTab('analytics')"
+                [class.border-blue-500]="dashboardSubTab() === 'analytics'"
+                [class.text-blue-600]="dashboardSubTab() === 'analytics'"
+                [class.border-transparent]="dashboardSubTab() !== 'analytics'"
+                [class.text-gray-500]="dashboardSubTab() !== 'analytics'"
+                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-blue-600 hover:border-blue-300 transition"
+              >
+                Faculty Analytics
+              </button>
+            </nav>
           </div>
 
-          @if (loading()) {
-            <div class="text-center py-12">
-              <div
-                class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
-              ></div>
-              <p class="mt-4 text-gray-600">Loading dashboard...</p>
+          @if (dashboardSubTab() === 'overview') {
+            <!-- Filters -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                  <select
+                    [(ngModel)]="selectedAcademicYear"
+                    (change)="loadDepartmentStats()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option [value]="0">All Years</option>
+                    @for (year of academicYearsList(); track year.academic_year_id) {
+                      <option [value]="year.academic_year_id">
+                        {{ year.year_start }}-{{ year.year_end }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                  <select
+                    [(ngModel)]="selectedSemester"
+                    (change)="loadDepartmentStats()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  >
+                    <option value="">All Semesters</option>
+                    <option value="1st Sem">1st Semester</option>
+                    <option value="2nd Sem">2nd Semester</option>
+                  </select>
+                </div>
+              </div>
             </div>
+
+            @if (loading()) {
+              <div class="text-center py-12">
+                <div
+                  class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+                ></div>
+                <p class="mt-4 text-gray-600">Loading dashboard...</p>
+              </div>
+            }
+
+            @if (!loading() && departmentStats()) {
+              <!-- Key Metrics Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div
+                  class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
+                      <p class="text-4xl font-bold">{{ departmentStats()!.total_faculty }}</p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-users"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Cleared Faculties</h3>
+                      <p class="text-4xl font-bold">{{ departmentStats()!.cleared_faculties }}</p>
+                      <p class="text-xs opacity-90 mt-1">
+                        {{ departmentStats()!.faculty_clearance_rate }}% of total
+                      </p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-user-check"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Total Requirements</h3>
+                      <p class="text-4xl font-bold">{{ departmentStats()!.total_requirements }}</p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-clipboard-list"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Requirements Validated</h3>
+                      <p class="text-4xl font-bold">{{ departmentStats()!.validated }}</p>
+                      <p class="text-xs opacity-90 mt-1">
+                        {{ departmentStats()!.completion_rate }}% complete
+                      </p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Charts and Visualizations -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Status Distribution Chart -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">
+                    Requirements Status Distribution
+                  </h3>
+                  <div class="flex items-center justify-center mb-6">
+                    <div class="relative w-64 h-64">
+                      <!-- Donut Chart using conic-gradient -->
+                      <div
+                        class="absolute inset-0 rounded-full"
+                        [style.background]="
+                          'conic-gradient(' +
+                          'from 0deg, ' +
+                          'rgb(34, 197, 94) 0deg ' +
+                          (departmentStats()!.validated / departmentStats()!.total_requirements) *
+                            360 +
+                          'deg, ' +
+                          'rgb(234, 179, 8) ' +
+                          (departmentStats()!.validated / departmentStats()!.total_requirements) *
+                            360 +
+                          'deg ' +
+                          ((departmentStats()!.validated + departmentStats()!.pending) /
+                            departmentStats()!.total_requirements) *
+                            360 +
+                          'deg, ' +
+                          'rgb(239, 68, 68) ' +
+                          ((departmentStats()!.validated + departmentStats()!.pending) /
+                            departmentStats()!.total_requirements) *
+                            360 +
+                          'deg ' +
+                          ((departmentStats()!.validated +
+                            departmentStats()!.pending +
+                            departmentStats()!.returned) /
+                            departmentStats()!.total_requirements) *
+                            360 +
+                          'deg, ' +
+                          'rgb(156, 163, 175) ' +
+                          ((departmentStats()!.validated +
+                            departmentStats()!.pending +
+                            departmentStats()!.returned) /
+                            departmentStats()!.total_requirements) *
+                            360 +
+                          'deg 360deg)'
+                        "
+                      ></div>
+                      <!-- Center white circle for donut effect -->
+                      <div
+                        class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col"
+                      >
+                        <div class="text-3xl font-bold text-gray-800">
+                          {{ departmentStats()!.total_requirements }}
+                        </div>
+                        <div class="text-sm text-gray-600">Total</div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Legend -->
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-green-500 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{ departmentStats()!.validated }}</span>
+                        <span class="text-gray-600"> Validated</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{ departmentStats()!.pending }}</span>
+                        <span class="text-gray-600"> Pending</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-red-500 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{ departmentStats()!.returned }}</span>
+                        <span class="text-gray-600"> Returned</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-gray-400 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{ departmentStats()!.not_submitted }}</span>
+                        <span class="text-gray-600"> Not Submitted</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Overall Completion -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Overall Completion Rate</h3>
+                  <div class="flex items-center justify-center mb-6">
+                    <div class="relative w-64 h-64">
+                      <svg class="transform -rotate-90 w-64 h-64">
+                        <circle
+                          cx="128"
+                          cy="128"
+                          r="100"
+                          stroke="#e5e7eb"
+                          stroke-width="20"
+                          fill="none"
+                        />
+                        <circle
+                          cx="128"
+                          cy="128"
+                          r="100"
+                          stroke="#3b82f6"
+                          stroke-width="20"
+                          fill="none"
+                          [attr.stroke-dasharray]="628"
+                          [attr.stroke-dashoffset]="
+                            628 - (628 * +departmentStats()!.completion_rate) / 100
+                          "
+                          class="transition-all duration-1000"
+                        />
+                      </svg>
+                      <div class="absolute inset-0 flex items-center justify-center flex-col">
+                        <div class="text-5xl font-bold text-blue-600">
+                          {{ departmentStats()!.completion_rate }}%
+                        </div>
+                        <div class="text-sm text-gray-600 mt-2">Complete</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-center text-sm text-gray-600">
+                    <p class="mb-2">
+                      <span class="font-semibold text-gray-800">{{
+                        departmentStats()!.validated
+                      }}</span>
+                      out of
+                      <span class="font-semibold text-gray-800">{{
+                        departmentStats()!.total_requirements
+                      }}</span>
+                      requirements validated
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Faculty Clearance:
+                      <span class="font-semibold text-green-600"
+                        >{{ departmentStats()!.faculty_clearance_rate }}%</span
+                      >
+                      ({{ departmentStats()!.cleared_faculties }}/{{
+                        departmentStats()!.total_faculty
+                      }})
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Faculty Clearance Status -->
+              <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-6">Faculty Clearance Status</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <!-- Cleared Faculties -->
+                  <div
+                    class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-2 border-green-200"
+                  >
+                    <div class="shrink-0">
+                      <div
+                        class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white"
+                      >
+                        <i class="fas fa-user-check text-2xl"></i>
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-3xl font-bold text-green-700">
+                        {{ departmentStats()!.cleared_faculties }}
+                      </p>
+                      <p class="text-sm text-green-600 font-medium">Cleared Faculties</p>
+                      <p class="text-xs text-gray-600 mt-1">All requirements approved</p>
+                    </div>
+                  </div>
+
+                  <!-- Pending Faculties -->
+                  <div
+                    class="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200"
+                  >
+                    <div class="shrink-0">
+                      <div
+                        class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center text-white"
+                      >
+                        <i class="fas fa-clock text-2xl"></i>
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-3xl font-bold text-yellow-700">
+                        {{ departmentStats()!.pending_faculties }}
+                      </p>
+                      <p class="text-sm text-yellow-600 font-medium">Pending Faculties</p>
+                      <p class="text-xs text-gray-600 mt-1">Incomplete requirements</p>
+                    </div>
+                  </div>
+
+                  <!-- Withholding Faculties -->
+                  <div
+                    class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200"
+                  >
+                    <div class="shrink-0">
+                      <div
+                        class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white"
+                      >
+                        <i class="fas fa-exclamation-triangle text-2xl"></i>
+                      </div>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-3xl font-bold text-red-700">
+                        {{ departmentStats()!.withholding_faculties }}
+                      </p>
+                      <p class="text-sm text-red-600 font-medium">Withholding</p>
+                      <p class="text-xs text-gray-600 mt-1">Has returned requirements</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Faculty Clearance Progress Bar -->
+                <div class="mt-6">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">Faculty Clearance Rate</span>
+                    <span class="text-sm font-semibold text-green-600">
+                      {{ departmentStats()!.cleared_faculties }} /
+                      {{ departmentStats()!.total_faculty }} ({{
+                        departmentStats()!.faculty_clearance_rate
+                      }}%)
+                    </span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
+                    <div
+                      class="bg-linear-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-3"
+                      [style.width.%]="departmentStats()!.faculty_clearance_rate"
+                    >
+                      <span class="text-xs font-semibold text-white"
+                        >{{ departmentStats()!.faculty_clearance_rate }}%</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
           }
 
-          @if (!loading() && departmentStats()) {
-            <!-- Key Metrics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div
-                class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.total_faculty }}</p>
-                  </div>
-                  <div class="text-5xl opacity-30">
-                    <i class="fas fa-users"></i>
-                  </div>
-                </div>
+          @if (dashboardSubTab() === 'analytics') {
+            @if (loading()) {
+              <div class="text-center py-12">
+                <div
+                  class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+                ></div>
+                <p class="mt-4 text-gray-600">Loading analytics...</p>
               </div>
-              <div
-                class="bg-linear-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Cleared Faculties</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.cleared_faculties }}</p>
-                    <p class="text-xs opacity-90 mt-1">
-                      {{ departmentStats()!.faculty_clearance_rate }}% of total
-                    </p>
-                  </div>
-                  <div class="text-5xl opacity-30">
-                    <i class="fas fa-user-check"></i>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Total Requirements</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.total_requirements }}</p>
-                  </div>
-                  <div class="text-5xl opacity-30">
-                    <i class="fas fa-clipboard-list"></i>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium opacity-90 mb-1">Requirements Validated</h3>
-                    <p class="text-4xl font-bold">{{ departmentStats()!.validated }}</p>
-                    <p class="text-xs opacity-90 mt-1">
-                      {{ departmentStats()!.completion_rate }}% complete
-                    </p>
-                  </div>
-                  <div class="text-5xl opacity-30">
-                    <i class="fas fa-check-circle"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
+            }
 
-            <!-- Charts and Visualizations -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <!-- Status Distribution Chart -->
-              <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-6">
-                  Requirements Status Distribution
-                </h3>
-                <div class="flex items-center justify-center mb-6">
-                  <div class="relative w-64 h-64">
-                    <!-- Donut Chart using conic-gradient -->
-                    <div
-                      class="absolute inset-0 rounded-full"
-                      [style.background]="
-                        'conic-gradient(' +
-                        'from 0deg, ' +
-                        'rgb(34, 197, 94) 0deg ' +
-                        (departmentStats()!.validated / departmentStats()!.total_requirements) * 360 +
-                        'deg, ' +
-                        'rgb(234, 179, 8) ' +
-                        (departmentStats()!.validated / departmentStats()!.total_requirements) * 360 +
-                        'deg ' +
-                        ((departmentStats()!.validated + departmentStats()!.pending) /
-                          departmentStats()!.total_requirements) *
-                          360 +
-                        'deg, ' +
-                        'rgb(239, 68, 68) ' +
-                        ((departmentStats()!.validated + departmentStats()!.pending) /
-                          departmentStats()!.total_requirements) *
-                          360 +
-                        'deg ' +
-                        ((departmentStats()!.validated +
-                          departmentStats()!.pending +
-                          departmentStats()!.returned) /
-                          departmentStats()!.total_requirements) *
-                          360 +
-                        'deg, ' +
-                        'rgb(156, 163, 175) ' +
-                        ((departmentStats()!.validated +
-                          departmentStats()!.pending +
-                          departmentStats()!.returned) /
-                          departmentStats()!.total_requirements) *
-                          360 +
-                        'deg 360deg)'
-                      "
-                    ></div>
-                    <!-- Center white circle for donut effect -->
-                    <div
-                      class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col"
-                    >
-                      <div class="text-3xl font-bold text-gray-800">
-                        {{ departmentStats()!.total_requirements }}
+            @if (!loading() && facultyDemographics()) {
+              <!-- Key Metrics Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div
+                  class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
+                      <p class="text-4xl font-bold">{{ facultyDemographics()!.total_faculty }}</p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-users"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Male Faculty</h3>
+                      <p class="text-4xl font-bold">{{ facultyDemographics()!.gender.male }}</p>
+                      <p class="text-xs opacity-90 mt-1">
+                        {{
+                          (
+                            (facultyDemographics()!.gender.male /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}% of total
+                      </p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-male"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Female Faculty</h3>
+                      <p class="text-4xl font-bold">{{ facultyDemographics()!.gender.female }}</p>
+                      <p class="text-xs opacity-90 mt-1">
+                        {{
+                          (
+                            (facultyDemographics()!.gender.female /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}% of total
+                      </p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-female"></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white"
+                >
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium opacity-90 mb-1">Doctorate Holders</h3>
+                      <p class="text-4xl font-bold">
+                        {{ facultyDemographics()!.education.doctorate }}
+                      </p>
+                      <p class="text-xs opacity-90 mt-1">
+                        {{
+                          (
+                            (facultyDemographics()!.education.doctorate /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}% of total
+                      </p>
+                    </div>
+                    <div class="text-5xl opacity-30">
+                      <i class="fas fa-graduation-cap"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Charts Row 1 -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Gender Distribution -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Gender Distribution</h3>
+                  <div class="flex items-center justify-center mb-6">
+                    <div class="relative w-64 h-64">
+                      <div
+                        class="absolute inset-0 rounded-full"
+                        [style.background]="
+                          'conic-gradient(' +
+                          'from 0deg, ' +
+                          'rgb(236, 72, 153) 0deg ' +
+                          (facultyDemographics()!.gender.male /
+                            facultyDemographics()!.total_faculty) *
+                            360 +
+                          'deg, ' +
+                          'rgb(168, 85, 247) ' +
+                          (facultyDemographics()!.gender.male /
+                            facultyDemographics()!.total_faculty) *
+                            360 +
+                          'deg 360deg)'
+                        "
+                      ></div>
+                      <div
+                        class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col"
+                      >
+                        <div class="text-3xl font-bold text-gray-800">
+                          {{ facultyDemographics()!.total_faculty }}
+                        </div>
+                        <div class="text-sm text-gray-600">Total</div>
                       </div>
-                      <div class="text-sm text-gray-600">Total</div>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-pink-500 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{ facultyDemographics()!.gender.male }}</span>
+                        <span class="text-gray-600"> Male</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                      <div class="text-sm">
+                        <span class="font-semibold">{{
+                          facultyDemographics()!.gender.female
+                        }}</span>
+                        <span class="text-gray-600"> Female</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <!-- Legend -->
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-green-500 rounded"></div>
-                    <div class="text-sm">
-                      <span class="font-semibold">{{ departmentStats()!.validated }}</span>
-                      <span class="text-gray-600"> Validated</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-yellow-500 rounded"></div>
-                    <div class="text-sm">
-                      <span class="font-semibold">{{ departmentStats()!.pending }}</span>
-                      <span class="text-gray-600"> Pending</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-red-500 rounded"></div>
-                    <div class="text-sm">
-                      <span class="font-semibold">{{ departmentStats()!.returned }}</span>
-                      <span class="text-gray-600"> Returned</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-gray-400 rounded"></div>
-                    <div class="text-sm">
-                      <span class="font-semibold">{{ departmentStats()!.not_submitted }}</span>
-                      <span class="text-gray-600"> Not Submitted</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Progress Bar Chart -->
-              <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-6">Department Progress Overview</h3>
-                <div class="space-y-6">
-                  <!-- Cleared Progress -->
-                  <div>
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="text-sm font-medium text-gray-700">Validated Requirements</span>
-                      <span class="text-sm font-semibold text-green-600">
-                        {{ departmentStats()!.validated }} /
-                        {{ departmentStats()!.total_requirements }} ({{
-                          (
-                            (departmentStats()!.validated / departmentStats()!.total_requirements) *
+                <!-- Age Distribution -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Age Distribution</h3>
+                  <div class="space-y-4">
+                    <div>
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">20-29 years</span>
+                        <span class="text-sm font-semibold text-blue-600">
+                          {{ facultyDemographics()!.age_ranges['20-29'] }}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-blue-500 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.age_ranges['20-29'] /
+                              facultyDemographics()!.total_faculty) *
                             100
-                          ).toFixed(1)
-                        }}%)
-                      </span>
+                          "
+                        ></div>
+                      </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div
-                        class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="
-                          (departmentStats()!.validated / departmentStats()!.total_requirements) * 100
-                        "
-                      ></div>
-                    </div>
-                  </div>
-
-                  <!-- Pending Reviews -->
-                  <div>
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="text-sm font-medium text-gray-700">Pending Reviews</span>
-                      <span class="text-sm font-semibold text-yellow-600">
-                        {{ departmentStats()!.pending }} /
-                        {{ departmentStats()!.total_requirements }} ({{
-                          (
-                            (departmentStats()!.pending / departmentStats()!.total_requirements) *
+                    <div>
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">30-39 years</span>
+                        <span class="text-sm font-semibold text-green-600">
+                          {{ facultyDemographics()!.age_ranges['30-39'] }}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-green-500 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.age_ranges['30-39'] /
+                              facultyDemographics()!.total_faculty) *
                             100
-                          ).toFixed(1)
-                        }}%)
-                      </span>
+                          "
+                        ></div>
+                      </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div
-                        class="bg-linear-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="
-                          (departmentStats()!.pending / departmentStats()!.total_requirements) * 100
-                        "
-                      ></div>
-                    </div>
-                  </div>
-
-                  <!-- Returned -->
-                  <div>
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="text-sm font-medium text-gray-700">Returned for Revision</span>
-                      <span class="text-sm font-semibold text-red-600">
-                        {{ departmentStats()!.returned }} /
-                        {{ departmentStats()!.total_requirements }} ({{
-                          (
-                            (departmentStats()!.returned / departmentStats()!.total_requirements) *
+                    <div>
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">40-49 years</span>
+                        <span class="text-sm font-semibold text-yellow-600">
+                          {{ facultyDemographics()!.age_ranges['40-49'] }}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-yellow-500 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.age_ranges['40-49'] /
+                              facultyDemographics()!.total_faculty) *
                             100
-                          ).toFixed(1)
-                        }}%)
-                      </span>
+                          "
+                        ></div>
+                      </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div
-                        class="bg-linear-to-r from-red-400 to-red-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="
-                          (departmentStats()!.returned / departmentStats()!.total_requirements) *
-                          100
-                        "
-                      ></div>
-                    </div>
-                  </div>
-
-                  <!-- Not Submitted -->
-                  <div>
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="text-sm font-medium text-gray-700">Not Yet Submitted</span>
-                      <span class="text-sm font-semibold text-gray-600">
-                        {{ departmentStats()!.not_submitted }} /
-                        {{ departmentStats()!.total_requirements }} ({{
-                          (
-                            (departmentStats()!.not_submitted /
-                              departmentStats()!.total_requirements) *
+                    <div>
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">50-59 years</span>
+                        <span class="text-sm font-semibold text-orange-600">
+                          {{ facultyDemographics()!.age_ranges['50-59'] }}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-orange-500 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.age_ranges['50-59'] /
+                              facultyDemographics()!.total_faculty) *
                             100
-                          ).toFixed(1)
-                        }}%)
-                      </span>
+                          "
+                        ></div>
+                      </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                      <div
-                        class="bg-linear-to-r from-gray-400 to-gray-600 h-full rounded-full transition-all duration-500"
-                        [style.width.%]="
-                          (departmentStats()!.not_submitted /
-                            departmentStats()!.total_requirements) *
-                          100
-                        "
-                      ></div>
-                    </div>
-                  </div>
-
-                  <!-- Overall Completion -->
-                  <div class="pt-4 border-t border-gray-200">
-                    <div class="flex justify-between items-center mb-2">
-                      <span class="text-base font-bold text-gray-800">Overall Completion</span>
-                      <span class="text-base font-bold text-blue-600"
-                        >{{ departmentStats()!.completion_rate }}%</span
-                      >
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                      <div
-                        class="bg-linear-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-2"
-                        [style.width.%]="departmentStats()!.completion_rate"
-                      >
-                        <span class="text-xs font-semibold text-white"
-                          >{{ departmentStats()!.completion_rate }}%</span
-                        >
+                    <div>
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">60+ years</span>
+                        <span class="text-sm font-semibold text-red-600">
+                          {{ facultyDemographics()!.age_ranges['60+'] }}
+                        </span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-red-500 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.age_ranges['60+'] /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          "
+                        ></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Faculty Clearance Status -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h3 class="text-lg font-bold text-gray-800 mb-6">Faculty Clearance Status</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Cleared Faculties -->
-                <div
-                  class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-2 border-green-200"
-                >
-                  <div class="shrink-0">
-                    <div
-                      class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white"
-                    >
-                      <i class="fas fa-user-check text-2xl"></i>
+              <!-- Charts Row 2: Demographics -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Civil Status -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Civil Status</h3>
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Single</p>
+                        <p class="text-2xl font-bold text-green-600">
+                          {{ facultyDemographics()!.civil_status.single }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.civil_status.single /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Married</p>
+                        <p class="text-2xl font-bold text-blue-600">
+                          {{ facultyDemographics()!.civil_status.married }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.civil_status.married /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Widowed</p>
+                        <p class="text-2xl font-bold text-gray-600">
+                          {{ facultyDemographics()!.civil_status.widowed }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.civil_status.widowed /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Separated</p>
+                        <p class="text-2xl font-bold text-yellow-600">
+                          {{ facultyDemographics()!.civil_status.separated }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.civil_status.separated /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
                     </div>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-3xl font-bold text-green-700">
-                      {{ departmentStats()!.cleared_faculties }}
-                    </p>
-                    <p class="text-sm text-green-600 font-medium">Cleared Faculties</p>
-                    <p class="text-xs text-gray-600 mt-1">All requirements approved</p>
-                  </div>
                 </div>
 
-                <!-- Pending Faculties -->
-                <div
-                  class="flex items-center space-x-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200"
-                >
-                  <div class="shrink-0">
-                    <div
-                      class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center text-white"
-                    >
-                      <i class="fas fa-clock text-2xl"></i>
+                <!-- Credential Status -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Credential Status</h3>
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Validated</p>
+                        <p class="text-2xl font-bold text-green-600">
+                          {{ facultyDemographics()!.credential_status.validated }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.credential_status.validated /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Pending</p>
+                        <p class="text-2xl font-bold text-yellow-600">
+                          {{ facultyDemographics()!.credential_status.pending }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.credential_status.pending /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Returned</p>
+                        <p class="text-2xl font-bold text-red-600">
+                          {{ facultyDemographics()!.credential_status.returned }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.credential_status.returned /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Not Submitted</p>
+                        <p class="text-2xl font-bold text-gray-600">
+                          {{ facultyDemographics()!.credential_status.not_submitted }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.credential_status.not_submitted /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
                     </div>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-3xl font-bold text-yellow-700">
-                      {{ departmentStats()!.pending_faculties }}
-                    </p>
-                    <p class="text-sm text-yellow-600 font-medium">Pending Faculties</p>
-                    <p class="text-xs text-gray-600 mt-1">Incomplete requirements</p>
-                  </div>
                 </div>
+              </div>
 
-                <!-- Withholding Faculties -->
+              <!-- Section Divider -->
+              <div class="my-8 border-t-2 border-gray-300 relative">
                 <div
-                  class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200"
+                  class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2 bg-white px-4"
                 >
-                  <div class="shrink-0">
-                    <div
-                      class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white"
-                    >
-                      <i class="fas fa-exclamation-triangle text-2xl"></i>
+                  <h2 class="text-xl font-bold text-gray-700">Academic Information</h2>
+                </div>
+              </div>
+
+              <!-- Charts Row 3: Academic -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Educational Attainment -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Educational Attainment</h3>
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-indigo-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Doctorate</p>
+                        <p class="text-2xl font-bold text-indigo-600">
+                          {{ facultyDemographics()!.education.doctorate }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.education.doctorate /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Masters</p>
+                        <p class="text-2xl font-bold text-purple-600">
+                          {{ facultyDemographics()!.education.masters }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.education.masters /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Bachelors</p>
+                        <p class="text-2xl font-bold text-blue-600">
+                          {{ facultyDemographics()!.education.bachelors }}
+                        </p>
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{
+                          (
+                            (facultyDemographics()!.education.bachelors /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}%
+                      </div>
                     </div>
                   </div>
-                  <div class="flex-1">
-                    <p class="text-3xl font-bold text-red-700">
-                      {{ departmentStats()!.withholding_faculties }}
-                    </p>
-                    <p class="text-sm text-red-600 font-medium">Withholding</p>
-                    <p class="text-xs text-gray-600 mt-1">Has returned requirements</p>
+                </div>
+
+                <!-- Currently Enrolled -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Currently Enrolled</h3>
+                  @if (educationAnalytics()) {
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                        <div>
+                          <p class="text-sm text-gray-600">Masters Program</p>
+                          <p class="text-2xl font-bold text-purple-600">
+                            {{ educationAnalytics()!.currently_enrolled.masters }}
+                          </p>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                          {{
+                            (
+                              (educationAnalytics()!.currently_enrolled.masters /
+                                facultyDemographics()!.total_faculty) *
+                              100
+                            ).toFixed(1)
+                          }}%
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between p-3 bg-indigo-50 rounded-lg">
+                        <div>
+                          <p class="text-sm text-gray-600">Doctorate Program</p>
+                          <p class="text-2xl font-bold text-indigo-600">
+                            {{ educationAnalytics()!.currently_enrolled.doctorate }}
+                          </p>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                          {{
+                            (
+                              (educationAnalytics()!.currently_enrolled.doctorate /
+                                facultyDemographics()!.total_faculty) *
+                              100
+                            ).toFixed(1)
+                          }}%
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Charts Row 4: Certifications & Trainings -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Certifications & Eligibility -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Certifications & Eligibility</h3>
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                      <div>
+                        <p class="text-sm text-gray-600">Total Certifications</p>
+                        <p class="text-3xl font-bold text-blue-600">
+                          {{ facultyDemographics()!.certifications.total_certifications }}
+                        </p>
+                      </div>
+                      <div class="text-4xl text-blue-300">
+                        <i class="fas fa-certificate"></i>
+                      </div>
+                    </div>
+                    <div class="space-y-3">
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <div class="flex items-center gap-2">
+                            <i class="fas fa-id-card text-green-600"></i>
+                            <span class="text-sm font-medium text-gray-700"
+                              >Professional License</span
+                            >
+                          </div>
+                          <span class="text-lg font-bold text-green-600">
+                            {{ facultyDemographics()!.certifications.with_professional_license }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                          <div
+                            class="bg-green-500 h-full rounded-full"
+                            [style.width.%]="
+                              (facultyDemographics()!.certifications.with_professional_license /
+                                facultyDemographics()!.total_faculty) *
+                              100
+                            "
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <div class="flex items-center gap-2">
+                            <i class="fas fa-award text-purple-600"></i>
+                            <span class="text-sm font-medium text-gray-700">Civil Service</span>
+                          </div>
+                          <span class="text-lg font-bold text-purple-600">
+                            {{ facultyDemographics()!.certifications.with_civil_service }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                          <div
+                            class="bg-purple-500 h-full rounded-full"
+                            [style.width.%]="
+                              (facultyDemographics()!.certifications.with_civil_service /
+                                facultyDemographics()!.total_faculty) *
+                              100
+                            "
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <div class="flex items-center gap-2">
+                            <i class="fas fa-graduation-cap text-indigo-600"></i>
+                            <span class="text-sm font-medium text-gray-700">Board/Bar Exam</span>
+                          </div>
+                          <span class="text-lg font-bold text-indigo-600">
+                            {{ facultyDemographics()!.certifications.with_board_exam }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                          <div
+                            class="bg-indigo-500 h-full rounded-full"
+                            [style.width.%]="
+                              (facultyDemographics()!.certifications.with_board_exam /
+                                facultyDemographics()!.total_faculty) *
+                              100
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Trainings & Seminars -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Trainings & Seminars</h3>
+                  <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div class="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                        <div>
+                          <p class="text-xs text-gray-600">Total Trainings</p>
+                          <p class="text-3xl font-bold text-orange-600">
+                            {{ facultyDemographics()!.training.total_trainings }}
+                          </p>
+                        </div>
+                        <div class="text-3xl text-orange-300">
+                          <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between p-4 bg-teal-50 rounded-lg">
+                        <div>
+                          <p class="text-xs text-gray-600">Total Hours</p>
+                          <p class="text-3xl font-bold text-teal-600">
+                            {{ facultyDemographics()!.training.total_hours }}
+                          </p>
+                        </div>
+                        <div class="text-3xl text-teal-300">
+                          <i class="fas fa-clock"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                      <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm text-gray-700">Faculty with Trainings</p>
+                        <p class="text-2xl font-bold text-blue-600">
+                          {{ facultyDemographics()!.training.faculty_with_trainings }}
+                        </p>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          class="bg-blue-600 h-full rounded-full"
+                          [style.width.%]="
+                            (facultyDemographics()!.training.faculty_with_trainings /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          "
+                        ></div>
+                      </div>
+                      <p class="text-xs text-gray-600 mt-1">
+                        {{
+                          (
+                            (facultyDemographics()!.training.faculty_with_trainings /
+                              facultyDemographics()!.total_faculty) *
+                            100
+                          ).toFixed(1)
+                        }}% of faculty
+                      </p>
+                    </div>
+
+                    <!-- Training Types Bar Chart -->
+                    <div class="space-y-2">
+                      <p class="text-sm font-medium text-gray-700 mb-2">Training Types</p>
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <span class="text-xs text-gray-600">Managerial</span>
+                          <span class="text-sm font-bold text-gray-700">
+                            {{ facultyDemographics()!.training.by_type.managerial }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            class="bg-blue-500 h-full rounded-full"
+                            [style.width.%]="
+                              facultyDemographics()!.training.total_trainings > 0
+                                ? (facultyDemographics()!.training.by_type.managerial /
+                                    facultyDemographics()!.training.total_trainings) *
+                                  100
+                                : 0
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <span class="text-xs text-gray-600">Supervisory</span>
+                          <span class="text-sm font-bold text-gray-700">
+                            {{ facultyDemographics()!.training.by_type.supervisory }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            class="bg-green-500 h-full rounded-full"
+                            [style.width.%]="
+                              facultyDemographics()!.training.total_trainings > 0
+                                ? (facultyDemographics()!.training.by_type.supervisory /
+                                    facultyDemographics()!.training.total_trainings) *
+                                  100
+                                : 0
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <span class="text-xs text-gray-600">Technical</span>
+                          <span class="text-sm font-bold text-gray-700">
+                            {{ facultyDemographics()!.training.by_type.technical }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            class="bg-purple-500 h-full rounded-full"
+                            [style.width.%]="
+                              facultyDemographics()!.training.total_trainings > 0
+                                ? (facultyDemographics()!.training.by_type.technical /
+                                    facultyDemographics()!.training.total_trainings) *
+                                  100
+                                : 0
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex justify-between items-center mb-1">
+                          <span class="text-xs text-gray-600">Others</span>
+                          <span class="text-sm font-bold text-gray-700">
+                            {{ facultyDemographics()!.training.by_type.others }}
+                          </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            class="bg-orange-500 h-full rounded-full"
+                            [style.width.%]="
+                              facultyDemographics()!.training.total_trainings > 0
+                                ? (facultyDemographics()!.training.by_type.others /
+                                    facultyDemographics()!.training.total_trainings) *
+                                  100
+                                : 0
+                            "
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Faculty Clearance Progress Bar -->
-              <div class="mt-6">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm font-medium text-gray-700">Faculty Clearance Rate</span>
-                  <span class="text-sm font-semibold text-green-600">
-                    {{ departmentStats()!.cleared_faculties }} /
-                    {{ departmentStats()!.total_faculty }} ({{
-                      departmentStats()!.faculty_clearance_rate
-                    }}%)
-                  </span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                  <div
-                    class="bg-linear-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-500 flex items-center justify-end px-3"
-                    [style.width.%]="departmentStats()!.faculty_clearance_rate"
-                  >
-                    <span class="text-xs font-semibold text-white"
-                      >{{ departmentStats()!.faculty_clearance_rate }}%</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Status Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div
-                class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-green-800 mb-1">Validated</h3>
-                    <p class="text-3xl font-bold text-green-600">
-                      {{ departmentStats()!.validated }}
-                    </p>
-                    <p class="text-xs text-green-700 mt-2">
-                      {{
-                        (
-                          (departmentStats()!.validated / departmentStats()!.total_requirements) *
-                          100
-                        ).toFixed(1)
-                      }}% of total
-                    </p>
-                  </div>
-                  <div class="text-4xl text-green-300">
-                    <i class="fas fa-check-circle"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-yellow-800 mb-1">Pending Review</h3>
-                    <p class="text-3xl font-bold text-yellow-600">
-                      {{ departmentStats()!.pending }}
-                    </p>
-                    <p class="text-xs text-yellow-700 mt-2">
-                      {{
-                        (
-                          (departmentStats()!.pending / departmentStats()!.total_requirements) *
-                          100
-                        ).toFixed(1)
-                      }}% of total
-                    </p>
-                  </div>
-                  <div class="text-4xl text-yellow-300">
-                    <i class="fas fa-clock"></i>
-                  </div>
+              <!-- Charts Row 5: Research & Publications -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Research & Publications -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                  <h3 class="text-lg font-bold text-gray-800 mb-6">Research & Publications</h3>
+                  @if (researchAnalytics()) {
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                        <div>
+                          <p class="text-sm text-gray-600">Total Publications</p>
+                          <p class="text-3xl font-bold text-blue-600">
+                            {{ researchAnalytics()!.total_publications }}
+                          </p>
+                        </div>
+                        <div class="text-4xl text-blue-300">
+                          <i class="fas fa-book"></i>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                        <div>
+                          <p class="text-sm text-gray-600">Faculty with Publications</p>
+                          <p class="text-3xl font-bold text-green-600">
+                            {{ researchAnalytics()!.faculty_with_publications }}
+                          </p>
+                        </div>
+                        <div class="text-4xl text-green-300">
+                          <i class="fas fa-user-graduate"></i>
+                        </div>
+                      </div>
+                      <div class="p-4 bg-purple-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-2">Percentage with Publications</p>
+                        <div class="flex items-center gap-4">
+                          <div class="flex-1">
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                              <div
+                                class="bg-purple-600 h-full rounded-full"
+                                [style.width.%]="researchAnalytics()!.percentage_with_publications"
+                              ></div>
+                            </div>
+                          </div>
+                          <span class="text-2xl font-bold text-purple-600">
+                            {{ researchAnalytics()!.percentage_with_publications }}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  }
                 </div>
               </div>
-
-              <div
-                class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-red-800 mb-1">Returned</h3>
-                    <p class="text-3xl font-bold text-red-600">{{ departmentStats()!.returned }}</p>
-                    <p class="text-xs text-red-700 mt-2">
-                      {{
-                        (
-                          (departmentStats()!.returned / departmentStats()!.total_requirements) *
-                          100
-                        ).toFixed(1)
-                      }}% of total
-                    </p>
-                  </div>
-                  <div class="text-4xl text-red-300">
-                    <i class="fas fa-undo"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="bg-gray-50 border-l-4 border-gray-500 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-gray-800 mb-1">Not Submitted</h3>
-                    <p class="text-3xl font-bold text-gray-600">
-                      {{ departmentStats()!.not_submitted }}
-                    </p>
-                    <p class="text-xs text-gray-700 mt-2">
-                      {{
-                        (
-                          (departmentStats()!.not_submitted /
-                            departmentStats()!.total_requirements) *
-                          100
-                        ).toFixed(1)
-                      }}% of total
-                    </p>
-                  </div>
-                  <div class="text-4xl text-gray-300">
-                    <i class="fas fa-exclamation-circle"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
+            }
           }
         </div>
       }
@@ -859,6 +1529,7 @@ import { DropdownService, DropdownAcademicYear } from '../../../services/dropdow
 export class DeanDashboard implements OnInit {
   isSidebarOpen = signal(true);
   activeTab = signal<string>('dashboard');
+  dashboardSubTab = signal<string>('overview');
   isUserMenuOpen = signal(false);
 
   // Dashboard data
@@ -868,10 +1539,16 @@ export class DeanDashboard implements OnInit {
   selectedAcademicYear = signal<number>(0);
   selectedSemester = signal<string>('');
 
+  // Analytics data
+  facultyDemographics = signal<FacultyDemographics | null>(null);
+  educationAnalytics = signal<EducationAnalytics | null>(null);
+  researchAnalytics = signal<ResearchAnalytics | null>(null);
+
   constructor(
     public authService: Auth,
     private requirementService: DeanRequirementService,
     private dropdownService: DropdownService,
+    private analyticsService: DeanAnalyticsService,
   ) {}
 
   ngOnInit() {
@@ -923,6 +1600,50 @@ export class DeanDashboard implements OnInit {
 
   selectTab(tab: string) {
     this.activeTab.set(tab);
+    if (tab === 'dashboard') {
+      this.dashboardSubTab.set('overview');
+    }
+  }
+
+  selectDashboardSubTab(subTab: string) {
+    this.dashboardSubTab.set(subTab);
+    if (subTab === 'analytics') {
+      this.loadAnalytics();
+    }
+  }
+
+  loadAnalytics() {
+    this.loading.set(true);
+
+    // Load all analytics data
+    this.analyticsService.getFacultyDemographics().subscribe({
+      next: (data) => {
+        this.facultyDemographics.set(data);
+      },
+      error: (error) => {
+        console.error('Error loading faculty demographics:', error);
+      },
+    });
+
+    this.analyticsService.getEducationAnalytics().subscribe({
+      next: (data) => {
+        this.educationAnalytics.set(data);
+      },
+      error: (error) => {
+        console.error('Error loading education analytics:', error);
+      },
+    });
+
+    this.analyticsService.getResearchAnalytics().subscribe({
+      next: (data) => {
+        this.researchAnalytics.set(data);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading research analytics:', error);
+        this.loading.set(false);
+      },
+    });
   }
 
   logout() {
@@ -935,6 +1656,7 @@ export class DeanDashboard implements OnInit {
       faculty: 'Faculty Management',
       organization: 'Organization Management',
       accomplishments: 'Accomplishments Monitoring',
+      credentials: 'Faculty Credentials',
       sections: 'Section Settings',
       programs: 'Program Management',
       courses: 'Course Settings',

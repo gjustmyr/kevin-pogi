@@ -13,6 +13,7 @@ import {
   PDSOtherInfo,
   PDSReference,
 } from '../../../services/pds.service';
+import { PDSExcelExportService } from '../../../services/pds-excel-export.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 
@@ -89,7 +90,10 @@ export class PersonalDataSheetComponent implements OnInit {
   newMembership = '';
   newReference: PDSReference = { name: '', address: '', telephone_number: '' };
 
-  constructor(private pdsService: PDSService) {}
+  constructor(
+    private pdsService: PDSService,
+    private pdsExcelExportService: PDSExcelExportService,
+  ) {}
 
   ngOnInit() {
     this.loadPDS();
@@ -517,14 +521,37 @@ export class PersonalDataSheetComponent implements OnInit {
 
   // Helper methods for filtering other_info by type
   hasSkills(): boolean {
-    return (this.pds().other_info || []).some(info => info.info_type === 'SKILL');
+    return (this.pds().other_info || []).some((info) => info.info_type === 'SKILL');
   }
 
   hasRecognitions(): boolean {
-    return (this.pds().other_info || []).some(info => info.info_type === 'RECOGNITION');
+    return (this.pds().other_info || []).some((info) => info.info_type === 'RECOGNITION');
   }
 
   hasMemberships(): boolean {
-    return (this.pds().other_info || []).some(info => info.info_type === 'MEMBERSHIP');
+    return (this.pds().other_info || []).some((info) => info.info_type === 'MEMBERSHIP');
+  }
+
+  async exportToExcel() {
+    try {
+      this.loading.set(true);
+      await this.pdsExcelExportService.exportToExcel(this.pds());
+      Swal.fire({
+        icon: 'success',
+        title: 'Exported!',
+        text: 'PDS exported to Excel successfully',
+        confirmButtonColor: '#2563eb',
+      });
+      this.loading.set(false);
+    } catch (error) {
+      console.error('Export error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Export Failed',
+        text: 'Failed to export PDS to Excel',
+        confirmButtonColor: '#dc2626',
+      });
+      this.loading.set(false);
+    }
   }
 }

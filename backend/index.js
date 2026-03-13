@@ -41,6 +41,7 @@ const deanOrganizationRoutes = require("./routes/dean-organization.routes");
 const deanCourseAssignmentRoutes = require("./routes/dean-course-assignment.routes");
 const deanRequirementRoutes = require("./routes/dean-requirement.routes");
 const deanFacultyCredentialsRoutes = require("./routes/dean-faculty-credentials.routes");
+const deanAnalyticsRoutes = require("./routes/dean-analytics.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
@@ -75,6 +76,7 @@ app.use("/api/dean/organizations", deanOrganizationRoutes);
 app.use("/api/dean/course-assignments", deanCourseAssignmentRoutes);
 app.use("/api/dean/requirements", deanRequirementRoutes);
 app.use("/api/dean/faculty-credentials", deanFacultyCredentialsRoutes);
+app.use("/api/dean/analytics", deanAnalyticsRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
@@ -82,26 +84,26 @@ app.use("/api/faculty/credentials", facultyCredentialsRoutes);
 app.use("/api/faculty/pds", pdsRoutes);
 
 app.get("/api/hello", (req, res) => {
-	res.json({ message: "Hello from the backend!" });
+  res.json({ message: "Hello from the backend!" });
 });
 
 const PORT = process.env.PORT || 3000;
 
 // Test database connection and sync models
 db.sequelize
-	.authenticate()
-	.then(() => {
-		console.log("Database connection successful!");
-		// Sync models with database (creates tables if they don't exist)
-		return db.sequelize.sync();
-	})
-	.then(() => {
-		console.log("Database tables synced!");
-	})
-	.catch((err) => {
-		console.error("Database error:", err.message);
-	});
+  .authenticate()
+  .then(() => {
+    console.log("Database connection successful!");
+    // Sync models with database (creates tables if they don't exist)
+    return db.sequelize.sync();
+  })
+  .then(() => {
+    console.log("Database tables synced!");
+  })
+  .catch((err) => {
+    console.error("Database error:", err.message);
+  });
 
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

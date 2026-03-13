@@ -1,0 +1,114 @@
+{
+  "tin_no": {
+    "label": "N59",
+    "input": "O59"
+  },
+  "surname": {
+    "label": "B47",
+    "input": "C47"
+  },
+  "first_name": {
+    "label": "B48",
+    "input": "C48"
+  },
+  "name_extension": {
+    "label": "H44",
+    "input": "I44"
+  },
+  "middle_name": {
+    "label": "B49",
+    "input": "C49"
+  },
+  "date_of_birth": {
+    "label": "N36",
+    "input": "O36"
+  },
+  "citizenship_type": {
+    "label": "I15",
+    "input": "J15"
+  },
+  "place_of_birth": {
+    "label": "B15",
+    "input": "C15"
+  },
+  "civil_status": {
+    "label": "C18",
+    "input": "D18"
+  },
+  "residential_address": {
+    "label": "G17",
+    "input": "H17"
+  },
+  "height": {
+    "label": "C23",
+    "input": "D23"
+  },
+  "weight": {
+    "label": "C24",
+    "input": "D24"
+  },
+  "blood_type": {
+    "label": "C26",
+    "input": "D26"
+  },
+  "permanent_address": {
+    "label": "G25",
+    "input": "H25"
+  },
+  "pag_ibig_id_no": {
+    "label": "C30",
+    "input": "D30"
+  },
+  "philhealth_no": {
+    "label": "B31",
+    "input": "C31"
+  },
+  "telephone_no": {
+    "label": "B42",
+    "input": "C42"
+  },
+  "mobile_no": {
+    "label": "G33",
+    "input": "H33"
+  },
+  "email_address": {
+    "label": "G34",
+    "input": "H34"
+  },
+  "spouse_surname": {
+    "label": "B36",
+    "input": "C36"
+  },
+  "children_start_row": {
+    "label": "L36",
+    "startRow": 37
+  },
+  "father_surname": {
+    "label": "B43",
+    "input": "C43"
+  },
+  "mother_maiden_name": {
+    "label": "H46",
+    "input": "I46"
+  },
+  "elementary_row": {
+    "label": "B54",
+    "row": 54
+  },
+  "secondary_row": {
+    "label": "B55",
+    "row": 55
+  },
+  "vocational_row": {
+    "label": "B56",
+    "row": 56
+  },
+  "college_row": {
+    "label": "B57",
+    "row": 57
+  },
+  "graduate_row": {
+    "label": "B58",
+    "row": 58
+  }
+}

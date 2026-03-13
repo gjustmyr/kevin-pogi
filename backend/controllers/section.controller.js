@@ -9,6 +9,8 @@ exports.getSections = async (req, res) => {
     const offset = (page - 1) * limit;
     const search = req.query.search || "";
     const program_id = req.query.program_id;
+    const year_level = req.query.year_level;
+    const semester = req.query.semester;
 
     const whereClause = {};
 
@@ -20,6 +22,14 @@ exports.getSections = async (req, res) => {
 
     if (program_id) {
       whereClause.program_id = program_id;
+    }
+
+    if (year_level) {
+      whereClause.year_level = year_level;
+    }
+
+    if (semester) {
+      whereClause.semester = semester;
     }
 
     const { count, rows } = await db.Section.findAndCountAll({

@@ -1,0 +1,12 @@
+{
+  "name": "pds-analyzer",
+  "version": "1.0.0",
+  "description": "Scripts to analyze PDS Excel template",
+  "scripts": {
+    "analyze-pds": "node scripts/analyze-pds-template.js",
+    "map-pds": "node scripts/map-pds-fields.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
