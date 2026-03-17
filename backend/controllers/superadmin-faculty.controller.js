@@ -27,7 +27,7 @@ exports.getFaculty = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const search = req.query.search || "";
-    const department_id = req.query.department_id;
+    const department = req.query.department;
 
     const whereClause = {};
 
@@ -39,8 +39,8 @@ exports.getFaculty = async (req, res) => {
       ];
     }
 
-    if (department_id) {
-      whereClause.department_id = department_id;
+    if (department) {
+      whereClause.department = department;
     }
 
     const { count, rows } = await db.Faculty.findAndCountAll({
@@ -48,16 +48,6 @@ exports.getFaculty = async (req, res) => {
       limit,
       offset,
       order: [["last_name", "ASC"]],
-      include: [
-        {
-          model: db.Department,
-          attributes: [
-            "department_id",
-            "department_name",
-            "department_acronym",
-          ],
-        },
-      ],
     });
 
     res.json({

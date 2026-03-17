@@ -1,0 +1,782 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Document Submissions</h2>
+    <p class="text-gray-600 mt-1">Submit and track organization documents</p>
+  </div>
+
+  <!-- Success/Error Messages -->
+  @if (successMessage()) {
+    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+      {{ successMessage() }}
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- View Mode Toggle and Actions -->
+  <div class="mb-6 flex justify-between items-center">
+    <div class="flex space-x-2">
+      <button
+        (click)="switchViewMode('documents')"
+        [class.bg-blue-600]="viewMode() === 'documents'"
+        [class.text-white]="viewMode() === 'documents'"
+        [class.bg-gray-200]="viewMode() !== 'documents'"
+        [class.text-gray-700]="viewMode() !== 'documents'"
+        class="px-4 py-2 rounded-lg font-medium transition"
+      >
+        <i class="fas fa-file-alt mr-2"></i>My Documents
+      </button>
+      <button
+        (click)="switchViewMode('checklist')"
+        [class.bg-blue-600]="viewMode() === 'checklist'"
+        [class.text-white]="viewMode() === 'checklist'"
+        [class.bg-gray-200]="viewMode() !== 'checklist'"
+        [class.text-gray-700]="viewMode() !== 'checklist'"
+        class="px-4 py-2 rounded-lg font-medium transition"
+      >
+        <i class="fas fa-tasks mr-2"></i>Submission Checklist
+      </button>
+    </div>
+    <button
+      (click)="openSubmitModal()"
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+    >
+      <i class="fas fa-upload mr-2"></i>Submit Document
+    </button>
+  </div>
+
+  <!-- Documents View -->
+  @if (viewMode() === 'documents') {
+    <!-- Filters -->
+    <div class="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+          <select
+            [(ngModel)]="selectedAcademicYear"
+            (ngModelChange)="applyFilters()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option [ngValue]="undefined">All Years</option>
+            @for (year of academicYears(); track year.academic_year_id) {
+              <option [ngValue]="year.academic_year_id">
+                {{ year.year_start }}-{{ year.year_end }}
+              </option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+          <select
+            [(ngModel)]="selectedSemester"
+            (ngModelChange)="applyFilters()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option [ngValue]="undefined">All Semesters</option>
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+            <option value="Summer">Summer</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Document Type</label>
+          <select
+            [(ngModel)]="selectedDocumentType"
+            (ngModelChange)="applyFilters()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option [ngValue]="undefined">All Types</option>
+            @for (type of documentTypes(); track type.document_type_id) {
+              <option [ngValue]="type.document_type_id">{{ type.type_name }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select
+            [(ngModel)]="selectedStatus"
+            (ngModelChange)="applyFilters()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option [ngValue]="undefined">All Status</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="revision_needed">Needs Revision</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents List -->
+    @if (loading()) {
+      <div class="text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+        ></div>
+        <p class="text-gray-600 mt-2">Loading documents...</p>
+      </div>
+    } @else if (documents().length === 0) {
+      <div class="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
+        <i class="fas fa-file-alt text-gray-400 text-5xl mb-4"></i>
+        <p class="text-gray-600 text-lg">No documents submitted yet</p>
+        <button
+          (click)="openSubmitModal()"
+          class="mt-4 text-blue-600 hover:text-blue-800 font-medium"
+        >
+          Submit Your First Document
+        </button>
+      </div>
+    } @else {
+      <div class="grid gap-4">
+        @for (doc of documents(); track doc.document_id) {
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-2">
+                  <h3 class="text-lg font-semibold text-gray-900">{{ doc.document_title }}</h3>
+                  <span
+                    [class]="
+                      'px-3 py-1 text-xs font-semibold rounded-full ' +
+                      getStatusBadgeClass(doc.status)
+                    "
+                  >
+                    {{ getStatusLabel(doc.status) }}
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
+                  <div>
+                    <i class="fas fa-tag mr-2 text-gray-400"></i>
+                    <span class="font-medium">{{ doc.DocumentType?.type_name }}</span>
+                  </div>
+                  <div>
+                    <i class="fas fa-calendar mr-2 text-gray-400"></i>
+                    @if (doc.AcademicYear) {
+                      {{ doc.AcademicYear.year_start }}-{{ doc.AcademicYear.year_end }}
+                    }
+                  </div>
+                  <div>
+                    <i class="fas fa-file mr-2 text-gray-400"></i>
+                    {{ doc.original_filename }}
+                  </div>
+                  <div>
+                    <i class="fas fa-hdd mr-2 text-gray-400"></i>
+                    {{ formatFileSize(doc.file_size) }}
+                  </div>
+                </div>
+
+                <div class="text-sm text-gray-600">
+                  <i class="fas fa-clock mr-2 text-gray-400"></i>
+                  Submitted: {{ formatDate(doc.submitted_date) }}
+                </div>
+
+                @if (doc.review_date && doc.reviewer) {
+                  <div class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="text-sm font-medium text-gray-700 mb-1">
+                      <i class="fas fa-user-check mr-2"></i>
+                      Reviewed on {{ formatDate(doc.review_date) }}
+                    </div>
+                    @if (doc.review_comments) {
+                      <div class="text-sm text-gray-600">
+                        <strong>Comments:</strong> {{ doc.review_comments }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="flex space-x-2 ml-4">
+                <button
+                  (click)="openViewModal(doc)"
+                  class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  title="View Details"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button
+                  (click)="downloadDocument(doc.document_id, doc.original_filename)"
+                  class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                  title="Download"
+                >
+                  <i class="fas fa-download"></i>
+                </button>
+                @if (doc.status === 'pending' || doc.status === 'revision_needed') {
+                  <button
+                    (click)="openUpdateModal(doc)"
+                    class="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition"
+                    title="Resubmit"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    (click)="openDeleteModal(doc)"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Delete"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="mt-6 flex justify-between items-center">
+          <div class="text-sm text-gray-600">
+            Showing {{ (currentPage() - 1) * itemsPerPage + 1 }} to
+            {{ Math.min(currentPage() * itemsPerPage, totalItems()) }} of
+            {{ totalItems() }} documents
+          </div>
+          <div class="flex space-x-2">
+            <button
+              (click)="changePage(currentPage() - 1)"
+              [disabled]="currentPage() === 1"
+              [class.opacity-50]="currentPage() === 1"
+              [class.cursor-not-allowed]="currentPage() === 1"
+              class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Previous
+            </button>
+            @for (page of [].constructor(totalPages()); track $index) {
+              <button
+                (click)="changePage($index + 1)"
+                [class.bg-blue-600]="currentPage() === $index + 1"
+                [class.text-white]="currentPage() === $index + 1"
+                class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                {{ $index + 1 }}
+              </button>
+            }
+            <button
+              (click)="changePage(currentPage() + 1)"
+              [disabled]="currentPage() === totalPages()"
+              [class.opacity-50]="currentPage() === totalPages()"
+              [class.cursor-not-allowed]="currentPage() === totalPages()"
+              class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <!-- Checklist View -->
+  @if (viewMode() === 'checklist') {
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Term to View Requirements</h3>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+            <select
+              [(ngModel)]="selectedAcademicYear"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option [ngValue]="undefined">Select Academic Year</option>
+              @for (year of academicYears(); track year.academic_year_id) {
+                <option [ngValue]="year.academic_year_id">
+                  {{ year.year_start }}-{{ year.year_end }}
+                </option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+            <select
+              [(ngModel)]="selectedSemester"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option [ngValue]="undefined">Select Semester</option>
+              <option value="1st Semester">1st Semester</option>
+              <option value="2nd Semester">2nd Semester</option>
+              <option value="Summer">Summer</option>
+            </select>
+          </div>
+        </div>
+        <button
+          (click)="refreshChecklist()"
+          [disabled]="!selectedAcademicYear() || !selectedSemester()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <i class="fas fa-sync-alt mr-2"></i>Load Checklist
+        </button>
+      </div>
+
+      @if (loading()) {
+        <div class="text-center py-12">
+          <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+          ></div>
+          <p class="text-gray-600 mt-2">Loading checklist...</p>
+        </div>
+      } @else if (checklist().length === 0) {
+        <div class="text-center py-12">
+          <i class="fas fa-clipboard-list text-gray-400 text-5xl mb-4"></i>
+          <p class="text-gray-600 text-lg">
+            Select academic year and semester to view requirements
+          </p>
+        </div>
+      } @else {
+        <div class="space-y-3">
+          @for (item of checklist(); track item.document_type_id) {
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-3 mb-2">
+                    @if (item.submitted && item.status === 'approved') {
+                      <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    } @else if (item.submitted && item.status === 'rejected') {
+                      <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                    } @else if (item.submitted && item.status === 'revision_needed') {
+                      <i class="fas fa-exclamation-circle text-yellow-600 text-xl"></i>
+                    } @else if (item.submitted && item.status === 'pending') {
+                      <i class="fas fa-clock text-blue-600 text-xl"></i>
+                    } @else {
+                      <i class="fas fa-circle text-gray-300 text-xl"></i>
+                    }
+                    <h4 class="font-semibold text-gray-900">{{ item.type_name }}</h4>
+                    @if (item.required) {
+                      <span
+                        class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full"
+                      >
+                        Required
+                      </span>
+                    }
+                  </div>
+
+                  @if (item.description) {
+                    <p class="text-sm text-gray-600 mb-2 ml-8">{{ item.description }}</p>
+                  }
+
+                  <div class="ml-8">
+                    @if (item.submitted) {
+                      <div class="flex items-center space-x-4 text-sm">
+                        <span
+                          [class]="
+                            'px-2 py-1 rounded-full font-medium ' + getStatusBadgeClass(item.status)
+                          "
+                        >
+                          {{ getStatusLabel(item.status) }}
+                        </span>
+                        @if (item.submitted_date) {
+                          <span class="text-gray-600">
+                            <i class="fas fa-calendar-check mr-1"></i>
+                            Submitted: {{ formatDate(item.submitted_date) }}
+                          </span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="text-sm text-red-600 font-medium">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        Not yet submitted
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <div>
+                  @if (
+                    !item.submitted ||
+                    item.status === 'revision_needed' ||
+                    item.status === 'rejected'
+                  ) {
+                    <button
+                      (click)="openSubmitModal()"
+                      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                    >
+                      <i class="fas fa-upload mr-2"></i>
+                      {{ item.submitted ? 'Resubmit' : 'Submit' }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Summary -->
+        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex justify-between items-center">
+            <div class="text-sm text-blue-900">
+              <strong>Progress:</strong>
+              {{ getApprovedCount() }} of {{ getRequiredCount() }} required documents approved
+            </div>
+            @if (isAllRequiredApproved()) {
+              <span class="px-3 py-1 bg-green-600 text-white rounded-full text-sm font-semibold">
+                <i class="fas fa-check mr-2"></i>All Required Documents Submitted!
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Submit Document Modal -->
+@if (showSubmitModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div (click)="closeModals()"></div>
+    <div
+      class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-10"
+    >
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Submit Document</h3>
+
+        <form (ngSubmit)="submitDocument()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Document Type <span class="text-red-500">*</span>
+            </label>
+            <select
+              [(ngModel)]="documentForm().document_type_id"
+              name="document_type_id"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option [ngValue]="undefined">Select Document Type</option>
+              @for (type of documentTypes(); track type.document_type_id) {
+                <option [ngValue]="type.document_type_id">
+                  {{ type.type_name }}
+                  @if (type.required_per_semester) {
+                    (Required)
+                  }
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Academic Year <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="documentForm().academic_year_id"
+                name="academic_year_id"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option [ngValue]="undefined">Select Year</option>
+                @for (year of academicYears(); track year.academic_year_id) {
+                  <option [ngValue]="year.academic_year_id">
+                    {{ year.year_start }}-{{ year.year_end }}
+                  </option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Semester <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="documentForm().semester"
+                name="semester"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="Summer">Summer</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Document Title <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="documentForm().document_title"
+              name="document_title"
+              required
+              placeholder="e.g., March 2026 Membership List"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Upload File <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="file"
+              (change)="onFileSelected($event)"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p class="text-xs text-gray-600 mt-1">
+              Accepted: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 10MB)
+            </p>
+            @if (selectedFile()) {
+              <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-900">
+                <i class="fas fa-file mr-2"></i>{{ selectedFile()!.name }} ({{
+                  formatFileSize(selectedFile()!.size)
+                }})
+              </div>
+            }
+          </div>
+
+          @if (errorMessage()) {
+            <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="closeModals()"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="loading()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              @if (loading()) {
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+              }
+              Submit Document
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Update Document Modal -->
+@if (showUpdateModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div (click)="closeModals()"></div>
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full relative z-10">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Resubmit Document</h3>
+
+        <form (ngSubmit)="updateDocument()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Document Title</label>
+            <input
+              type="text"
+              [(ngModel)]="documentForm().document_title"
+              name="document_title"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Replace File (Optional)
+            </label>
+            <input
+              type="file"
+              (change)="onFileSelected($event)"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p class="text-xs text-gray-600 mt-1">Leave empty to keep current file</p>
+            @if (selectedFile()) {
+              <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-900">
+                <i class="fas fa-file mr-2"></i>{{ selectedFile()!.name }}
+              </div>
+            }
+          </div>
+
+          @if (errorMessage()) {
+            <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="closeModals()"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="loading()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              @if (loading()) {
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+              }
+              Resubmit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div (click)="closeModals()"></div>
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full relative z-10">
+      <div class="p-6">
+        <div
+          class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4"
+        >
+          <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 text-center mb-2">Delete Document</h3>
+        <p class="text-gray-600 text-center mb-6">
+          Are you sure you want to delete
+          <strong>{{ selectedDocument()?.document_title }}</strong
+          >? This action cannot be undone.
+        </p>
+
+        @if (errorMessage()) {
+          <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div class="flex justify-end space-x-3">
+          <button
+            type="button"
+            (click)="closeModals()"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="deleteDocument()"
+            [disabled]="loading()"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+          >
+            @if (loading()) {
+              <i class="fas fa-spinner fa-spin mr-2"></i>
+            }
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- View Document Modal -->
+@if (showViewModal() && selectedDocument()) {
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div (click)="closeModals()"></div>
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full relative z-10">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Document Details</h3>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <p class="text-gray-900">{{ selectedDocument()!.document_title }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <span
+                [class]="
+                  'px-3 py-1 text-xs font-semibold rounded-full ' +
+                  getStatusBadgeClass(selectedDocument()!.status)
+                "
+              >
+                {{ getStatusLabel(selectedDocument()!.status) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Document Type</label>
+              <p class="text-gray-900">{{ selectedDocument()!.DocumentType?.type_name }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Term</label>
+              <p class="text-gray-900">
+                @if (selectedDocument()!.AcademicYear) {
+                  {{ selectedDocument()!.AcademicYear!.year_start }}-{{ selectedDocument()!.AcademicYear!.year_end }} -
+                  {{ selectedDocument()!.semester }}
+                }
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">File Name</label>
+              <p class="text-gray-900 break-all">{{ selectedDocument()!.original_filename }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">File Size</label>
+              <p class="text-gray-900">{{ formatFileSize(selectedDocument()!.file_size) }}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Submitted Date</label>
+            <p class="text-gray-900">{{ formatDate(selectedDocument()!.submitted_date) }}</p>
+          </div>
+
+          @if (selectedDocument()!.review_date) {
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 class="font-semibold text-gray-900 mb-2">Review Information</h4>
+              <div class="space-y-2 text-sm">
+                <div>
+                  <span class="text-gray-600">Reviewed on:</span>
+                  <span class="text-gray-900 ml-2">{{
+                    formatDate(selectedDocument()!.review_date!)
+                  }}</span>
+                </div>
+                @if (selectedDocument()!.review_comments) {
+                  <div>
+                    <span class="text-gray-600">Comments:</span>
+                    <p class="text-gray-900 mt-1">{{ selectedDocument()!.review_comments }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 mt-6">
+          <button
+            type="button"
+            (click)="closeModals()"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          >
+            Close
+          </button>
+          <button
+            (click)="
+              downloadDocument(
+                selectedDocument()!.document_id,
+                selectedDocument()!.original_filename
+              )
+            "
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <i class="fas fa-download mr-2"></i>Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

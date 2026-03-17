@@ -7,7 +7,7 @@ export interface Organization {
   organization_id: number;
   organization_name: string;
   description?: string;
-  department_id: number;
+  department: string;
   faculty_id: number;
   user_id: number;
   faculty?: {
@@ -17,11 +17,6 @@ export interface Organization {
     middle_name?: string;
     last_name: string;
     email: string;
-  };
-  department?: {
-    department_id: number;
-    department_name: string;
-    department_acronym: string;
   };
 }
 

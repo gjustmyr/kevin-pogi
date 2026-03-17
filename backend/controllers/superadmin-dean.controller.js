@@ -310,7 +310,7 @@ exports.getDeans = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const search = req.query.search || "";
-    const department_id = req.query.department_id;
+    const department = req.query.department;
 
     const whereClause = {};
 
@@ -322,8 +322,8 @@ exports.getDeans = async (req, res) => {
       ];
     }
 
-    if (department_id) {
-      whereClause.department_id = department_id;
+    if (department) {
+      whereClause.department = department;
     }
 
     const { count, rows } = await db.Dean.findAndCountAll({
@@ -331,16 +331,6 @@ exports.getDeans = async (req, res) => {
       limit,
       offset,
       order: [["last_name", "ASC"]],
-      include: [
-        {
-          model: db.Department,
-          attributes: [
-            "department_id",
-            "department_name",
-            "department_acronym",
-          ],
-        },
-      ],
     });
 
     res.json({
@@ -367,10 +357,10 @@ exports.createDean = async (req, res) => {
       last_name,
       email,
       contact_number,
-      department_id,
+      department,
     } = req.body;
 
-    if (!employee_id || !first_name || !last_name || !email || !department_id) {
+    if (!employee_id || !first_name || !last_name || !email || !department) {
       await transaction.rollback();
       return res.status(400).json({
         message:
@@ -406,18 +396,9 @@ exports.createDean = async (req, res) => {
       });
     }
 
-    // Check if department exists
-    const department = await db.Department.findByPk(department_id);
-    if (!department) {
-      await transaction.rollback();
-      return res.status(404).json({
-        message: "Department not found",
-      });
-    }
-
     // Check if department already has a dean
     const existingDean = await db.Dean.findOne({
-      where: { department_id },
+      where: { department },
     });
     if (existingDean) {
       await transaction.rollback();
@@ -449,7 +430,7 @@ exports.createDean = async (req, res) => {
         last_name,
         email,
         contact_number,
-        department_id,
+        department,
         user_id: user.user_id,
       },
       { transaction },
@@ -498,7 +479,7 @@ exports.updateDean = async (req, res) => {
       last_name,
       email,
       contact_number,
-      department_id,
+      department,
     } = req.body;
 
     const dean = await db.Dean.findByPk(id);
@@ -544,10 +525,10 @@ exports.updateDean = async (req, res) => {
     }
 
     // Check if department is being changed and if new department already has a dean
-    if (department_id !== dean.department_id) {
+    if (department !== dean.department) {
       const existingDean = await db.Dean.findOne({
         where: {
-          department_id,
+          department,
           dean_id: { [Op.ne]: id },
         },
       });
@@ -566,7 +547,7 @@ exports.updateDean = async (req, res) => {
       last_name,
       email,
       contact_number,
-      department_id,
+      department,
     });
 
     // Update user email if changed

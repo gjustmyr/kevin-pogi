@@ -24,7 +24,7 @@ export class SuperadminDeanManagement implements OnInit {
   totalPages = signal(1);
   totalItems = signal(0);
   searchQuery = signal('');
-  selectedDepartmentId = signal<number | undefined>(undefined);
+  selectedDepartment = signal<string | undefined>(undefined);
   pageSize = 10;
   Math = Math;
 
@@ -38,7 +38,7 @@ export class SuperadminDeanManagement implements OnInit {
     last_name: '',
     email: '',
     contact_number: '',
-    department_id: 0,
+    department: '',
   };
   editForm = {
     dean_id: 0,
@@ -48,7 +48,7 @@ export class SuperadminDeanManagement implements OnInit {
     last_name: '',
     email: '',
     contact_number: '',
-    department_id: 0,
+    department: '',
   };
 
   constructor(
@@ -75,7 +75,7 @@ export class SuperadminDeanManagement implements OnInit {
   loadDeans() {
     this.loading.set(true);
     this.deanService
-      .getDeans(this.currentPage(), this.pageSize, this.searchQuery(), this.selectedDepartmentId())
+      .getDeans(this.currentPage(), this.pageSize, this.searchQuery(), this.selectedDepartment())
       .subscribe({
         next: (response) => {
           this.deansList.set(response.deans);
@@ -102,8 +102,8 @@ export class SuperadminDeanManagement implements OnInit {
     this.loadDeans();
   }
 
-  filterByDepartment(departmentId: string) {
-    this.selectedDepartmentId.set(departmentId ? Number(departmentId) : undefined);
+  filterByDepartment(department: string) {
+    this.selectedDepartment.set(department || undefined);
     this.currentPage.set(1);
     this.loadDeans();
   }
@@ -153,7 +153,7 @@ export class SuperadminDeanManagement implements OnInit {
       last_name: '',
       email: '',
       contact_number: '',
-      department_id: 0,
+      department: '',
     };
     this.showCreateModal.set(true);
   }
@@ -190,11 +190,11 @@ export class SuperadminDeanManagement implements OnInit {
       });
       return;
     }
-    if (!this.createForm.department_id || this.createForm.department_id === 0) {
+    if (!this.createForm.department || !this.createForm.department.trim()) {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
-        text: 'Please select a department',
+        text: 'Please enter a department',
         confirmButtonColor: '#dc2626',
       });
       return;
@@ -255,7 +255,7 @@ export class SuperadminDeanManagement implements OnInit {
       last_name: dean.last_name,
       email: dean.email,
       contact_number: dean.contact_number || '',
-      department_id: dean.department_id,
+      department: dean.department || '',
     };
     this.showEditModal.set(true);
   }
@@ -292,11 +292,11 @@ export class SuperadminDeanManagement implements OnInit {
       });
       return;
     }
-    if (!this.editForm.department_id || this.editForm.department_id === 0) {
+    if (!this.editForm.department || !this.editForm.department.trim()) {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
-        text: 'Please select a department',
+        text: 'Please enter a department',
         confirmButtonColor: '#dc2626',
       });
       return;
@@ -311,7 +311,7 @@ export class SuperadminDeanManagement implements OnInit {
         last_name: this.editForm.last_name,
         email: this.editForm.email,
         contact_number: this.editForm.contact_number,
-        department_id: this.editForm.department_id,
+        department: this.editForm.department,
       })
       .subscribe({
         next: () => {

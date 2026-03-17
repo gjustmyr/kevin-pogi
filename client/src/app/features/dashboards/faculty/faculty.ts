@@ -5,16 +5,30 @@ import { RouterModule } from '@angular/router';
 import { FacultyRequirements } from '../../faculty/requirements/requirements';
 import { FacultyCredentials } from '../../faculty/credentials/credentials';
 import { PersonalDataSheetComponent } from '../../faculty/personal-data-sheet/personal-data-sheet.component';
+import { FacultyAnnouncementsComponent } from '../../faculty/announcements/announcements';
 import {
   FacultyRequirementService,
-  Assignment,
+  RequirementSubmission,
 } from '../../../services/faculty-requirement.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
 import { FormsModule } from '@angular/forms';
 
+// Legacy interface for course assignments (removed from system but kept for backwards compatibility)
+interface Assignment {
+  requirement_submissions?: RequirementSubmission[];
+}
+
 @Component({
   selector: 'app-faculty-dashboard',
-  imports: [CommonModule, RouterModule, FacultyRequirements, FacultyCredentials, PersonalDataSheetComponent, FormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FacultyRequirements,
+    FacultyCredentials,
+    PersonalDataSheetComponent,
+    FacultyAnnouncementsComponent,
+    FormsModule,
+  ],
   template: `
     <!-- Sidebar -->
     <aside
@@ -115,6 +129,26 @@ import { FormsModule } from '@angular/forms';
                 />
               </svg>
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Personal Data Sheet</span>
+            </button>
+          </li>
+
+          <!-- Announcements -->
+          <li>
+            <button
+              (click)="selectTab('announcements')"
+              [class.bg-green-50]="activeTab() === 'announcements'"
+              [class.text-green-600]="activeTab() === 'announcements'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Announcements</span>
             </button>
           </li>
         </ul>
@@ -649,6 +683,9 @@ import { FormsModule } from '@angular/forms';
       @if (activeTab() === 'pds') {
         <app-personal-data-sheet />
       }
+      @if (activeTab() === 'announcements') {
+        <app-faculty-announcements />
+      }
     </div>
   `,
   styles: [],
@@ -713,25 +750,11 @@ export class FacultyDashboard implements OnInit {
   }
 
   loadDashboardData() {
+    // Note: Course assignments have been removed from the system
     this.loading.set(true);
-    this.requirementService
-      .getMyAssignments(
-        1,
-        1000,
-        this.selectedAcademicYear() || undefined,
-        this.selectedSemester() || undefined,
-      )
-      .subscribe({
-        next: (response) => {
-          this.assignments.set(response.assignments);
-          this.calculateStats();
-          this.loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading assignments:', error);
-          this.loading.set(false);
-        },
-      });
+    this.assignments.set([]);
+    this.calculateStats();
+    this.loading.set(false);
   }
 
   calculateStats() {
@@ -795,6 +818,8 @@ export class FacultyDashboard implements OnInit {
         return 'Credentials';
       case 'pds':
         return 'Personal Data Sheet';
+      case 'announcements':
+        return 'Announcements';
       default:
         return 'Faculty Portal';
     }

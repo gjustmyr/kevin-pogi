@@ -10,13 +10,8 @@ export interface FacultyWithCredentials {
   last_name: string;
   email: string;
   contact_number?: string;
-  department_id: number;
+  department: string;
   user_id: number;
-  department?: {
-    department_id: number;
-    department_name: string;
-    department_acronym: string;
-  };
   faculty_credential?: {
     id: number;
     faculty_id: number;

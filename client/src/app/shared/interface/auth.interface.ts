@@ -23,8 +23,7 @@ export interface UserProfile {
   organization_name?: string;
   email?: string;
   contact_number?: string;
-  department_id?: number;
-  department_name?: string;
+  department?: string;
   description?: string;
   name?: string;
   /**

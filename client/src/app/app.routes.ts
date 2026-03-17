@@ -11,9 +11,10 @@ import { AdminDashboard } from './features/dashboards/admin/admin';
 import { FacultyRequirements } from './features/faculty/requirements/requirements';
 import { PersonalDataSheetComponent } from './features/faculty/personal-data-sheet/personal-data-sheet.component';
 import { DeanRequirementsMonitoring } from './features/dean/requirements-monitoring/requirements-monitoring';
-import { DeanCourseManagement } from './features/dean/course-management/course-management';
-import { DeanSectionManagement } from './features/dean/section-management/section-management';
-import { DeanProgramManagement } from './features/dean/program-management/program-management';
+import { DeanAnnouncementsComponent } from './features/dean/announcements/announcements';
+import { FacultyAnnouncementsComponent } from './features/faculty/announcements/announcements';
+import { DeanOrganizationAdvisersComponent } from './features/dean/organization-advisers/dean-organization-advisers';
+import { DeanOrganizationDocumentsComponent } from './features/dean/organization-documents/dean-organization-documents';
 
 export const routes: Routes = [
   {
@@ -37,23 +38,23 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['dean'])],
   },
   {
-    path: 'dean/courses',
-    component: DeanCourseManagement,
-    canActivate: [authGuard, roleGuard(['dean'])],
-  },
-  {
-    path: 'dean/sections',
-    component: DeanSectionManagement,
-    canActivate: [authGuard, roleGuard(['dean'])],
-  },
-  {
-    path: 'dean/programs',
-    component: DeanProgramManagement,
-    canActivate: [authGuard, roleGuard(['dean'])],
-  },
-  {
     path: 'dean/requirements-monitoring',
     component: DeanRequirementsMonitoring,
+    canActivate: [authGuard, roleGuard(['dean'])],
+  },
+  {
+    path: 'dean/announcements',
+    component: DeanAnnouncementsComponent,
+    canActivate: [authGuard, roleGuard(['dean'])],
+  },
+  {
+    path: 'dean/organization-advisers',
+    component: DeanOrganizationAdvisersComponent,
+    canActivate: [authGuard, roleGuard(['dean'])],
+  },
+  {
+    path: 'dean/organization-documents',
+    component: DeanOrganizationDocumentsComponent,
     canActivate: [authGuard, roleGuard(['dean'])],
   },
   {
@@ -69,6 +70,11 @@ export const routes: Routes = [
   {
     path: 'faculty/personal-data-sheet',
     component: PersonalDataSheetComponent,
+    canActivate: [authGuard, roleGuard(['faculty'])],
+  },
+  {
+    path: 'faculty/announcements',
+    component: FacultyAnnouncementsComponent,
     canActivate: [authGuard, roleGuard(['faculty'])],
   },
   {

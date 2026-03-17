@@ -1,5 +1,7 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const path = require("path");
+const fs = require("fs").promises;
 
 // Get all requirement submissions for dean's department faculty
 exports.getAllRequirements = async (req, res) => {
@@ -26,7 +28,7 @@ exports.getAllRequirements = async (req, res) => {
 
 		// Get all faculty in dean's department
 		const facultyList = await db.Faculty.findAll({
-			where: { department_id: dean.department_id },
+			where: { department: dean.department },
 			attributes: ["faculty_id"],
 		});
 
@@ -41,70 +43,66 @@ exports.getAllRequirements = async (req, res) => {
 			});
 		}
 
-		// Build assignment where clause
-		const assignmentWhere = {
+		// Build where clause
+		const whereClause = {
 			faculty_id: { [Op.in]: facultyIds },
 		};
 
 		if (faculty_id) {
-			assignmentWhere.faculty_id = faculty_id;
+			whereClause.faculty_id = faculty_id;
 		}
 
 		if (academic_year_id) {
-			assignmentWhere.academic_year_id = academic_year_id;
+			whereClause.academic_year_id = academic_year_id;
 		}
 
 		if (semester) {
-			assignmentWhere.semester = semester;
+			whereClause.semester = semester;
 		}
 
-		// Build submission where clause
-		const submissionWhere = {};
 		if (status) {
-			submissionWhere.status = status;
+			whereClause.status = status;
 		}
 
 		const { count, rows } = await db.RequirementSubmission.findAndCountAll({
-			where: submissionWhere,
+			where: whereClause,
 			limit,
 			offset,
 			order: [["submission_date", "DESC"]],
 			include: [
 				{
-					model: db.CourseAssignment,
-					where: assignmentWhere,
-					include: [
-						{
-							model: db.Faculty,
-							attributes: [
-								"faculty_id",
-								"employee_id",
-								"first_name",
-								"middle_name",
-								"last_name",
-							],
-							where: search
-								? {
-										[Op.or]: [
-											{ first_name: { [Op.like]: `%${search}%` } },
-											{ last_name: { [Op.like]: `%${search}%` } },
-											{ employee_id: { [Op.like]: `%${search}%` } },
-										],
-									}
-								: undefined,
-						},
-						{
-							model: db.Course,
-							attributes: ["course_id", "course_code", "course_name"],
-						},
-						{
-							model: db.Section,
-							attributes: ["section_id", "section_name", "year_level"],
-						},
-						{
-							model: db.AcademicYear,
-							attributes: ["academic_year_id", "year_start", "year_end"],
-						},
+					model: db.Faculty,
+					attributes: [
+						"faculty_id",
+						"employee_id",
+						"first_name",
+						"middle_name",
+						"last_name",
+						"department",
+					],
+					where: search
+						? {
+								[Op.or]: [
+									{ first_name: { [Op.like]: `%${search}%` } },
+									{ last_name: { [Op.like]: `%${search}%` } },
+									{ employee_id: { [Op.like]: `%${search}%` } },
+								],
+							}
+						: undefined,
+				},
+				{
+					model: db.AcademicYear,
+					attributes: ["academic_year_id", "year_start", "year_end"],
+				},
+				{
+					model: db.RequirementFile,
+					as: "files",
+					attributes: [
+						"file_id",
+						"file_path",
+						"file_name",
+						"file_size",
+						"upload_date",
 					],
 				},
 			],
@@ -122,11 +120,13 @@ exports.getAllRequirements = async (req, res) => {
 	}
 };
 
-// Get faculty accomplishment summary
-exports.getFacultyAccomplishment = async (req, res) => {
+// Get a specific faculty's requirements and statistics
+exports.getFacultyRequirements = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { faculty_id } = req.params;
+		const academic_year_id = req.query.academic_year_id;
+		const semester = req.query.semester;
 
 		// Get dean's department
 		const dean = await db.Dean.findOne({
@@ -141,121 +141,83 @@ exports.getFacultyAccomplishment = async (req, res) => {
 		const faculty = await db.Faculty.findOne({
 			where: {
 				faculty_id,
-				department_id: dean.department_id,
+				department: dean.department,
 			},
-			attributes: [
-				"faculty_id",
-				"employee_id",
-				"first_name",
-				"middle_name",
-				"last_name",
-				"email",
-				"clearance_status",
-				"clearance_remarks",
-				"clearance_date",
-			],
 		});
 
 		if (!faculty) {
-			return res.status(404).json({ message: "Faculty not found" });
+			return res
+				.status(404)
+				.json({ message: "Faculty not found in your department" });
 		}
 
-		const academic_year_id = req.query.academic_year_id;
-		const semester = req.query.semester;
-
-		const assignmentWhere = {
+		// Build where clause
+		const whereClause = {
 			faculty_id,
-			status: "active",
 		};
 
 		if (academic_year_id) {
-			assignmentWhere.academic_year_id = academic_year_id;
+			whereClause.academic_year_id = academic_year_id;
 		}
 
 		if (semester) {
-			assignmentWhere.semester = semester;
+			whereClause.semester = semester;
 		}
 
-		// Get all assignments for this faculty
-		const assignments = await db.CourseAssignment.findAll({
-			where: assignmentWhere,
+		// Get all requirements
+		const requirements = await db.RequirementSubmission.findAll({
+			where: whereClause,
+			order: [["submission_date", "DESC"]],
 			include: [
-				{
-					model: db.Course,
-					attributes: ["course_id", "course_code", "course_name"],
-				},
-				{
-					model: db.Section,
-					attributes: ["section_id", "section_name", "year_level"],
-				},
 				{
 					model: db.AcademicYear,
 					attributes: ["academic_year_id", "year_start", "year_end"],
 				},
 				{
-					model: db.RequirementSubmission,
-					required: false,
+					model: db.RequirementFile,
+					as: "files",
+					attributes: [
+						"file_id",
+						"file_path",
+						"file_name",
+						"file_size",
+						"upload_date",
+					],
 				},
 			],
-			order: [["assigned_date", "DESC"]],
 		});
 
 		// Calculate statistics
-		const requirementTypes = [
-			"Instructional Materials",
-			"Student Class Attendance Sheet",
-			"Acknowledgement Receipt of Syllabus",
-			"Acknowledgement Receipt of Exam",
-			"Midterm, Final Exam, and TQS",
-			"Student Exam (Highest-Middle-Lowest)",
-			"Key to Correction of Midterm and Final Exam",
-			"Report of Grades",
-			"Class Record",
-		];
-
-		const totalRequirements = assignments.length * requirementTypes.length;
-		let submittedCount = 0;
-		let validatedCount = 0;
-		let pendingCount = 0;
-		let returnedCount = 0;
-
-		assignments.forEach((assignment) => {
-			assignment.requirement_submissions.forEach((submission) => {
-				submittedCount++;
-				if (submission.status === "validated") validatedCount++;
-				else if (submission.status === "pending") pendingCount++;
-				else if (submission.status === "returned") returnedCount++;
-			});
-		});
+		const total = requirements.length;
+		const validated = requirements.filter(
+			(r) => r.status === "validated",
+		).length;
+		const pending = requirements.filter((r) => r.status === "pending").length;
+		const returned = requirements.filter((r) => r.status === "returned").length;
 
 		res.json({
 			faculty,
-			assignments,
+			requirements,
 			statistics: {
-				total_courses: assignments.length,
-				total_requirements: totalRequirements,
-				submitted: submittedCount,
-				validated: validatedCount,
-				pending: pendingCount,
-				returned: returnedCount,
-				not_submitted: totalRequirements - submittedCount,
-				completion_rate:
-					totalRequirements > 0
-						? ((validatedCount / totalRequirements) * 100).toFixed(2)
-						: 0,
+				total_requirements: total,
+				validated,
+				pending,
+				returned,
+				completion_rate: total > 0 ? ((validated / total) * 100).toFixed(2) : 0,
 			},
 		});
 	} catch (error) {
-		console.error("Get faculty accomplishment error:", error);
-		res.status(500).json({ message: "Error fetching faculty accomplishment" });
+		console.error("Get faculty requirements error:", error);
+		res.status(500).json({ message: "Error fetching faculty requirements" });
 	}
 };
 
-// Get requirements for a specific assignment
-exports.getAssignmentRequirements = async (req, res) => {
+// Get department-wide statistics
+exports.getDepartmentStatistics = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
-		const { assignment_id } = req.params;
+		const academic_year_id = req.query.academic_year_id;
+		const semester = req.query.semester;
 
 		// Get dean's department
 		const dean = await db.Dean.findOne({
@@ -266,81 +228,77 @@ exports.getAssignmentRequirements = async (req, res) => {
 			return res.status(404).json({ message: "Dean profile not found" });
 		}
 
-		// Get assignment and verify it belongs to dean's department
-		const assignment = await db.CourseAssignment.findOne({
-			where: { assignment_id },
-			include: [
-				{
-					model: db.Faculty,
-					where: { department_id: dean.department_id },
-					attributes: [
-						"faculty_id",
-						"employee_id",
-						"first_name",
-						"middle_name",
-						"last_name",
-					],
-				},
-				{
-					model: db.Course,
-					attributes: ["course_id", "course_code", "course_name"],
-				},
-				{
-					model: db.Section,
-					attributes: ["section_id", "section_name", "year_level"],
-				},
-				{
-					model: db.AcademicYear,
-					attributes: ["academic_year_id", "year_start", "year_end"],
-				},
-			],
+		// Get all faculty in dean's department
+		const facultyList = await db.Faculty.findAll({
+			where: { department: dean.department },
 		});
 
-		if (!assignment) {
-			return res.status(404).json({ message: "Assignment not found" });
+		// Count faculties by clearance status
+		const clearedFacultiesCount = facultyList.filter(
+			(f) => f.clearance_status === "cleared",
+		).length;
+		const withholdingFacultiesCount = facultyList.filter(
+			(f) => f.clearance_status === "withholding",
+		).length;
+		const pendingFacultiesCount = facultyList.filter(
+			(f) => f.clearance_status === "pending",
+		).length;
+
+		// Get requirement statistics for the department
+		const facultyIds = facultyList.map((f) => f.faculty_id);
+		const requirementWhere = {
+			faculty_id: { [Op.in]: facultyIds },
+		};
+
+		if (academic_year_id) {
+			requirementWhere.academic_year_id = academic_year_id;
 		}
 
-		// Get all submissions for this assignment
-		const submissions = await db.RequirementSubmission.findAll({
-			where: { assignment_id },
-			order: [["submission_date", "DESC"]],
+		if (semester) {
+			requirementWhere.semester = semester;
+		}
+
+		const requirements = await db.RequirementSubmission.findAll({
+			where: requirementWhere,
 		});
 
-		// Define all requirement types
-		const requirementTypes = [
-			"Instructional Materials",
-			"Student Class Attendance Sheet",
-			"Acknowledgement Receipt of Syllabus",
-			"Acknowledgement Receipt of Exam",
-			"Midterm, Final Exam, and TQS",
-			"Student Exam (Highest-Middle-Lowest)",
-			"Key to Correction of Midterm and Final Exam",
-			"Report of Grades",
-			"Class Record",
-		];
-
-		// Map submissions to requirement types
-		const requirementsStatus = requirementTypes.map((type, index) => {
-			const submission = submissions.find((s) => s.requirement_type === type);
-			return {
-				requirement_number: index + 1,
-				requirement_type: type,
-				submission: submission || null,
-			};
-		});
+		const totalRequirements = requirements.length;
+		const validatedRequirements = requirements.filter(
+			(r) => r.status === "validated",
+		).length;
+		const pendingRequirements = requirements.filter(
+			(r) => r.status === "pending",
+		).length;
+		const returnedRequirements = requirements.filter(
+			(r) => r.status === "returned",
+		).length;
 
 		res.json({
-			assignment,
-			requirements: requirementsStatus,
+			total_faculty: facultyList.length,
+			cleared_faculties: clearedFacultiesCount,
+			withholding_faculties: withholdingFacultiesCount,
+			pending_faculties: pendingFacultiesCount,
+			faculty_clearance_rate:
+				facultyList.length > 0
+					? ((clearedFacultiesCount / facultyList.length) * 100).toFixed(2)
+					: 0,
+			total_requirements: totalRequirements,
+			validated_requirements: validatedRequirements,
+			pending_requirements: pendingRequirements,
+			returned_requirements: returnedRequirements,
+			requirement_validation_rate:
+				totalRequirements > 0
+					? ((validatedRequirements / totalRequirements) * 100).toFixed(2)
+					: 0,
 		});
 	} catch (error) {
-		console.error("Get assignment requirements error:", error);
-		res.status(500).json({ message: "Error fetching assignment requirements" });
+		console.error("Get department statistics error:", error);
+		res.status(500).json({ message: "Error fetching statistics" });
 	}
 };
 
-// Clear a requirement (approve)
-exports.clearRequirement = async (req, res) => {
+// Validate a requirement (approve)
+exports.validateRequirement = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { submission_id } = req.params;
@@ -360,13 +318,8 @@ exports.clearRequirement = async (req, res) => {
 			where: { submission_id },
 			include: [
 				{
-					model: db.CourseAssignment,
-					include: [
-						{
-							model: db.Faculty,
-							where: { department_id: dean.department_id },
-						},
-					],
+					model: db.Faculty,
+					where: { department: dean.department },
 				},
 			],
 		});
@@ -383,16 +336,8 @@ exports.clearRequirement = async (req, res) => {
 		await submission.save();
 
 		// Auto-update faculty clearance status after dean validation
-		const faculty_id = submission.course_assignment.faculty_id;
-		const calculatedStatus = await calculateFacultyClearanceStatus(faculty_id);
-		
-		await db.Faculty.update(
-			{
-				clearance_status: calculatedStatus,
-				clearance_date: new Date(),
-			},
-			{ where: { faculty_id } },
-		);
+		const faculty_id = submission.faculty_id;
+		await updateFacultyClearanceStatus(faculty_id);
 
 		res.json({
 			message: "Requirement validated successfully",
@@ -404,17 +349,17 @@ exports.clearRequirement = async (req, res) => {
 	}
 };
 
-// Return a requirement (needs revision)
+// Return a requirement (reject/needs revision)
 exports.returnRequirement = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { submission_id } = req.params;
 		const { remarks } = req.body;
 
-		if (!remarks || !remarks.trim()) {
-			return res.status(400).json({
-				message: "Remarks are required when returning a requirement",
-			});
+		if (!remarks) {
+			return res
+				.status(400)
+				.json({ message: "Remarks are required when returning a requirement" });
 		}
 
 		// Get dean's department
@@ -431,13 +376,8 @@ exports.returnRequirement = async (req, res) => {
 			where: { submission_id },
 			include: [
 				{
-					model: db.CourseAssignment,
-					include: [
-						{
-							model: db.Faculty,
-							where: { department_id: dean.department_id },
-						},
-					],
+					model: db.Faculty,
+					where: { department: dean.department },
 				},
 			],
 		});
@@ -453,17 +393,9 @@ exports.returnRequirement = async (req, res) => {
 		submission.validated_date = new Date();
 		await submission.save();
 
-		// Auto-update faculty clearance status after dean validation
-		const faculty_id = submission.course_assignment.faculty_id;
-		const calculatedStatus = await calculateFacultyClearanceStatus(faculty_id);
-		
-		await db.Faculty.update(
-			{
-				clearance_status: calculatedStatus,
-				clearance_date: new Date(),
-			},
-			{ where: { faculty_id } },
-		);
+		// Auto-update faculty clearance status after dean returns requirement
+		const faculty_id = submission.faculty_id;
+		await updateFacultyClearanceStatus(faculty_id);
 
 		res.json({
 			message: "Requirement returned successfully",
@@ -495,13 +427,8 @@ exports.downloadRequirement = async (req, res) => {
 			where: { submission_id },
 			include: [
 				{
-					model: db.CourseAssignment,
-					include: [
-						{
-							model: db.Faculty,
-							where: { department_id: dean.department_id },
-						},
-					],
+					model: db.Faculty,
+					where: { department: dean.department },
 				},
 			],
 		});
@@ -510,240 +437,30 @@ exports.downloadRequirement = async (req, res) => {
 			return res.status(404).json({ message: "Submission not found" });
 		}
 
+		// Check if file exists
+		try {
+			await fs.access(submission.file_path);
+		} catch (err) {
+			return res.status(404).json({ message: "File not found" });
+		}
+
 		// Send file
 		res.download(submission.file_path, submission.file_name);
 	} catch (error) {
 		console.error("Download requirement error:", error);
-		res.status(500).json({ message: "Error downloading file" });
+		res.status(500).json({ message: "Error downloading requirement" });
 	}
 };
 
-// Get department-wide statistics
-exports.getDepartmentStatistics = async (req, res) => {
-	try {
-		const deanUserId = req.user.user_id;
-
-		// Get dean's department
-		const dean = await db.Dean.findOne({
-			where: { user_id: deanUserId },
-		});
-
-		if (!dean) {
-			return res.status(404).json({ message: "Dean profile not found" });
-		}
-
-		const academic_year_id = req.query.academic_year_id;
-		const semester = req.query.semester;
-
-		// Get all faculty in dean's department
-		const facultyList = await db.Faculty.findAll({
-			where: { department_id: dean.department_id },
-		});
-
-		// Count faculties by clearance status
-		const clearedFacultiesCount = facultyList.filter(
-			(f) => f.clearance_status === "cleared",
-		).length;
-		const withholdingFacultiesCount = facultyList.filter(
-			(f) => f.clearance_status === "withholding",
-		).length;
-		const pendingFacultiesCount = facultyList.filter(
-			(f) => f.clearance_status === "pending",
-		).length;
-
-		const facultyIds = facultyList.map((f) => f.faculty_id);
-
-		const assignmentWhere = {
-			faculty_id: { [Op.in]: facultyIds },
-			status: "active",
-		};
-
-		if (academic_year_id) {
-			assignmentWhere.academic_year_id = academic_year_id;
-		}
-
-		if (semester) {
-			assignmentWhere.semester = semester;
-		}
-
-		// Get all assignments
-		const assignments = await db.CourseAssignment.findAll({
-			where: assignmentWhere,
-			include: [
-				{
-					model: db.RequirementSubmission,
-					required: false,
-				},
-			],
-		});
-
-		const requirementTypes = [
-			"Instructional Materials",
-			"Student Class Attendance Sheet",
-			"Acknowledgement Receipt of Syllabus",
-			"Acknowledgement Receipt of Exam",
-			"Midterm, Final Exam, and TQS",
-			"Student Exam (Highest-Middle-Lowest)",
-			"Key to Correction of Midterm and Final Exam",
-			"Report of Grades",
-			"Class Record",
-		];
-
-		const totalRequirements = assignments.length * requirementTypes.length;
-		let submittedCount = 0;
-		let validatedCount = 0;
-		let pendingCount = 0;
-		let returnedCount = 0;
-
-		assignments.forEach((assignment) => {
-			assignment.requirement_submissions.forEach((submission) => {
-				submittedCount++;
-				if (submission.status === "validated") validatedCount++;
-				else if (submission.status === "pending") pendingCount++;
-				else if (submission.status === "returned") returnedCount++;
-			});
-		});
-
-		res.json({
-			total_faculty: facultyList.length,
-			cleared_faculties: clearedFacultiesCount,
-			withholding_faculties: withholdingFacultiesCount,
-			pending_faculties: pendingFacultiesCount,
-			total_courses: assignments.length,
-			total_requirements: totalRequirements,
-			submitted: submittedCount,
-			validated: validatedCount,
-			pending: pendingCount,
-			returned: returnedCount,
-			not_submitted: totalRequirements - submittedCount,
-			completion_rate:
-				totalRequirements > 0
-					? ((validatedCount / totalRequirements) * 100).toFixed(2)
-					: 0,
-			faculty_clearance_rate:
-				facultyList.length > 0
-					? ((clearedFacultiesCount / facultyList.length) * 100).toFixed(2)
-					: 0,
-		});
-	} catch (error) {
-		console.error("Get department statistics error:", error);
-		res.status(500).json({ message: "Error fetching statistics" });
-	}
-};
-
-// Helper function to auto-calculate faculty clearance status based on dean's validation
-// This runs after dean validates/returns requirements to automatically update faculty status
-async function calculateFacultyClearanceStatus(
-	faculty_id,
-	academic_year_id = null,
-	semester = null,
-) {
-	try {
-		const assignmentWhere = {
-			faculty_id,
-			status: "active",
-		};
-
-		if (academic_year_id) {
-			assignmentWhere.academic_year_id = academic_year_id;
-		}
-
-		if (semester) {
-			assignmentWhere.semester = semester;
-		}
-
-		// Get all assignments for this faculty
-		const assignments = await db.CourseAssignment.findAll({
-			where: assignmentWhere,
-			include: [
-				{
-					model: db.RequirementSubmission,
-					required: false,
-				},
-			],
-		});
-
-		// Define required requirement types (9 types per assignment)
-		const requirementTypes = [
-			"Instructional Materials",
-			"Student Class Attendance Sheet",
-			"Acknowledgement Receipt of Syllabus",
-			"Acknowledgement Receipt of Exam",
-			"Midterm, Final Exam, and TQS",
-			"Student Exam (Highest-Middle-Lowest)",
-			"Key to Correction of Midterm and Final Exam",
-			"Report of Grades",
-			"Class Record",
-		];
-
-		const totalRequirements = assignments.length * requirementTypes.length;
-		
-		if (totalRequirements === 0) {
-			return "pending"; // No assignments yet
-		}
-
-		let validatedCount = 0;
-		let returnedCount = 0;
-
-		// Check status of each requirement
-		assignments.forEach((assignment) => {
-			assignment.requirement_submissions.forEach((submission) => {
-				if (submission.status === "validated") {
-					validatedCount++;
-				} else if (submission.status === "returned") {
-					returnedCount++;
-				}
-			});
-		});
-
-		// Determine clearance status based on dean's validation:
-		// 1. If ANY requirements are returned → "withholding"
-		if (returnedCount > 0) {
-			return "withholding";
-		}
-
-		// 2. If ALL requirements are validated by dean → "cleared"
-		if (validatedCount === totalRequirements) {
-			return "cleared";
-		}
-
-		// 3. Otherwise (requirements not submitted or pending validation) → "pending"
-		return "pending";
-	} catch (error) {
-		console.error("Calculate faculty clearance status error:", error);
-		return "pending";
-	}
-}
-
-/**
- * MANUAL Faculty Clearance Status Setting (Override)
- * 
- * This endpoint allows admin/dean to MANUALLY override a faculty's clearance status.
- * 
- * Note: Faculty clearance status is normally AUTO-CALCULATED after dean validates requirements:
- * - "pending": Default status, requirements incomplete or awaiting validation
- * - "cleared": All requirements validated/cleared by dean (auto-set when complete)
- * - "withholding": Has returned/rejected requirements (auto-set when requirements returned)
- * 
- * Use this endpoint to manually override the automatic status if needed
- * (e.g., special circumstances, exceptions, or corrections).
- */
+// Manually set faculty clearance status (dean override)
 exports.setFacultyClearanceStatus = async (req, res) => {
 	try {
 		const deanUserId = req.user.user_id;
 		const { faculty_id } = req.params;
-		const { status, remarks, academic_year_id, semester } = req.body;
-
-		// Validate that specific academic year and semester are provided
-		if (!academic_year_id || !semester) {
-			return res.status(400).json({
-				message:
-					"Academic year and semester are required. Please select a specific period to set clearance status.",
-			});
-		}
+		const { clearance_status } = req.body;
 
 		// Validate status
-		if (!["pending", "cleared", "withholding"].includes(status)) {
+		if (!["pending", "cleared", "withholding"].includes(clearance_status)) {
 			return res.status(400).json({
 				message:
 					"Invalid status. Must be 'pending', 'cleared', or 'withholding'",
@@ -763,30 +480,29 @@ exports.setFacultyClearanceStatus = async (req, res) => {
 		const faculty = await db.Faculty.findOne({
 			where: {
 				faculty_id,
-				department_id: dean.department_id,
+				department: dean.department,
 			},
 		});
 
 		if (!faculty) {
-			return res.status(404).json({
-				message: "Faculty not found or does not belong to your department",
-			});
+			return res
+				.status(404)
+				.json({ message: "Faculty not found in your department" });
 		}
 
 		// Update faculty clearance status
-		faculty.clearance_status = status;
-		faculty.clearance_remarks = remarks || null;
-		faculty.clearance_date = new Date();
-		await faculty.save();
+		await db.Faculty.update(
+			{
+				clearance_status,
+				clearance_date: new Date(),
+			},
+			{ where: { faculty_id } },
+		);
 
 		res.json({
-			message: `Faculty clearance status updated successfully for ${semester} AY ${academic_year_id}`,
-			faculty: {
-				faculty_id: faculty.faculty_id,
-				clearance_status: faculty.clearance_status,
-				clearance_remarks: faculty.clearance_remarks,
-				clearance_date: faculty.clearance_date,
-			},
+			message: "Faculty clearance status updated successfully",
+			faculty_id,
+			clearance_status,
 		});
 	} catch (error) {
 		console.error("Set faculty clearance status error:", error);
@@ -796,77 +512,67 @@ exports.setFacultyClearanceStatus = async (req, res) => {
 	}
 };
 
-/**
- * AUTO-CALCULATE Faculty Clearance Status
- * 
- * This endpoint automatically calculates faculty clearance status based on dean's validation:
- * - "withholding": Faculty has returned/rejected requirements
- * - "cleared": All requirements have been validated/cleared by dean
- * - "pending": Requirements not submitted or still awaiting validation
- * 
- * Status is automatically updated after each dean validation action.
- */
-exports.updateFacultyClearanceStatus = async (req, res) => {
+// Helper function to auto-calculate and update faculty clearance status
+async function updateFacultyClearanceStatus(faculty_id) {
 	try {
-		const deanUserId = req.user.user_id;
-		const { faculty_id } = req.params;
-		const { academic_year_id, semester } = req.query;
-
-		// Validate that specific academic year and semester are provided
-		if (!academic_year_id || !semester) {
-			return res.status(400).json({
-				message:
-					"Academic year and semester are required. Please select a specific period to calculate clearance status.",
-			});
-		}
-
-		// Get dean's department
-		const dean = await db.Dean.findOne({
-			where: { user_id: deanUserId },
+		const requirements = await db.RequirementSubmission.findAll({
+			where: { faculty_id },
 		});
 
-		if (!dean) {
-			return res.status(404).json({ message: "Dean profile not found" });
+		if (requirements.length === 0) {
+			// No requirements submitted yet
+			await db.Faculty.update(
+				{
+					clearance_status: "pending",
+					clearance_date: new Date(),
+				},
+				{ where: { faculty_id } },
+			);
+			return;
 		}
 
-		// Verify faculty belongs to dean's department
-		const faculty = await db.Faculty.findOne({
-			where: {
-				faculty_id,
-				department_id: dean.department_id,
+		const returnedCount = requirements.filter(
+			(r) => r.status === "returned",
+		).length;
+		const validatedCount = requirements.filter(
+			(r) => r.status === "validated",
+		).length;
+		const totalCount = requirements.length;
+
+		// Determine clearance status based on dean's validation:
+		// 1. If ANY requirements are returned → "withholding"
+		if (returnedCount > 0) {
+			await db.Faculty.update(
+				{
+					clearance_status: "withholding",
+					clearance_date: new Date(),
+				},
+				{ where: { faculty_id } },
+			);
+			return;
+		}
+
+		// 2. If ALL requirements are validated by dean → "cleared"
+		if (validatedCount === totalCount) {
+			await db.Faculty.update(
+				{
+					clearance_status: "cleared",
+					clearance_date: new Date(),
+				},
+				{ where: { faculty_id } },
+			);
+			return;
+		}
+
+		// 3. Otherwise (requirements not submitted or pending validation) → "pending"
+		await db.Faculty.update(
+			{
+				clearance_status: "pending",
+				clearance_date: new Date(),
 			},
-		});
-
-		if (!faculty) {
-			return res.status(404).json({
-				message: "Faculty not found or does not belong to your department",
-			});
-		}
-
-		// Calculate clearance status based on dean's validation
-		const calculatedStatus = await calculateFacultyClearanceStatus(
-			faculty_id,
-			academic_year_id,
-			semester,
+			{ where: { faculty_id } },
 		);
-
-		// Update faculty clearance status
-		faculty.clearance_status = calculatedStatus;
-		faculty.clearance_date = new Date();
-		await faculty.save();
-		
-		res.json({
-			message: `Faculty clearance status calculated and updated to '${calculatedStatus}' for ${semester} AY ${academic_year_id}`,
-			faculty: {
-				faculty_id: faculty.faculty_id,
-				clearance_status: faculty.clearance_status,
-				clearance_date: faculty.clearance_date,
-			},
-		});
 	} catch (error) {
 		console.error("Update faculty clearance status error:", error);
-		res
-			.status(500)
-			.json({ message: "Error updating faculty clearance status" });
 	}
-};
+}

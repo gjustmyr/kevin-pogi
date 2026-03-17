@@ -8,20 +8,30 @@ const upload = require("../utils/upload");
 router.use(verifyToken);
 router.use(checkRole("faculty"));
 
-// Get faculty's course assignments with requirement status
-router.get("/assignments", requirementController.getMyAssignments);
+// Get faculty's requirement submissions (per academic year/semester)
+router.get("/", requirementController.getMyRequirements);
 
-// Get requirements for a specific assignment
-router.get(
-	"/assignments/:assignment_id/requirements",
-	requirementController.getRequirementsByAssignment,
-);
+// Get statistics for faculty's requirements
+router.get("/statistics", requirementController.getMyStatistics);
 
-// Submit a requirement (with file upload)
+// Submit a requirement (with multiple file uploads - max 10 files)
 router.post(
 	"/submit",
-	upload.single("file"),
+	upload.array("files", 10),
 	requirementController.submitRequirement,
+);
+
+// Add more files to existing requirement submission
+router.post(
+	"/:submission_id/add-files",
+	upload.array("files", 10),
+	requirementController.addFiles,
+);
+
+// Delete a specific file from a requirement submission
+router.delete(
+	"/:submission_id/files/:file_id",
+	requirementController.deleteFile,
 );
 
 // Delete a requirement submission

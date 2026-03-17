@@ -49,7 +49,7 @@
                 {{ dean.contact_number }}
               </td>
               <td class="px-6 py-4 text-sm">
-                {{ dean.department?.department_name || 'N/A' }}
+                {{ dean.department || 'N/A' }}
               </td>
               <td class="px-6 py-4 text-sm">
                 <button (click)="openEditModal(dean)" class="text-blue-600 hover:underline mr-3">

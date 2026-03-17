@@ -22,7 +22,7 @@ exports.getOrganizations = async (req, res) => {
     const search = req.query.search || "";
 
     const whereClause = {
-      department_id: dean.department_id,
+      department: dean.department,
     };
 
     if (search) {
@@ -44,14 +44,6 @@ exports.getOrganizations = async (req, res) => {
             "middle_name",
             "last_name",
             "email",
-          ],
-        },
-        {
-          model: db.Department,
-          attributes: [
-            "department_id",
-            "department_name",
-            "department_acronym",
           ],
         },
       ],
@@ -100,7 +92,7 @@ exports.createOrganization = async (req, res) => {
     const faculty = await db.Faculty.findOne({
       where: {
         faculty_id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 
@@ -150,7 +142,7 @@ exports.createOrganization = async (req, res) => {
       {
         organization_name,
         description,
-        department_id: dean.department_id,
+        department: dean.department,
         faculty_id,
         user_id: user.user_id,
       },
@@ -190,7 +182,7 @@ exports.updateOrganization = async (req, res) => {
     const organization = await db.Organization.findOne({
       where: {
         organization_id: id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 
@@ -202,7 +194,7 @@ exports.updateOrganization = async (req, res) => {
     const faculty = await db.Faculty.findOne({
       where: {
         faculty_id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 
@@ -266,7 +258,7 @@ exports.deleteOrganization = async (req, res) => {
     const organization = await db.Organization.findOne({
       where: {
         organization_id: id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DeanService, Dean, Department, CreateDeanData } from '../../../services/dean.service';
+import { DeanService, Dean, CreateDeanData } from '../../../services/dean.service';
+import { DropdownService, DropdownDepartment } from '../../../services/dropdown.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class DeanManagementComponent implements OnInit {
   deans = signal<Dean[]>([]);
-  departments = signal<Department[]>([]);
+  departmentsList = signal<DropdownDepartment[]>([]);
   loading = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
@@ -21,7 +22,10 @@ export class DeanManagementComponent implements OnInit {
   // Expose Math for template
   Math = Math;
 
-  constructor(private deanService: DeanService) {}
+  constructor(
+    private deanService: DeanService,
+    private dropdownService: DropdownService
+  ) {}
 
   ngOnInit() {
     this.loadDeans();
@@ -52,9 +56,9 @@ export class DeanManagementComponent implements OnInit {
   }
 
   loadDepartments() {
-    this.deanService.getDepartments().subscribe({
+    this.dropdownService.getDepartments().subscribe({
       next: (departments) => {
-        this.departments.set(departments);
+        this.departmentsList.set(departments);
       },
       error: (error) => {
         console.error('Error loading departments:', error);
@@ -126,16 +130,16 @@ export class DeanManagementComponent implements OnInit {
               <input id="contact_number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full px-3 py-2.5" placeholder="09123456789" required>
             </div>
             <div>
-              <label for="department_id" class="block mb-2.5 text-sm font-medium text-gray-900">Department</label>
-              <select id="department_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full px-3 py-2.5">
-                <option value="">Select department</option>
-                ${this.departments()
+              <label for="department" class="block mb-2.5 text-sm font-medium text-gray-900">Department</label>
+              <input id="department" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full px-3 py-2.5" placeholder="e.g. College of Engineering" list="department-list">
+              <datalist id="department-list">
+                ${this.departmentsList()
                   .map(
                     (dept) =>
-                      `<option value="${dept.department_id}">${dept.department_name}</option>`,
+                      `<option value="${dept.department_name}">`,
                   )
                   .join('')}
-              </select>
+              </datalist>
             </div>
           </div>
         </div>
@@ -237,15 +241,15 @@ export class DeanManagementComponent implements OnInit {
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-            <select id="department_id" class="swal2-input w-full m-0">
-              <option value="">None</option>
-              ${this.departments()
+            <input id="department" class="swal2-input w-full m-0" value="${dean.department || ''}" placeholder="e.g. College of Engineering" list="edit-department-list">
+            <datalist id="edit-department-list">
+              ${this.departmentsList()
                 .map(
                   (dept) =>
-                    `<option value="${dept.department_id}" ${dept.department_id === dean.department_id ? 'selected' : ''}>${dept.department_name}</option>`,
+                    `<option value="${dept.department_name}">`,
                 )
                 .join('')}
-            </select>
+            </datalist>
           </div>
         </div>
       `,

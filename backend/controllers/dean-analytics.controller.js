@@ -8,7 +8,7 @@ exports.getFacultyDemographics = async (req, res) => {
     // Get dean's department
     const dean = await db.Dean.findOne({
       where: { user_id: deanUserId },
-      attributes: ["department_id"],
+      attributes: ["department"],
     });
 
     if (!dean) {
@@ -17,7 +17,7 @@ exports.getFacultyDemographics = async (req, res) => {
 
     // Get all faculty in the department with their PDS data
     const faculties = await db.Faculty.findAll({
-      where: { department_id: dean.department_id },
+      where: { department: dean.department },
       include: [
         {
           model: db.PersonalDataSheet,
@@ -496,7 +496,7 @@ exports.getEducationAnalytics = async (req, res) => {
     // Get dean's department
     const dean = await db.Dean.findOne({
       where: { user_id: deanUserId },
-      attributes: ["department_id"],
+      attributes: ["department"],
     });
 
     if (!dean) {
@@ -505,7 +505,7 @@ exports.getEducationAnalytics = async (req, res) => {
 
     // Get all faculty with their education records from PDS
     const faculties = await db.Faculty.findAll({
-      where: { department_id: dean.department_id },
+      where: { department: dean.department },
       include: [
         {
           model: db.PersonalDataSheet,
@@ -622,7 +622,7 @@ exports.getResearchAnalytics = async (req, res) => {
     // Get dean's department
     const dean = await db.Dean.findOne({
       where: { user_id: deanUserId },
-      attributes: ["department_id"],
+      attributes: ["department"],
     });
 
     if (!dean) {
@@ -631,7 +631,7 @@ exports.getResearchAnalytics = async (req, res) => {
 
     // Get all faculty with their other info (which includes publications/research)
     const faculties = await db.Faculty.findAll({
-      where: { department_id: dean.department_id },
+      where: { department: dean.department },
       include: [
         {
           model: db.PersonalDataSheet,

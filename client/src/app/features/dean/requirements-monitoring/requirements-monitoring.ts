@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import {
   DeanRequirementService,
   DepartmentStatistics,
-  FacultyAccomplishment,
+  FacultyRequirementsResponse,
 } from '../../../services/dean-requirement.service';
 import { DeanFacultyService, Faculty } from '../../../services/dean-faculty.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
-import { RequirementSubmission, Assignment } from '../../../services/faculty-requirement.service';
+import { RequirementSubmission } from '../../../services/faculty-requirement.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -34,8 +34,8 @@ export class DeanRequirementsMonitoring implements OnInit {
   totalItems = signal(0);
   pageSize = 10;
 
-  // Faculty accomplishments
-  selectedFacultyAccomplishment = signal<FacultyAccomplishment | null>(null);
+  // Faculty requirements
+  selectedFacultyRequirements = signal<FacultyRequirementsResponse | null>(null);
 
   // View modal
   showViewModal = signal(false);
@@ -85,30 +85,30 @@ export class DeanRequirementsMonitoring implements OnInit {
   filterData() {
     this.currentPage.set(1);
     if (this.selectedFacultyId()) {
-      this.loadFacultyAccomplishment();
+      this.loadFacultyRequirements();
     }
   }
 
-  loadFacultyAccomplishment() {
+  loadFacultyRequirements() {
     if (!this.selectedFacultyId()) {
-      this.selectedFacultyAccomplishment.set(null);
+      this.selectedFacultyRequirements.set(null);
       return;
     }
 
     this.loading.set(true);
     this.requirementService
-      .getFacultyAccomplishment(
+      .getFacultyRequirements(
         this.selectedFacultyId(),
         this.selectedAcademicYear() || undefined,
         this.selectedSemester() || undefined,
       )
       .subscribe({
-        next: (accomplishment) => {
-          this.selectedFacultyAccomplishment.set(accomplishment);
+        next: (requirements) => {
+          this.selectedFacultyRequirements.set(requirements);
           this.loading.set(false);
         },
         error: (error) => {
-          console.error('Error loading faculty accomplishment:', error);
+          console.error('Error loading faculty requirements:', error);
           this.loading.set(false);
         },
       });
@@ -118,7 +118,7 @@ export class DeanRequirementsMonitoring implements OnInit {
     if (page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
       if (this.selectedFacultyId()) {
-        this.loadFacultyAccomplishment();
+        this.loadFacultyRequirements();
       }
     }
   }
@@ -189,9 +189,9 @@ export class DeanRequirementsMonitoring implements OnInit {
                 confirmButtonColor: '#2563eb',
               });
               this.closeViewModal();
-              this.loadFacultyAccomplishment();
+              this.loadFacultyRequirements();
             },
-            error: (error) => {
+            error: (error: any) => {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -236,9 +236,9 @@ export class DeanRequirementsMonitoring implements OnInit {
                 confirmButtonColor: '#2563eb',
               });
               this.closeViewModal();
-              this.loadFacultyAccomplishment();
+              this.loadFacultyRequirements();
             },
-            error: (error) => {
+            error: (error: any) => {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -280,21 +280,18 @@ export class DeanRequirementsMonitoring implements OnInit {
     return yearNames[yearLevel - 1] || `Year ${yearLevel}`;
   }
 
-  getCompletionStats(assignment: Assignment) {
-    const submissions = assignment.requirement_submissions || [];
-    const total = 9;
-    const submitted = submissions.length;
-    const validated = submissions.filter((s) => s.status === 'validated').length;
-    const pending = submissions.filter((s) => s.status === 'pending').length;
-    const returned = submissions.filter((s) => s.status === 'returned').length;
+  getCompletionStats(submissions: RequirementSubmission[]) {
+    const total = submissions.length;
+    const validated = submissions.filter((s: RequirementSubmission) => s.status === 'validated').length;
+    const pending = submissions.filter((s: RequirementSubmission) => s.status === 'pending').length;
+    const returned = submissions.filter((s: RequirementSubmission) => s.status === 'returned').length;
 
     return {
       total,
-      submitted,
       validated,
       pending,
       returned,
-      percentage: Math.round((validated / total) * 100),
+      percentage: total > 0 ? Math.round((validated / total) * 100) : 0,
     };
   }
 
@@ -328,7 +325,7 @@ export class DeanRequirementsMonitoring implements OnInit {
   }
 
   setFacultyClearanceStatus(status: 'pending' | 'cleared' | 'withholding') {
-    if (!this.selectedFacultyAccomplishment()) return;
+    if (!this.selectedFacultyRequirements()) return;
 
     // Validate that specific period is selected
     if (!this.isSpecificPeriodSelected()) {
@@ -359,11 +356,9 @@ export class DeanRequirementsMonitoring implements OnInit {
       if (result.isConfirmed) {
         this.requirementService
           .setFacultyClearanceStatus(
-            this.selectedFacultyAccomplishment()!.faculty.faculty_id,
+            this.selectedFacultyRequirements()!.faculty.faculty_id,
             status,
-            result.value || undefined,
-            this.selectedAcademicYear() || undefined,
-            this.selectedSemester() || undefined,
+            result.value || undefined
           )
           .subscribe({
             next: () => {
@@ -373,9 +368,9 @@ export class DeanRequirementsMonitoring implements OnInit {
                 text: `Faculty clearance status set to ${statusText.toLowerCase()}`,
                 confirmButtonColor: '#2563eb',
               });
-              this.loadFacultyAccomplishment();
+              this.loadFacultyRequirements();
             },
-            error: (error) => {
+            error: (error: any) => {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -388,55 +383,6 @@ export class DeanRequirementsMonitoring implements OnInit {
     });
   }
 
-  calculateFacultyClearanceStatus() {
-    if (!this.selectedFacultyAccomplishment()) return;
-
-    // Validate that specific period is selected
-    if (!this.isSpecificPeriodSelected()) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Period Required',
-        text: 'Please select a specific academic year and semester to calculate clearance status',
-        confirmButtonColor: '#2563eb',
-      });
-      return;
-    }
-
-    Swal.fire({
-      title: 'Auto-Calculate Clearance Status?',
-      text: 'This will automatically determine the faculty clearance status based on their requirements',
-      showCancelButton: true,
-      confirmButtonText: 'Calculate',
-      confirmButtonColor: '#2563eb',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.requirementService
-          .calculateFacultyClearanceStatus(
-            this.selectedFacultyAccomplishment()!.faculty.faculty_id,
-            this.selectedAcademicYear() || undefined,
-            this.selectedSemester() || undefined,
-          )
-          .subscribe({
-            next: () => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Calculated',
-                text: 'Faculty clearance status calculated and updated',
-                confirmButtonColor: '#2563eb',
-              });
-              this.loadFacultyAccomplishment();
-            },
-            error: (error) => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.error?.message || 'Failed to calculate clearance status',
-                confirmButtonColor: '#2563eb',
-              });
-            },
-          });
-      }
-    });
-  }
+  // Removed calculateFacultyClearanceStatus - clearance is now auto-calculated by backend
+  // when validating or returning requirements
 }

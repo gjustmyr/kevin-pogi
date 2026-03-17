@@ -11,13 +11,8 @@ export interface Dean {
   last_name: string;
   email: string;
   contact_number?: string;
-  department_id: number;
+  department: string;
   user_id: number;
-  department?: {
-    department_id: number;
-    department_name: string;
-    department_acronym: string;
-  };
   createdAt?: string;
   updatedAt?: string;
 }
@@ -36,7 +31,7 @@ export interface CreateDeanData {
   last_name: string;
   email: string;
   contact_number?: string;
-  department_id: number;
+  department: string;
 }
 
 export interface UpdateDeanData {
@@ -46,7 +41,7 @@ export interface UpdateDeanData {
   last_name: string;
   email: string;
   contact_number?: string;
-  department_id: number;
+  department: string;
 }
 
 @Injectable({
@@ -61,15 +56,15 @@ export class SuperadminDeanService {
     page: number = 1,
     limit: number = 10,
     search: string = '',
-    department_id?: number,
+    department?: string,
   ): Observable<DeansResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString())
       .set('search', search);
 
-    if (department_id) {
-      params = params.set('department_id', department_id.toString());
+    if (department) {
+      params = params.set('department', department);
     }
 
     return this.http.get<DeansResponse>(this.apiUrl, { params });

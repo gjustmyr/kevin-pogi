@@ -6,11 +6,7 @@ import { environment } from '../environments/environment';
 export interface SuperadminStatistics {
   total_faculty: number;
   total_deans: number;
-  total_departments: number;
   total_files: number;
-  total_storage_bytes: number;
-  total_storage_mb: number;
-  total_storage_gb: number;
   files_by_status: {
     pending: number;
     returned: number;

@@ -5,11 +5,11 @@ import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
 import { DeanFacultyManagement } from '../../dean/faculty-management/faculty-management';
 import { DeanOrganizationManagement } from '../../dean/organization-management/organization-management';
-import { DeanCourseManagement } from '../../dean/course-management/course-management';
-import { DeanSectionManagement } from '../../dean/section-management/section-management';
-import { DeanProgramManagement } from '../../dean/program-management/program-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
 import { DeanFacultyCredentialsView } from '../../dean/faculty-credentials-view/faculty-credentials-view';
+import { DeanAnnouncementsComponent } from '../../dean/announcements/announcements';
+import { DeanOrganizationAdvisersComponent } from '../../dean/organization-advisers/dean-organization-advisers';
+import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
 import {
   DeanRequirementService,
   DepartmentStatistics,
@@ -30,11 +30,11 @@ import {
     RouterModule,
     DeanFacultyManagement,
     DeanOrganizationManagement,
-    DeanCourseManagement,
-    DeanSectionManagement,
-    DeanProgramManagement,
     DeanRequirementsMonitoring,
     DeanFacultyCredentialsView,
+    DeanAnnouncementsComponent,
+    DeanOrganizationAdvisersComponent,
+    DeanOrganizationDocumentsComponent,
   ],
   template: `
     <!-- Sidebar -->
@@ -158,72 +158,73 @@ import {
             </button>
           </li>
 
+          <!-- Announcements -->
+          <li>
+            <button
+              (click)="selectTab('announcements')"
+              [class.bg-blue-50]="activeTab() === 'announcements'"
+              [class.text-blue-600]="activeTab() === 'announcements'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Announcements</span>
+            </button>
+          </li>
+
+          <li class="pt-2 mt-2 border-t border-gray-200">
+            <div class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Organization Management
+            </div>
+          </li>
+
+          <!-- Organization Advisers -->
+          <li>
+            <button
+              (click)="selectTab('org-advisers')"
+              [class.bg-blue-50]="activeTab() === 'org-advisers'"
+              [class.text-blue-600]="activeTab() === 'org-advisers'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Org Advisers</span>
+            </button>
+          </li>
+
+          <!-- Organization Documents -->
+          <li>
+            <button
+              (click)="selectTab('org-documents')"
+              [class.bg-blue-50]="activeTab() === 'org-documents'"
+              [class.text-blue-600]="activeTab() === 'org-documents'"
+              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+            >
+              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Org Documents</span>
+            </button>
+          </li>
+
           <li class="pt-2 mt-2 border-t border-gray-200"></li>
-
-          <!-- Settings Section -->
-          <li>
-            <div class="px-2 py-1 text-xs font-semibold text-gray-500 uppercase">Settings</div>
-          </li>
-
-          <!-- Sections -->
-          <li>
-            <button
-              (click)="selectTab('sections')"
-              [class.bg-blue-50]="activeTab() === 'sections'"
-              [class.text-blue-600]="activeTab() === 'sections'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-3 5h3m-6 0h.01M12 16h3m-6 0h.01M10 3v4h4V3h-4Z"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Sections</span>
-            </button>
-          </li>
-
-          <!-- Programs -->
-          <li>
-            <button
-              (click)="selectTab('programs')"
-              [class.bg-blue-50]="activeTab() === 'programs'"
-              [class.text-blue-600]="activeTab() === 'programs'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Programs</span>
-            </button>
-          </li>
-
-          <!-- Courses/Subjects -->
-          <li>
-            <button
-              (click)="selectTab('courses')"
-              [class.bg-blue-50]="activeTab() === 'courses'"
-              [class.text-blue-600]="activeTab() === 'courses'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831 4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Courses</span>
-            </button>
-          </li>
         </ul>
       </div>
     </aside>
@@ -496,14 +497,7 @@ import {
                             departmentStats()!.returned) /
                             departmentStats()!.total_requirements) *
                             360 +
-                          'deg, ' +
-                          'rgb(156, 163, 175) ' +
-                          ((departmentStats()!.validated +
-                            departmentStats()!.pending +
-                            departmentStats()!.returned) /
-                            departmentStats()!.total_requirements) *
-                            360 +
-                          'deg 360deg)'
+                          'deg)'
                         "
                       ></div>
                       <!-- Center white circle for donut effect -->
@@ -518,7 +512,7 @@ import {
                     </div>
                   </div>
                   <!-- Legend -->
-                  <div class="grid grid-cols-2 gap-4">
+                  <div class="grid grid-cols-3 gap-4">
                     <div class="flex items-center space-x-2">
                       <div class="w-4 h-4 bg-green-500 rounded"></div>
                       <div class="text-sm">
@@ -538,13 +532,6 @@ import {
                       <div class="text-sm">
                         <span class="font-semibold">{{ departmentStats()!.returned }}</span>
                         <span class="text-gray-600"> Returned</span>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <div class="w-4 h-4 bg-gray-400 rounded"></div>
-                      <div class="text-sm">
-                        <span class="font-semibold">{{ departmentStats()!.not_submitted }}</span>
-                        <span class="text-gray-600"> Not Submitted</span>
                       </div>
                     </div>
                   </div>
@@ -1513,14 +1500,14 @@ import {
       @if (activeTab() === 'credentials') {
         <app-dean-faculty-credentials-view />
       }
-      @if (activeTab() === 'sections') {
-        <app-dean-section-management />
+      @if (activeTab() === 'announcements') {
+        <app-dean-announcements />
       }
-      @if (activeTab() === 'programs') {
-        <app-dean-program-management />
+      @if (activeTab() === 'org-advisers') {
+        <app-dean-organization-advisers />
       }
-      @if (activeTab() === 'courses') {
-        <app-dean-course-management />
+      @if (activeTab() === 'org-documents') {
+        <app-dean-organization-documents />
       }
     </div>
   `,
@@ -1657,9 +1644,9 @@ export class DeanDashboard implements OnInit {
       organization: 'Organization Management',
       accomplishments: 'Accomplishments Monitoring',
       credentials: 'Faculty Credentials',
-      sections: 'Section Settings',
-      programs: 'Program Management',
-      courses: 'Course Settings',
+      announcements: 'Announcements',
+      'org-advisers': 'Organization Advisers',
+      'org-documents': 'Organization Documents Review',
     };
     return titles[this.activeTab()] || 'Dashboard';
   }

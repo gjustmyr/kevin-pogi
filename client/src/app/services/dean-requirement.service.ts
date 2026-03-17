@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
-import { RequirementSubmission, Assignment } from './faculty-requirement.service';
+import { RequirementSubmission } from './faculty-requirement.service';
 
 export interface RequirementsResponse {
   requirements: RequirementSubmission[];
@@ -11,7 +11,7 @@ export interface RequirementsResponse {
   totalItems: number;
 }
 
-export interface FacultyAccomplishment {
+export interface FacultyRequirementsResponse {
   faculty: {
     faculty_id: number;
     employee_id: string;
@@ -23,15 +23,12 @@ export interface FacultyAccomplishment {
     clearance_remarks?: string;
     clearance_date?: string;
   };
-  assignments: Assignment[];
+  requirements: RequirementSubmission[];
   statistics: {
-    total_courses: number;
     total_requirements: number;
-    submitted: number;
     validated: number;
     pending: number;
     returned: number;
-    not_submitted: number;
     completion_rate: string;
   };
 }
@@ -41,26 +38,12 @@ export interface DepartmentStatistics {
   cleared_faculties: number;
   withholding_faculties: number;
   pending_faculties: number;
-  total_courses: number;
   total_requirements: number;
-  submitted: number;
   validated: number;
   pending: number;
   returned: number;
-  not_submitted: number;
   completion_rate: string;
   faculty_clearance_rate: string;
-}
-
-export interface RequirementStatus {
-  requirement_number: number;
-  requirement_type: string;
-  submission: RequirementSubmission | null;
-}
-
-export interface AssignmentWithRequirements {
-  assignment: Assignment;
-  requirements: RequirementStatus[];
 }
 
 @Injectable({
@@ -123,12 +106,12 @@ export class DeanRequirementService {
     return this.http.get<DepartmentStatistics>(`${this.apiUrl}/statistics`, { params });
   }
 
-  // Get faculty accomplishment summary
-  getFacultyAccomplishment(
+  // Get faculty requirements summary
+  getFacultyRequirements(
     faculty_id: number,
     academic_year_id?: number,
     semester?: string,
-  ): Observable<FacultyAccomplishment> {
+  ): Observable<FacultyRequirementsResponse> {
     let params = new HttpParams();
 
     if (academic_year_id) {
@@ -139,22 +122,15 @@ export class DeanRequirementService {
       params = params.set('semester', semester);
     }
 
-    return this.http.get<FacultyAccomplishment>(
-      `${this.apiUrl}/faculty/${faculty_id}/accomplishment`,
+    return this.http.get<FacultyRequirementsResponse>(
+      `${this.apiUrl}/faculty/${faculty_id}`,
       { params },
-    );
-  }
-
-  // Get requirements for a specific assignment
-  getAssignmentRequirements(assignment_id: number): Observable<AssignmentWithRequirements> {
-    return this.http.get<AssignmentWithRequirements>(
-      `${this.apiUrl}/assignments/${assignment_id}/requirements`,
     );
   }
 
   // Validate a requirement (approve)
   validateRequirement(submission_id: number, remarks?: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${submission_id}/clear`, { remarks });
+    return this.http.put(`${this.apiUrl}/${submission_id}/validate`, { remarks });
   }
 
   // Return a requirement (needs revision)
@@ -172,42 +148,15 @@ export class DeanRequirementService {
     window.open(this.getDownloadUrl(submission_id), '_blank');
   }
 
-  // Set faculty clearance status (manual)
+  // Set faculty clearance status (manual override or auto-calculation triggered by backend)
   setFacultyClearanceStatus(
     faculty_id: number,
     status: 'pending' | 'cleared' | 'withholding',
     remarks?: string,
-    academic_year_id?: number,
-    semester?: string,
   ): Observable<any> {
     return this.http.put(`${this.apiUrl}/faculty/${faculty_id}/clearance-status`, {
       status,
       remarks,
-      academic_year_id,
-      semester,
     });
-  }
-
-  // Auto-calculate and update faculty clearance status
-  calculateFacultyClearanceStatus(
-    faculty_id: number,
-    academic_year_id?: number,
-    semester?: string,
-  ): Observable<any> {
-    let params = new HttpParams();
-
-    if (academic_year_id) {
-      params = params.set('academic_year_id', academic_year_id.toString());
-    }
-
-    if (semester) {
-      params = params.set('semester', semester);
-    }
-
-    return this.http.post(
-      `${this.apiUrl}/faculty/${faculty_id}/calculate-clearance`,
-      {},
-      { params },
-    );
   }
 }

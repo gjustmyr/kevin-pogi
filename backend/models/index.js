@@ -17,21 +17,17 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-const Department = require("./department.model")(sequelize, Sequelize);
-const Programs = require("./program.model")(sequelize, Sequelize);
-const Section = require("./section.model")(sequelize, Sequelize);
 const Dean = require("./dean.model")(sequelize, Sequelize);
 const Faculty = require("./faculty.model")(sequelize, Sequelize);
 const Organization = require("./organization.model")(sequelize, Sequelize);
 const User = require("./user.model")(sequelize, Sequelize);
 const Admin = require("./admin.model")(sequelize, Sequelize);
-const Course = require("./course.model")(sequelize, Sequelize);
 const AcademicYear = require("./academic-year.model")(sequelize, Sequelize);
-const CourseAssignment = require("./course-assignment.model")(
+const RequirementSubmission = require("./requirement-submission.model")(
 	sequelize,
 	Sequelize,
 );
-const RequirementSubmission = require("./requirement-submission.model")(
+const RequirementFile = require("./requirement-file.model")(
 	sequelize,
 	Sequelize,
 );
@@ -49,10 +45,7 @@ const PersonalDataSheet = require("./personal-data-sheet.model")(
 );
 const PDSChild = require("./pds-child.model")(sequelize, Sequelize);
 const PDSEducation = require("./pds-education.model")(sequelize, Sequelize);
-const PDSEligibility = require("./pds-eligibility.model")(
-	sequelize,
-	Sequelize,
-);
+const PDSEligibility = require("./pds-eligibility.model")(sequelize, Sequelize);
 const PDSWorkExperience = require("./pds-work-experience.model")(
 	sequelize,
 	Sequelize,
@@ -64,6 +57,26 @@ const PDSVoluntaryWork = require("./pds-voluntary-work.model")(
 const PDSTraining = require("./pds-training.model")(sequelize, Sequelize);
 const PDSOtherInfo = require("./pds-other-info.model")(sequelize, Sequelize);
 const PDSReference = require("./pds-reference.model")(sequelize, Sequelize);
+const Announcement = require("./announcement.model")(sequelize, Sequelize);
+const AnnouncementRead = require("./announcement-read.model")(
+	sequelize,
+	Sequelize,
+);
+const OrganizationAdviser = require("./organization-adviser.model")(
+	sequelize,
+	Sequelize,
+);
+const OrganizationMember = require("./organization-member.model")(
+	sequelize,
+	Sequelize,
+);
+const DocumentType = require("./document-type.model")(sequelize, Sequelize);
+const OrganizationDocument = require("./organization-document.model")(
+	sequelize,
+	Sequelize,
+);
+const OrganizationPositionTemplate =
+	require("./organization-position-template.model")(sequelize, Sequelize);
 
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
@@ -97,46 +110,6 @@ Organization.belongsTo(User, {
 	foreignKey: "user_id",
 });
 
-/* Department → Dean (1:1 - one dean per department) */
-Department.hasOne(Dean, {
-	foreignKey: "department_id",
-});
-Dean.belongsTo(Department, {
-	foreignKey: "department_id",
-});
-
-/* Department → Programs (1:Many) */
-Department.hasMany(Programs, {
-	foreignKey: "department_id",
-});
-Programs.belongsTo(Department, {
-	foreignKey: "department_id",
-});
-
-/* Programs → Sections (1:Many) */
-Programs.hasMany(Section, {
-	foreignKey: "program_id",
-});
-Section.belongsTo(Programs, {
-	foreignKey: "program_id",
-});
-
-/* Department → Faculty (1:Many) */
-Department.hasMany(Faculty, {
-	foreignKey: "department_id",
-});
-Faculty.belongsTo(Department, {
-	foreignKey: "department_id",
-});
-
-/* Department → Organizations (1:Many) */
-Department.hasMany(Organization, {
-	foreignKey: "department_id",
-});
-Organization.belongsTo(Department, {
-	foreignKey: "department_id",
-});
-
 /* Faculty → Organizations (1:1 - one faculty assigned to organization) */
 Faculty.hasOne(Organization, {
 	foreignKey: "faculty_id",
@@ -145,49 +118,28 @@ Organization.belongsTo(Faculty, {
 	foreignKey: "faculty_id",
 });
 
-/* Department → Courses (1:Many) */
-Department.hasMany(Course, {
-	foreignKey: "department_id",
-});
-Course.belongsTo(Department, {
-	foreignKey: "department_id",
-});
-
-/* CourseAssignment Relationships */
-Faculty.hasMany(CourseAssignment, {
-	foreignKey: "faculty_id",
-});
-CourseAssignment.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
-});
-
-Course.hasMany(CourseAssignment, {
-	foreignKey: "course_id",
-});
-CourseAssignment.belongsTo(Course, {
-	foreignKey: "course_id",
-});
-
-Section.hasMany(CourseAssignment, {
-	foreignKey: "section_id",
-});
-CourseAssignment.belongsTo(Section, {
-	foreignKey: "section_id",
-});
-
-AcademicYear.hasMany(CourseAssignment, {
-	foreignKey: "academic_year_id",
-});
-CourseAssignment.belongsTo(AcademicYear, {
-	foreignKey: "academic_year_id",
-});
-
 /* RequirementSubmission Relationships */
-CourseAssignment.hasMany(RequirementSubmission, {
-	foreignKey: "assignment_id",
+Faculty.hasMany(RequirementSubmission, {
+	foreignKey: "faculty_id",
 });
-RequirementSubmission.belongsTo(CourseAssignment, {
-	foreignKey: "assignment_id",
+RequirementSubmission.belongsTo(Faculty, {
+	foreignKey: "faculty_id",
+});
+
+AcademicYear.hasMany(RequirementSubmission, {
+	foreignKey: "academic_year_id",
+});
+RequirementSubmission.belongsTo(AcademicYear, {
+	foreignKey: "academic_year_id",
+});
+
+/* RequirementFile Relationships */
+RequirementSubmission.hasMany(RequirementFile, {
+	foreignKey: "submission_id",
+	as: "files",
+});
+RequirementFile.belongsTo(RequirementSubmission, {
+	foreignKey: "submission_id",
 });
 
 /* FacultyCredential Relationships */
@@ -287,19 +239,114 @@ PDSReference.belongsTo(PersonalDataSheet, {
 	foreignKey: "pds_id",
 });
 
-db.Department = Department;
-db.Program = Programs;
-db.Programs = Programs;
-db.Section = Section;
+/* Announcement Relationships */
+Dean.hasMany(Announcement, {
+	foreignKey: "dean_id",
+	as: "announcements",
+});
+Announcement.belongsTo(Dean, {
+	foreignKey: "dean_id",
+});
+
+Announcement.hasMany(AnnouncementRead, {
+	foreignKey: "announcement_id",
+	as: "reads",
+});
+AnnouncementRead.belongsTo(Announcement, {
+	foreignKey: "announcement_id",
+});
+
+Faculty.hasMany(AnnouncementRead, {
+	foreignKey: "faculty_id",
+	as: "announcement_reads",
+});
+AnnouncementRead.belongsTo(Faculty, {
+	foreignKey: "faculty_id",
+});
+
+/* Organization Adviser Relationships */
+Organization.hasMany(OrganizationAdviser, {
+	foreignKey: "organization_id",
+	as: "advisers",
+});
+OrganizationAdviser.belongsTo(Organization, {
+	foreignKey: "organization_id",
+});
+
+Faculty.hasMany(OrganizationAdviser, {
+	foreignKey: "faculty_id",
+	as: "adviser_assignments",
+});
+OrganizationAdviser.belongsTo(Faculty, {
+	foreignKey: "faculty_id",
+});
+
+/* Organization Member Relationships */
+Organization.hasMany(OrganizationMember, {
+	foreignKey: "organization_id",
+	as: "members",
+});
+OrganizationMember.belongsTo(Organization, {
+	foreignKey: "organization_id",
+});
+
+AcademicYear.hasMany(OrganizationMember, {
+	foreignKey: "academic_year_id",
+});
+OrganizationMember.belongsTo(AcademicYear, {
+	foreignKey: "academic_year_id",
+});
+
+/* Self-referential relationship for member hierarchy */
+OrganizationMember.hasMany(OrganizationMember, {
+	foreignKey: "parent_member_id",
+	as: "subordinates",
+});
+OrganizationMember.belongsTo(OrganizationMember, {
+	foreignKey: "parent_member_id",
+	as: "supervisor",
+});
+
+/* Organization Document Relationships */
+Organization.hasMany(OrganizationDocument, {
+	foreignKey: "organization_id",
+	as: "documents",
+});
+OrganizationDocument.belongsTo(Organization, {
+	foreignKey: "organization_id",
+});
+
+DocumentType.hasMany(OrganizationDocument, {
+	foreignKey: "document_type_id",
+});
+OrganizationDocument.belongsTo(DocumentType, {
+	foreignKey: "document_type_id",
+});
+
+AcademicYear.hasMany(OrganizationDocument, {
+	foreignKey: "academic_year_id",
+});
+OrganizationDocument.belongsTo(AcademicYear, {
+	foreignKey: "academic_year_id",
+});
+
+User.hasMany(OrganizationDocument, {
+	foreignKey: "reviewed_by",
+	as: "reviewed_documents",
+});
+OrganizationDocument.belongsTo(User, {
+	foreignKey: "reviewed_by",
+	as: "reviewer",
+});
+
 db.Dean = Dean;
 db.Faculty = Faculty;
 db.Organization = Organization;
 db.User = User;
 db.Admin = Admin;
-db.Course = Course;
 db.AcademicYear = AcademicYear;
-db.CourseAssignment = CourseAssignment;
 db.RequirementSubmission = RequirementSubmission;
+db.RequirementFile = RequirementFile;
 db.FacultyCredential = FacultyCredential;
 db.CredentialCertificate = CredentialCertificate;
 db.PersonalDataSheet = PersonalDataSheet;
@@ -311,5 +358,12 @@ db.PDSVoluntaryWork = PDSVoluntaryWork;
 db.PDSTraining = PDSTraining;
 db.PDSOtherInfo = PDSOtherInfo;
 db.PDSReference = PDSReference;
+db.Announcement = Announcement;
+db.AnnouncementRead = AnnouncementRead;
+db.OrganizationAdviser = OrganizationAdviser;
+db.OrganizationMember = OrganizationMember;
+db.DocumentType = DocumentType;
+db.OrganizationDocument = OrganizationDocument;
+db.OrganizationPositionTemplate = OrganizationPositionTemplate;
 
 module.exports = db;

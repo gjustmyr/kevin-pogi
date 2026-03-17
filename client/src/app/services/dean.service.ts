@@ -9,17 +9,13 @@ export interface Dean {
   middle_name?: string;
   last_name: string;
   contact_number: string;
-  department_id?: number;
+  department?: string;
   created_at: string;
   updated_at: string;
   user: {
     user_id: number;
     email: string;
     role: string;
-  };
-  department?: {
-    department_id: number;
-    department_name: string;
   };
 }
 
@@ -30,18 +26,13 @@ export interface DeansResponse {
   totalItems: number;
 }
 
-export interface Department {
-  department_id: number;
-  department_name: string;
-}
-
 export interface CreateDeanData {
   email: string;
   first_name: string;
   middle_name?: string;
   last_name: string;
   contact_number: string;
-  department_id?: number;
+  department?: string;
 }
 
 @Injectable({
@@ -50,15 +41,12 @@ export interface CreateDeanData {
 export class DeanService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/admin/deans';
+  private deanApiUrl = 'http://localhost:3000/api/dean';
 
   getDeans(page: number = 1, limit: number = 10): Observable<DeansResponse> {
     const params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
 
     return this.http.get<DeansResponse>(this.apiUrl, { params });
-  }
-
-  getDepartments(): Observable<Department[]> {
-    return this.http.get<Department[]>(`${this.apiUrl}/departments`);
   }
 
   createDean(data: CreateDeanData): Observable<{ message: string; dean: Dean }> {
@@ -71,5 +59,14 @@ export class DeanService {
 
   deleteDean(id: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
+  }
+
+  // Dean-specific methods
+  getOrganizations(): Observable<{ organizations: any[] }> {
+    return this.http.get<{ organizations: any[] }>(`${this.deanApiUrl}/organizations`);
+  }
+
+  getFaculty(): Observable<{ faculty: any[] }> {
+    return this.http.get<{ faculty: any[] }>(`${this.deanApiUrl}/faculty`);
   }
 }

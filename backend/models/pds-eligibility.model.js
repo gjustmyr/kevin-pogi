@@ -14,7 +14,8 @@ module.exports = (sequelize, Sequelize) => {
 		career_service: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			comment: "Career Service/RA 1080 (BOARD/BAR) Under Special Laws/CES/CSEE/Barangay Eligibility/Driver's License",
+			comment:
+				"Career Service/RA 1080 (BOARD/BAR) Under Special Laws/CES/CSEE/Barangay Eligibility/Driver's License",
 		},
 		rating: {
 			type: Sequelize.STRING,

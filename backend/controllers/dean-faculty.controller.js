@@ -278,7 +278,7 @@ exports.getFaculty = async (req, res) => {
     const search = req.query.search || "";
 
     const whereClause = {
-      department_id: dean.department_id,
+      department: dean.department,
     };
 
     if (search) {
@@ -294,16 +294,6 @@ exports.getFaculty = async (req, res) => {
       limit,
       offset,
       order: [["last_name", "ASC"]],
-      include: [
-        {
-          model: db.Department,
-          attributes: [
-            "department_id",
-            "department_name",
-            "department_acronym",
-          ],
-        },
-      ],
     });
 
     res.json({
@@ -402,7 +392,7 @@ exports.createFaculty = async (req, res) => {
         last_name,
         email,
         contact_number,
-        department_id: dean.department_id,
+        department: dean.department,
         user_id: user.user_id,
       },
       { transaction },
@@ -467,7 +457,7 @@ exports.updateFaculty = async (req, res) => {
     const faculty = await db.Faculty.findOne({
       where: {
         faculty_id: id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 
@@ -558,7 +548,7 @@ exports.deleteFaculty = async (req, res) => {
     const faculty = await db.Faculty.findOne({
       where: {
         faculty_id: id,
-        department_id: dean.department_id,
+        department: dean.department,
       },
     });
 

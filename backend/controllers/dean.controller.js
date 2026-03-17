@@ -80,15 +80,10 @@ exports.getDeans = async (req, res) => {
 					as: "user",
 					attributes: ["user_id", "email", "role"],
 				},
-				{
-					model: db.Department,
-					as: "department",
-					attributes: ["department_id", "department_name"],
-				},
 			],
-			limit,
-			offset,
-			order: [["createdAt", "DESC"]],
+			limit: limit,
+			offset: offset,
+			order: [["created_at", "DESC"]],
 		});
 
 		res.json({
@@ -112,7 +107,7 @@ exports.createDean = async (req, res) => {
 			middle_name,
 			last_name,
 			contact_number,
-			department_id,
+			department,
 		} = req.body;
 
 		// Check if user already exists
@@ -139,7 +134,7 @@ exports.createDean = async (req, res) => {
 			middle_name,
 			last_name,
 			contact_number,
-			department_id,
+			department,
 		});
 
 		// Send credentials email
@@ -153,11 +148,6 @@ exports.createDean = async (req, res) => {
 					model: db.User,
 					as: "user",
 					attributes: ["user_id", "email", "role"],
-				},
-				{
-					model: db.Department,
-					as: "department",
-					attributes: ["department_id", "department_name"],
 				},
 			],
 		});
@@ -181,7 +171,7 @@ exports.updateDean = async (req, res) => {
 			middle_name,
 			last_name,
 			contact_number,
-			department_id,
+			department,
 			email,
 		} = req.body;
 
@@ -196,7 +186,7 @@ exports.updateDean = async (req, res) => {
 			middle_name,
 			last_name,
 			contact_number,
-			department_id,
+			department,
 		});
 
 		// Update email if changed
@@ -212,11 +202,6 @@ exports.updateDean = async (req, res) => {
 					model: db.User,
 					as: "user",
 					attributes: ["user_id", "email", "role"],
-				},
-				{
-					model: db.Department,
-					as: "department",
-					attributes: ["department_id", "department_name"],
 				},
 			],
 		});
@@ -256,17 +241,4 @@ exports.deleteDean = async (req, res) => {
 	}
 };
 
-// Get departments for dropdown
-exports.getDepartments = async (req, res) => {
-	try {
-		const departments = await db.Department.findAll({
-			attributes: ["department_id", "department_name"],
-			order: [["department_name", "ASC"]],
-		});
 
-		res.json(departments);
-	} catch (error) {
-		console.error("Get departments error:", error);
-		res.status(500).json({ message: "Error fetching departments" });
-	}
-};

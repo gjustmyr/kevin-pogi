@@ -11,9 +11,6 @@ router.use(checkRole("admin", "superadmin"));
 // Get all deans with pagination
 router.get("/", deanController.getDeans);
 
-// Get departments
-router.get("/departments", deanController.getDepartments);
-
 // Create dean
 router.post("/", deanController.createDean);
 
