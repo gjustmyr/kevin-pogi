@@ -34,7 +34,6 @@ export class DeanOrganizationManagement implements OnInit {
     description: '',
     faculty_id: 0,
     email: '',
-    password: '',
   };
   editForm = {
     organization_id: 0,
@@ -137,7 +136,6 @@ export class DeanOrganizationManagement implements OnInit {
       description: '',
       faculty_id: 0,
       email: '',
-      password: '',
     };
     this.showCreateModal.set(true);
   }
@@ -174,26 +172,30 @@ export class DeanOrganizationManagement implements OnInit {
       });
       return;
     }
-    if (!this.createForm.password.trim() || this.createForm.password.length < 8) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Validation Error',
-        text: 'Please enter a password (minimum 8 characters)',
-        confirmButtonColor: '#2563eb',
-      });
-      return;
-    }
 
     this.loading.set(true);
     this.organizationService.createOrganization(this.createForm).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading.set(false);
         this.closeCreateModal();
+
+        // Show credentials in a modal
         Swal.fire({
           icon: 'success',
-          title: 'Success!',
-          text: 'Organization created successfully',
+          title: 'Organization Created!',
+          html: `
+            <div class="text-left">
+              <p class="mb-4">Organization created successfully. Please save these credentials:</p>
+              <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                <p class="mb-2"><strong>Email:</strong> ${response.credentials.email}</p>
+                <p><strong>Password:</strong> <span class="font-mono text-blue-600">${response.credentials.password}</span></p>
+              </div>
+              <p class="text-sm text-red-600">⚠️ Save this password now. It won't be shown again.</p>
+            </div>
+          `,
+          confirmButtonText: 'I have saved the credentials',
           confirmButtonColor: '#2563eb',
+          allowOutsideClick: false,
         });
         this.loadOrganizations();
       },

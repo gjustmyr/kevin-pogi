@@ -20,96 +20,338 @@
     </div>
   </div>
 
-  <!-- Tab Navigation -->
-  <div class="bg-white rounded-lg shadow-md mb-6 overflow-x-auto">
-    <div class="flex border-b">
+  <!-- Horizontal Stepper Navigation -->
+  <div class="bg-white rounded-lg mb-6 p-6 overflow-x-auto">
+    <div class="flex items-center justify-between gap-4">
       <button
         (click)="selectTab(1)"
-        [class.border-blue-600]="currentTab() === 1"
-        [class.text-blue-600]="currentTab() === 1"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        I. Personal Info
+        <span
+          [ngClass]="
+            currentTab() > 1
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 1
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 1) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">1</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Personal</span>
       </button>
       <button
         (click)="selectTab(2)"
-        [class.border-blue-600]="currentTab() === 2"
-        [class.text-blue-600]="currentTab() === 2"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        II. Family
+        <span
+          [ngClass]="
+            currentTab() > 2
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 2
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 2) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">2</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Family</span>
       </button>
       <button
         (click)="selectTab(3)"
-        [class.border-blue-600]="currentTab() === 3"
-        [class.text-blue-600]="currentTab() === 3"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        III. Education
+        <span
+          [ngClass]="
+            currentTab() > 3
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 3
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 3) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">3</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Education</span>
       </button>
       <button
         (click)="selectTab(4)"
-        [class.border-blue-600]="currentTab() === 4"
-        [class.text-blue-600]="currentTab() === 4"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        IV. Eligibility
+        <span
+          [ngClass]="
+            currentTab() > 4
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 4
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 4) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">4</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Eligibility</span>
       </button>
       <button
         (click)="selectTab(5)"
-        [class.border-blue-600]="currentTab() === 5"
-        [class.text-blue-600]="currentTab() === 5"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        V. Work Experience
+        <span
+          [ngClass]="
+            currentTab() > 5
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 5
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 5) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">5</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Work</span>
       </button>
       <button
         (click)="selectTab(6)"
-        [class.border-blue-600]="currentTab() === 6"
-        [class.text-blue-600]="currentTab() === 6"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        VI. Voluntary Work
+        <span
+          [ngClass]="
+            currentTab() > 6
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 6
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 6) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">6</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Voluntary</span>
       </button>
       <button
         (click)="selectTab(7)"
-        [class.border-blue-600]="currentTab() === 7"
-        [class.text-blue-600]="currentTab() === 7"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        VII. Training
+        <span
+          [ngClass]="
+            currentTab() > 7
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 7
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 7) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">7</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Training</span>
       </button>
       <button
         (click)="selectTab(8)"
-        [class.border-blue-600]="currentTab() === 8"
-        [class.text-blue-600]="currentTab() === 8"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        VIII. Other Info
+        <span
+          [ngClass]="
+            currentTab() > 8
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 8
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 8) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">8</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Other</span>
       </button>
       <button
         (click)="selectTab(9)"
-        [class.border-blue-600]="currentTab() === 9"
-        [class.text-blue-600]="currentTab() === 9"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        IX. References
+        <span
+          [ngClass]="
+            currentTab() > 9
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 9
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 9) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">9</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">References</span>
       </button>
       <button
         (click)="selectTab(10)"
-        [class.border-blue-600]="currentTab() === 10"
-        [class.text-blue-600]="currentTab() === 10"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        Questionnaire
+        <span
+          [ngClass]="
+            currentTab() > 10
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 10
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 10) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">10</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Questions</span>
       </button>
       <button
         (click)="selectTab(11)"
-        [class.border-blue-600]="currentTab() === 11"
-        [class.text-blue-600]="currentTab() === 11"
-        class="px-6 py-3 text-sm font-medium hover:text-blue-600 border-b-2 border-transparent whitespace-nowrap"
+        type="button"
+        class="flex flex-col items-center gap-2 min-w-fit"
       >
-        Photo & Signature
+        <span
+          [ngClass]="
+            currentTab() > 11
+              ? 'bg-green-100 text-green-600'
+              : currentTab() === 11
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-gray-100 text-gray-500'
+          "
+          class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12"
+        >
+          @if (currentTab() > 11) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          } @else {
+            <span class="text-sm font-semibold">11</span>
+          }
+        </span>
+        <span class="text-xs whitespace-nowrap">Photo</span>
       </button>
     </div>
   </div>
@@ -129,7 +371,7 @@
               type="text"
               [(ngModel)]="pds().surname"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -139,7 +381,7 @@
               type="text"
               [(ngModel)]="pds().first_name"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -149,7 +391,7 @@
               type="text"
               [(ngModel)]="pds().middle_name"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
@@ -163,7 +405,7 @@
               type="text"
               [(ngModel)]="pds().name_extension"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
@@ -176,7 +418,7 @@
               type="date"
               [(ngModel)]="pds().date_of_birth"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -186,7 +428,7 @@
               type="text"
               [(ngModel)]="pds().place_of_birth"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -195,7 +437,7 @@
             <select
               [(ngModel)]="pds().sex"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             >
               <option value="Male">Male</option>
@@ -211,7 +453,7 @@
             <select
               [(ngModel)]="pds().civil_status"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             >
               <option value="Single">Single</option>
@@ -228,7 +470,7 @@
               [(ngModel)]="pds().height"
               [disabled]="isFormReadonly()"
               placeholder="e.g., 1.65"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
             />
           </div>
           <div>
@@ -238,7 +480,7 @@
               [(ngModel)]="pds().weight"
               [disabled]="isFormReadonly()"
               placeholder="e.g., 60"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
@@ -249,7 +491,7 @@
             <select
               [(ngModel)]="pds().blood_type"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select</option>
               <option value="A+">A+</option>
@@ -267,7 +509,7 @@
             <select
               [(ngModel)]="pds().citizenship_type"
               [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               required
             >
               <option value="Filipino">Filipino</option>
@@ -281,7 +523,7 @@
                 type="text"
                 [(ngModel)]="pds().dual_citizenship_country"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           }
@@ -299,7 +541,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_house_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -308,7 +550,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_street"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -319,7 +561,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_subdivision"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -328,7 +570,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_barangay"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -339,7 +581,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_city"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -349,7 +591,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_province"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -359,7 +601,7 @@
                 type="text"
                 [(ngModel)]="pds().residential_zip_code"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -388,7 +630,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_house_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -397,7 +639,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_street"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -408,7 +650,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_subdivision"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -417,7 +659,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_barangay"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -428,7 +670,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_city"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -438,7 +680,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_province"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -448,7 +690,7 @@
                 type="text"
                 [(ngModel)]="pds().permanent_zip_code"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -464,7 +706,7 @@
                 type="text"
                 [(ngModel)]="pds().telephone_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -473,7 +715,7 @@
                 type="text"
                 [(ngModel)]="pds().mobile_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -483,7 +725,7 @@
                 type="email"
                 [(ngModel)]="pds().email_address"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
@@ -500,7 +742,7 @@
                 type="text"
                 [(ngModel)]="pds().gsis_id_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -509,7 +751,7 @@
                 type="text"
                 [(ngModel)]="pds().pag_ibig_id_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -518,7 +760,7 @@
                 type="text"
                 [(ngModel)]="pds().philhealth_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -527,7 +769,7 @@
                 type="text"
                 [(ngModel)]="pds().sss_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -536,7 +778,7 @@
                 type="text"
                 [(ngModel)]="pds().tin_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -547,7 +789,7 @@
                 type="text"
                 [(ngModel)]="pds().agency_employee_no"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -570,7 +812,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_surname"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -579,7 +821,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_first_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -588,7 +830,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_middle_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -597,7 +839,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_occupation"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div class="md:col-span-2">
@@ -608,7 +850,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_employer"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div class="md:col-span-2">
@@ -617,7 +859,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_business_address"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -626,7 +868,7 @@
                 type="text"
                 [(ngModel)]="pds().spouse_telephone"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -642,7 +884,7 @@
                 type="text"
                 [(ngModel)]="pds().father_surname"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -651,7 +893,7 @@
                 type="text"
                 [(ngModel)]="pds().father_first_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div class="md:col-span-2">
@@ -660,7 +902,7 @@
                 type="text"
                 [(ngModel)]="pds().father_middle_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -676,7 +918,7 @@
                 type="text"
                 [(ngModel)]="pds().mother_surname"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -685,7 +927,7 @@
                 type="text"
                 [(ngModel)]="pds().mother_first_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div class="md:col-span-2">
@@ -694,7 +936,7 @@
                 type="text"
                 [(ngModel)]="pds().mother_middle_name"
                 [disabled]="isFormReadonly()"
-                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -719,7 +961,7 @@
                     type="text"
                     [(ngModel)]="newChild.child_name"
                     placeholder="Full Name"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   />
                 </div>
                 <div>
@@ -727,14 +969,14 @@
                   <input
                     type="date"
                     [(ngModel)]="newChild.date_of_birth"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>
               <button
                 (click)="addChild()"
                 type="button"
-                class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               >
                 <i class="fas fa-plus mr-2"></i>Add Child
               </button>
@@ -783,7 +1025,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Level *</label>
                 <select
                   [(ngModel)]="newEducation.level"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 >
                   <option value="ELEMENTARY">Elementary</option>
@@ -798,7 +1040,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEducation.school_name"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -809,7 +1051,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEducation.degree_course"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -820,7 +1062,7 @@
                   type="text"
                   [(ngModel)]="newEducation.period_from"
                   placeholder="YYYY"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -831,7 +1073,7 @@
                   type="text"
                   [(ngModel)]="newEducation.period_to"
                   placeholder="YYYY or 'Present'"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -841,7 +1083,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEducation.highest_level_earned"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -849,7 +1091,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEducation.year_graduated"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -859,14 +1101,14 @@
                 <input
                   type="text"
                   [(ngModel)]="newEducation.scholarship_honors"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             </div>
             <button
               (click)="addEducation()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Education
             </button>
@@ -941,7 +1183,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEligibility.career_service"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -950,7 +1192,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEligibility.rating"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -960,7 +1202,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newEligibility.date_of_examination"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -970,7 +1212,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEligibility.place_of_examination"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -978,7 +1220,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newEligibility.license_number"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -986,14 +1228,14 @@
                 <input
                   type="date"
                   [(ngModel)]="newEligibility.license_validity"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             </div>
             <button
               (click)="addEligibility()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Eligibility
             </button>
@@ -1058,7 +1300,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newWorkExperience.date_from"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1067,7 +1309,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newWorkExperience.date_to"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div class="md:col-span-2">
@@ -1075,7 +1317,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newWorkExperience.position_title"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1086,7 +1328,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newWorkExperience.department_agency"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1095,7 +1337,7 @@
                 <input
                   type="number"
                   [(ngModel)]="newWorkExperience.monthly_salary"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -1103,7 +1345,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newWorkExperience.salary_grade"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -1114,7 +1356,7 @@
                   type="text"
                   [(ngModel)]="newWorkExperience.status_of_appointment"
                   placeholder="e.g., Permanent, Casual, Contractual"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -1123,7 +1365,7 @@
                 >
                 <select
                   [(ngModel)]="newWorkExperience.is_government_service"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 >
                   <option [ngValue]="null">Select</option>
                   <option [ngValue]="true">Yes</option>
@@ -1134,7 +1376,7 @@
             <button
               (click)="addWorkExperience()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Work Experience
             </button>
@@ -1212,7 +1454,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newVoluntaryWork.organization_name"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1221,7 +1463,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newVoluntaryWork.date_from"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1230,7 +1472,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newVoluntaryWork.date_to"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1239,7 +1481,7 @@
                 <input
                   type="number"
                   [(ngModel)]="newVoluntaryWork.number_of_hours"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -1249,7 +1491,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newVoluntaryWork.position_nature_of_work"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1257,7 +1499,7 @@
             <button
               (click)="addVoluntaryWork()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Voluntary Work
             </button>
@@ -1318,7 +1560,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newTraining.title"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1327,7 +1569,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newTraining.date_from"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1336,7 +1578,7 @@
                 <input
                   type="date"
                   [(ngModel)]="newTraining.date_to"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1345,7 +1587,7 @@
                 <input
                   type="number"
                   [(ngModel)]="newTraining.number_of_hours"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div>
@@ -1354,7 +1596,7 @@
                   type="text"
                   [(ngModel)]="newTraining.type_of_ld"
                   placeholder="e.g., Seminar, Workshop, Training"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
               <div class="md:col-span-2">
@@ -1364,7 +1606,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newTraining.conducted_by"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1372,7 +1614,7 @@
             <button
               (click)="addTraining()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Training
             </button>
@@ -1432,12 +1674,12 @@
                   type="text"
                   [(ngModel)]="newSkill"
                   placeholder="Enter skill or hobby"
-                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   (click)="addSkill()"
                   type="button"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   <i class="fas fa-plus"></i>
                 </button>
@@ -1482,12 +1724,12 @@
                   type="text"
                   [(ngModel)]="newRecognition"
                   placeholder="Enter recognition or award"
-                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   (click)="addRecognition()"
                   type="button"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   <i class="fas fa-plus"></i>
                 </button>
@@ -1530,12 +1772,12 @@
                   type="text"
                   [(ngModel)]="newMembership"
                   placeholder="Enter organization name"
-                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   (click)="addMembership()"
                   type="button"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   <i class="fas fa-plus"></i>
                 </button>
@@ -1587,7 +1829,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newReference.name"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1596,7 +1838,7 @@
                 <input
                   type="text"
                   [(ngModel)]="newReference.address"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
@@ -1605,14 +1847,14 @@
                 <input
                   type="text"
                   [(ngModel)]="newReference.telephone_number"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             </div>
             <button
               (click)="addReference()"
               type="button"
-              class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-plus mr-2"></i>Add Reference
             </button>
@@ -1695,7 +1937,7 @@
                   [(ngModel)]="pds().q34_a_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1735,7 +1977,7 @@
                   [(ngModel)]="pds().q35_a_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1775,7 +2017,7 @@
                   [(ngModel)]="pds().q35_b_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1815,7 +2057,7 @@
                   [(ngModel)]="pds().q36_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1855,7 +2097,7 @@
                   [(ngModel)]="pds().q37_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1895,7 +2137,7 @@
                   [(ngModel)]="pds().q38_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1936,7 +2178,7 @@
                   [(ngModel)]="pds().q39_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -1977,7 +2219,7 @@
                   [(ngModel)]="pds().q39_details"
                   [disabled]="isFormReadonly()"
                   rows="2"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 ></textarea>
               </div>
             }
@@ -2017,7 +2259,7 @@
                   type="text"
                   [(ngModel)]="pds().q41_country"
                   [disabled]="isFormReadonly()"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             }
@@ -2057,7 +2299,7 @@
                   type="text"
                   [(ngModel)]="pds().q43_id_no"
                   [disabled]="isFormReadonly()"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             }
@@ -2097,7 +2339,7 @@
                   type="text"
                   [(ngModel)]="pds().q44_id_no"
                   [disabled]="isFormReadonly()"
-                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
                 />
               </div>
             }
@@ -2148,7 +2390,7 @@
                     />
                     <label
                       for="photoInput"
-                      class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition inline-block"
+                      class="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition inline-block"
                     >
                       Choose Photo
                     </label>
@@ -2203,7 +2445,7 @@
                     />
                     <label
                       for="signatureInput"
-                      class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition inline-block"
+                      class="cursor-pointer px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition inline-block"
                     >
                       Choose File
                     </label>
@@ -2255,7 +2497,7 @@
           (click)="exportToExcel()"
           [disabled]="loading()"
           type="button"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
           title="Export PDS to Excel"
         >
           @if (loading()) {

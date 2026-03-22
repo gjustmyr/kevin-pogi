@@ -17,8 +17,8 @@
       <li>
         <button
           (click)="selectTab('dashboard')"
-          [class.bg-purple-50]="activeTab() === 'dashboard'"
-          [class.text-purple-600]="activeTab() === 'dashboard'"
+          [class.bg-green-50]="activeTab() === 'dashboard'"
+          [class.text-green-600]="activeTab() === 'dashboard'"
           class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
         >
           <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,8 +45,8 @@
       <li>
         <button
           (click)="selectTab('members')"
-          [class.bg-purple-50]="activeTab() === 'members'"
-          [class.text-purple-600]="activeTab() === 'members'"
+          [class.bg-green-50]="activeTab() === 'members'"
+          [class.text-green-600]="activeTab() === 'members'"
           class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
         >
           <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,8 +65,8 @@
       <li>
         <button
           (click)="selectTab('documents')"
-          [class.bg-purple-50]="activeTab() === 'documents'"
-          [class.text-purple-600]="activeTab() === 'documents'"
+          [class.bg-green-50]="activeTab() === 'documents'"
+          [class.text-green-600]="activeTab() === 'documents'"
           class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
         >
           <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,8 +85,8 @@
       <li>
         <button
           (click)="selectTab('advisers')"
-          [class.bg-purple-50]="activeTab() === 'advisers'"
-          [class.text-purple-600]="activeTab() === 'advisers'"
+          [class.bg-green-50]="activeTab() === 'advisers'"
+          [class.text-green-600]="activeTab() === 'advisers'"
           class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
         >
           <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,30 +148,24 @@
     </button>
 
     @if (isUserMenuOpen()) {
-      <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+      <div class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg">
         <button
-          disabled
-          class="flex items-center w-full px-4 py-2 text-gray-400 cursor-not-allowed rounded-t-lg"
+          (click)="isChangePasswordOpen.set(true); isUserMenuOpen.set(false)"
+          class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-t-lg transition"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
             />
           </svg>
-          <span>Settings</span>
+          <span>Change Password</span>
         </button>
         <button
           (click)="logout()"
-          class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-b-lg transition"
+          class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-b-lg transition"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -535,3 +529,7 @@
     </div>
   }
 </div>
+
+@if (isChangePasswordOpen()) {
+  <app-change-password-modal (close)="isChangePasswordOpen.set(false)" />
+}

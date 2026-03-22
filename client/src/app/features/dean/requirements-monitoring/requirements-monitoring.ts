@@ -58,10 +58,11 @@ export class DeanRequirementsMonitoring implements OnInit {
     this.dropdownService.getAcademicYears().subscribe({
       next: (years) => {
         this.academicYearsList.set(years);
-        const currentYear = years.find((y) => y.is_active === 1);
-        if (currentYear) {
-          this.selectedAcademicYear.set(currentYear.academic_year_id);
+        // Set latest (first) academic year and semester as default
+        if (years.length > 0) {
+          this.selectedAcademicYear.set(years[0].academic_year_id);
         }
+        this.selectedSemester.set('1st Semester');
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -282,9 +283,13 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   getCompletionStats(submissions: RequirementSubmission[]) {
     const total = submissions.length;
-    const validated = submissions.filter((s: RequirementSubmission) => s.status === 'validated').length;
+    const validated = submissions.filter(
+      (s: RequirementSubmission) => s.status === 'validated',
+    ).length;
     const pending = submissions.filter((s: RequirementSubmission) => s.status === 'pending').length;
-    const returned = submissions.filter((s: RequirementSubmission) => s.status === 'returned').length;
+    const returned = submissions.filter(
+      (s: RequirementSubmission) => s.status === 'returned',
+    ).length;
 
     return {
       total,
@@ -358,7 +363,9 @@ export class DeanRequirementsMonitoring implements OnInit {
           .setFacultyClearanceStatus(
             this.selectedFacultyRequirements()!.faculty.faculty_id,
             status,
-            result.value || undefined
+            result.value || undefined,
+            this.selectedAcademicYear() || undefined,
+            this.selectedSemester() || undefined,
           )
           .subscribe({
             next: () => {
@@ -385,4 +392,15 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   // Removed calculateFacultyClearanceStatus - clearance is now auto-calculated by backend
   // when validating or returning requirements
+
+  getSemesterLabel(semester: string): string {
+    const map: Record<string, string> = {
+      '1st Sem': '1st Semester',
+      '2nd Sem': '2nd Semester',
+      'Midterm 1': '1st Semester',
+      'Midterm 2': '2nd Semester',
+      Summer: 'Summer 1',
+    };
+    return map[semester] ?? semester;
+  }
 }

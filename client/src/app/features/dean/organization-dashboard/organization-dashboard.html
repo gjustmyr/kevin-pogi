@@ -1,0 +1,290 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <div
+      class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white shadow-xl"
+    >
+      <h1 class="text-4xl font-bold mb-2">Organization Dashboard</h1>
+      <p class="text-purple-100 text-lg">Monitor and manage student organizations</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+    </div>
+  } @else {
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Organizations -->
+      <div
+        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-purple-500"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Total Organizations</p>
+            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalOrganizations }}</p>
+          </div>
+          <div class="bg-purple-100 p-4 rounded-full">
+            <svg
+              class="w-8 h-8 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Members -->
+      <div
+        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Total Members</p>
+            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalMembers }}</p>
+          </div>
+          <div class="bg-blue-100 p-4 rounded-full">
+            <svg
+              class="w-8 h-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Documents -->
+      <div
+        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-green-500"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Total Documents</p>
+            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalDocuments }}</p>
+          </div>
+          <div class="bg-green-100 p-4 rounded-full">
+            <svg
+              class="w-8 h-8 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Documents -->
+      <div
+        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-yellow-500"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium mb-1">Pending Review</p>
+            <p class="text-3xl font-bold text-gray-800">{{ statistics().pendingDocuments }}</p>
+          </div>
+          <div class="bg-yellow-100 p-4 rounded-full">
+            <svg
+              class="w-8 h-8 text-yellow-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Status Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">Approved</h3>
+          <span class="text-2xl font-bold text-green-600">{{
+            statistics().approvedDocuments
+          }}</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-green-500 h-2 rounded-full" [style.width.%]="getApprovalRate()"></div>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">{{ getApprovalRate() }}% approval rate</p>
+      </div>
+
+      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">Rejected</h3>
+          <span class="text-2xl font-bold text-red-600">{{ statistics().rejectedDocuments }}</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-red-500 h-2 rounded-full"
+            [style.width.%]="
+              statistics().totalDocuments > 0
+                ? (statistics().rejectedDocuments / statistics().totalDocuments) * 100
+                : 0
+            "
+          ></div>
+        </div>
+      </div>
+
+      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">Active Advisers</h3>
+          <span class="text-2xl font-bold text-indigo-600">{{ statistics().totalAdvisers }}</span>
+        </div>
+        <p class="text-sm text-gray-500">Faculty members assigned as advisers</p>
+      </div>
+    </div>
+
+    <!-- Recent Documents -->
+    <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Document Submissions</h2>
+      @if (recentDocuments().length === 0) {
+        <div class="text-center py-12">
+          <svg
+            class="w-16 h-16 text-gray-300 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          <p class="text-gray-500">No documents submitted yet</p>
+        </div>
+      } @else {
+        <div class="space-y-4">
+          @for (doc of recentDocuments(); track doc.document_id) {
+            <div
+              class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div class="flex items-center space-x-4 flex-1">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800">{{ doc.document_title }}</h4>
+                  <p class="text-sm text-gray-500">{{ doc.organization.organization_name }}</p>
+                  <p class="text-xs text-gray-400">
+                    {{ doc.document_type.type_name }} • {{ getTimeAgo(doc.submitted_date) }}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium"
+                  [ngClass]="getStatusColor(doc.status)"
+                >
+                  {{ getStatusText(doc.status) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Organizations Overview -->
+    <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Organizations Overview</h2>
+      @if (organizationStats().length === 0) {
+        <div class="text-center py-12">
+          <svg
+            class="w-16 h-16 text-gray-300 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          <p class="text-gray-500">No organizations found</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (org of organizationStats(); track org.organization_id) {
+            <div
+              class="p-4 border border-gray-200 border-dashed rounded-lg hover:shadow-lg transition-all duration-300"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <h3 class="font-bold text-gray-800 text-lg mb-2">{{ org.organization_name }}</h3>
+                  <p class="text-sm text-gray-600 mb-4">
+                    <i class="fas fa-user-tie mr-1"></i>
+                    {{ getFacultyName(org) }}
+                  </p>
+                </div>
+                @if (getPendingCount(org) > 0) {
+                  <span
+                    class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-1 rounded-full"
+                  >
+                    {{ getPendingCount(org) }} pending
+                  </span>
+                }
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center text-gray-600">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  </svg>
+                  <span>{{ getMemberCount(org) }} members</span>
+                </div>
+                <div class="flex items-center text-gray-600">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span>{{ getDocumentCount(org) }} docs</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

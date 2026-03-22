@@ -60,6 +60,13 @@ export class Auth {
     );
   }
 
+  changePassword(oldPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/change-password`, {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
+  }
+
   getToken(): string | null {
     return secureGetItem(this.TOKEN_KEY);
   }

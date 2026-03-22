@@ -153,6 +153,23 @@ export class FacultyRequirementService {
     return this.http.post(`${this.apiUrl}/${submission_id}/add-files`, formData);
   }
 
+  // Download a specific file by file_id
+  downloadSingleFile(submission_id: number, file_id: number, fileName: string): void {
+    this.http
+      .get(`${this.apiUrl}/${submission_id}/files/${file_id}/download`, { responseType: 'blob' })
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => console.error('Download failed', err),
+      });
+  }
+
   // Delete a specific file from a requirement
   deleteFile(submission_id: number, file_id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${submission_id}/files/${file_id}`);
@@ -163,13 +180,38 @@ export class FacultyRequirementService {
     return this.http.delete(`${this.apiUrl}/${submission_id}`);
   }
 
-  // Get download URL for a requirement
-  getDownloadUrl(submission_id: number): string {
-    return `${this.apiUrl}/${submission_id}/download`;
+  // Download a requirement file (authenticated)
+  downloadRequirement(submission_id: number, fileName?: string): void {
+    this.http
+      .get(`${this.apiUrl}/${submission_id}/download`, { responseType: 'blob', observe: 'response' })
+      .subscribe({
+        next: (response) => {
+          const blob = response.body!;
+          const disposition = response.headers.get('Content-Disposition');
+          let name = fileName ?? `requirement_${submission_id}`;
+          if (disposition) {
+            const match = disposition.match(/filename[^;=\n]*=(?:(['"]))?(.*?)\1/);
+            if (match?.[2]) name = match[2];
+          }
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = name;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => console.error('Download failed', err),
+      });
   }
 
-  // Download a requirement file
-  downloadRequirement(submission_id: number): void {
-    window.open(this.getDownloadUrl(submission_id), '_blank');
+  // Get the faculty's clearance status for a specific period
+  getPeriodClearance(
+    academic_year_id: number,
+    semester: string,
+  ): Observable<{ clearance: { clearance_status: string; clearance_remarks?: string; clearance_date?: string } | null }> {
+    const params = new HttpParams()
+      .set('academic_year_id', academic_year_id.toString())
+      .set('semester', semester);
+    return this.http.get<any>(`${this.apiUrl}/period-clearance`, { params });
   }
 }

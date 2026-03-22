@@ -12,6 +12,7 @@ import {
 } from '../../../services/faculty-requirement.service';
 import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
 import { FormsModule } from '@angular/forms';
+import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 
 // Legacy interface for course assignments (removed from system but kept for backwards compatibility)
 interface Assignment {
@@ -28,6 +29,7 @@ interface Assignment {
     PersonalDataSheetComponent,
     FacultyAnnouncementsComponent,
     FormsModule,
+    ChangePasswordModal,
   ],
   template: `
     <!-- Sidebar -->
@@ -211,27 +213,21 @@ interface Assignment {
 
         @if (isUserMenuOpen()) {
           <div
-            class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg"
+            class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg"
           >
             <button
-              disabled
-              class="flex items-center w-full px-4 py-2 text-gray-400 cursor-not-allowed rounded-t-lg"
+              (click)="isChangePasswordOpen.set(true); isUserMenuOpen.set(false)"
+              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-t-lg transition"
             >
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                 />
               </svg>
-              <span>Settings</span>
+              <span>Change Password</span>
             </button>
             <button
               (click)="logout()"
@@ -257,7 +253,7 @@ interface Assignment {
       @if (activeTab() === 'dashboard') {
         <div class="p-4 border border-gray-200 border-dashed rounded-lg">
           <!-- Filters -->
-          <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
@@ -266,7 +262,6 @@ interface Assignment {
                   (change)="filterData()"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                 >
-                  <option [value]="0">All Years</option>
                   @for (year of academicYearsList(); track year.academic_year_id) {
                     <option [value]="year.academic_year_id">
                       {{ year.year_start }}-{{ year.year_end }}
@@ -282,30 +277,17 @@ interface Assignment {
                   (change)="filterData()"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                 >
-                  <option value="">All Semesters</option>
-                  <option value="1st Sem">1st Semester</option>
-                  <option value="2nd Sem">2nd Semester</option>
+                  <option value="1st Semester">1st Semester</option>
+                  <option value="2nd Semester">2nd Semester</option>
+                  <option value="Summer 1">Summer 1</option>
+                  <option value="Summer 2">Summer 2</option>
                 </select>
               </div>
             </div>
           </div>
 
           <!-- Statistics Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div
-              class="bg-linear-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Courses</h3>
-                  <p class="text-4xl font-bold">{{ dashboardStats().totalAssignments }}</p>
-                </div>
-                <div class="text-5xl opacity-30">
-                  <i class="fas fa-book"></i>
-                </div>
-              </div>
-            </div>
-
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div
               class="bg-linear-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6"
             >
@@ -313,6 +295,7 @@ interface Assignment {
                 <div>
                   <h3 class="text-sm font-medium opacity-90 mb-1">Total Requirements</h3>
                   <p class="text-4xl font-bold">{{ dashboardStats().totalRequirements }}</p>
+                  <p class="text-xs opacity-80 mt-1">15 standard requirements per period</p>
                 </div>
                 <div class="text-5xl opacity-30">
                   <i class="fas fa-file-alt"></i>
@@ -321,7 +304,62 @@ interface Assignment {
             </div>
 
             @if (authService.currentUser()?.profile) {
-              @if (authService.currentUser()!.profile.clearance_status === 'cleared') {
+              @if (periodClearance() !== null) {
+                <!-- Per-period clearance when a specific academic year + semester is selected -->
+                @if (periodClearance()!.clearance_status === 'cleared') {
+                  <div
+                    class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                        <p class="text-4xl font-bold">Cleared</p>
+                        @if (periodClearance()!.clearance_date) {
+                          <p class="text-xs opacity-80 mt-1">
+                            {{ periodClearance()!.clearance_date | date: 'MMM d, y' }}
+                          </p>
+                        }
+                      </div>
+                      <div class="text-5xl opacity-30">
+                        <i class="fas fa-check-circle"></i>
+                      </div>
+                    </div>
+                  </div>
+                } @else if (periodClearance()!.clearance_status === 'withholding') {
+                  <div
+                    class="bg-linear-to-br from-red-500 to-red-600 text-white rounded-lg shadow-lg p-6"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                        <p class="text-4xl font-bold">Withholding</p>
+                        @if (periodClearance()!.clearance_date) {
+                          <p class="text-xs opacity-80 mt-1">
+                            {{ periodClearance()!.clearance_date | date: 'MMM d, y' }}
+                          </p>
+                        }
+                      </div>
+                      <div class="text-5xl opacity-30">
+                        <i class="fas fa-exclamation-circle"></i>
+                      </div>
+                    </div>
+                  </div>
+                } @else {
+                  <div
+                    class="bg-linear-to-br from-yellow-500 to-yellow-600 text-white rounded-lg shadow-lg p-6"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
+                        <p class="text-4xl font-bold">Pending</p>
+                      </div>
+                      <div class="text-5xl opacity-30">
+                        <i class="fas fa-clock"></i>
+                      </div>
+                    </div>
+                  </div>
+                }
+              } @else if (authService.currentUser()!.profile.clearance_status === 'cleared') {
                 <div
                   class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
                 >
@@ -413,7 +451,7 @@ interface Assignment {
           <!-- Charts and Progress -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Status Distribution -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
               <h3 class="text-lg font-bold text-gray-800 mb-6">Requirements Status Distribution</h3>
               <div class="flex items-center justify-center mb-6">
                 <div class="relative w-64 h-64">
@@ -498,7 +536,7 @@ interface Assignment {
             </div>
 
             <!-- Progress Bars -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
               <h3 class="text-lg font-bold text-gray-800 mb-6">Progress Overview</h3>
               <div class="space-y-6">
                 <!-- Overall Completion -->
@@ -521,7 +559,7 @@ interface Assignment {
                 <div>
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-sm font-medium text-gray-700">Submitted</span>
-                    <span class="text-sm font-semibold text-blue-600">
+                    <span class="text-sm font-semibold text-green-600">
                       {{ dashboardStats().submitted }} /
                       {{ dashboardStats().totalRequirements }} ({{
                         (
@@ -533,7 +571,7 @@ interface Assignment {
                   </div>
                   <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                     <div
-                      class="bg-linear-to-r from-blue-400 to-blue-600 h-full rounded-full transition-all duration-500"
+                      class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
                         (dashboardStats().submitted / dashboardStats().totalRequirements) * 100
                       "
@@ -687,6 +725,10 @@ interface Assignment {
         <app-faculty-announcements />
       }
     </div>
+
+    @if (isChangePasswordOpen()) {
+      <app-change-password-modal (close)="isChangePasswordOpen.set(false)" />
+    }
   `,
   styles: [],
 })
@@ -694,6 +736,7 @@ export class FacultyDashboard implements OnInit {
   isSidebarOpen = signal(true);
   activeTab = signal<string>('dashboard');
   isUserMenuOpen = signal(false);
+  isChangePasswordOpen = signal(false);
   loading = signal(false);
 
   // Dashboard data
@@ -701,6 +744,13 @@ export class FacultyDashboard implements OnInit {
   academicYearsList = signal<DropdownAcademicYear[]>([]);
   selectedAcademicYear = signal<number>(0);
   selectedSemester = signal<string>('');
+
+  // Per-period clearance (null = not yet loaded or no specific period selected)
+  periodClearance = signal<{
+    clearance_status: string;
+    clearance_remarks?: string;
+    clearance_date?: string;
+  } | null>(null);
 
   // Statistics
   dashboardStats = signal({
@@ -723,7 +773,11 @@ export class FacultyDashboard implements OnInit {
   ngOnInit() {
     this.refreshProfile();
     this.loadAcademicYears();
-    this.loadDashboardData();
+    // Wait for academic years to load before loading dashboard data
+    setTimeout(() => {
+      this.loadDashboardData();
+      this.loadPeriodClearance();
+    }, 100);
   }
 
   refreshProfile() {
@@ -734,14 +788,28 @@ export class FacultyDashboard implements OnInit {
     });
   }
 
+  loadPeriodClearance() {
+    const yearId = this.selectedAcademicYear();
+    const semester = this.selectedSemester();
+    if (!yearId || !semester) {
+      this.periodClearance.set(null);
+      return;
+    }
+    this.requirementService.getPeriodClearance(yearId, semester).subscribe({
+      next: (res) => this.periodClearance.set(res.clearance),
+      error: () => this.periodClearance.set(null),
+    });
+  }
+
   loadAcademicYears() {
     this.dropdownService.getAcademicYears().subscribe({
       next: (years) => {
         this.academicYearsList.set(years);
-        const currentYear = years.find((y) => y.is_active === 1);
-        if (currentYear) {
-          this.selectedAcademicYear.set(currentYear.academic_year_id);
+        // Set latest (first) academic year and semester as default
+        if (years.length > 0) {
+          this.selectedAcademicYear.set(years[0].academic_year_id);
         }
+        this.selectedSemester.set('1st Semester');
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -750,18 +818,44 @@ export class FacultyDashboard implements OnInit {
   }
 
   loadDashboardData() {
-    // Note: Course assignments have been removed from the system
     this.loading.set(true);
-    this.assignments.set([]);
-    this.calculateStats();
-    this.loading.set(false);
+
+    // Load actual requirement submissions for the selected period
+    this.requirementService
+      .getMyRequirements(
+        1, // page
+        1000, // large page size to get all
+        this.selectedAcademicYear() || undefined,
+        this.selectedSemester() || undefined,
+        undefined, // no status filter
+      )
+      .subscribe({
+        next: (response) => {
+          // Convert submissions to assignment format for backwards compatibility
+          const mockAssignment: Assignment = {
+            requirement_submissions: response.requirements,
+          };
+          this.assignments.set([mockAssignment]);
+          this.calculateStats();
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading dashboard data:', error);
+          this.assignments.set([]);
+          this.calculateStats();
+          this.loading.set(false);
+        },
+      });
   }
 
   calculateStats() {
+    // Faculty must submit 15 standard requirements per academic year/semester
+    const TOTAL_STANDARD_REQUIREMENTS = 15;
+    const totalRequirements = TOTAL_STANDARD_REQUIREMENTS;
+
+    // Note: Each requirement can have multiple files (1 to many relationship)
+    // We count unique requirement submissions, not individual files
     const assignments = this.assignments();
-    const totalAssignments = assignments.length;
-    const requirementsPerAssignment = 9;
-    const totalRequirements = totalAssignments * requirementsPerAssignment;
 
     let submitted = 0;
     let validated = 0;
@@ -781,7 +875,7 @@ export class FacultyDashboard implements OnInit {
       totalRequirements > 0 ? Math.round((validated / totalRequirements) * 100) : 0;
 
     this.dashboardStats.set({
-      totalAssignments,
+      totalAssignments: 0, // Courses removed from system
       totalRequirements,
       submitted,
       cleared: validated,
@@ -794,6 +888,7 @@ export class FacultyDashboard implements OnInit {
 
   filterData() {
     this.loadDashboardData();
+    this.loadPeriodClearance();
   }
 
   toggleSidebar() {

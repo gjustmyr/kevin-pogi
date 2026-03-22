@@ -11,5 +11,6 @@ router.post("/create-superadmin", authController.createSuperadmin);
 
 // Protected routes
 router.get("/profile", verifyToken, authController.getProfile);
+router.post("/change-password", verifyToken, authController.changePassword);
 
 module.exports = router;

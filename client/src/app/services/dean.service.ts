@@ -62,11 +62,19 @@ export class DeanService {
   }
 
   // Dean-specific methods
+  getProfile(): Observable<Dean> {
+    return this.http.get<Dean>(`${this.deanApiUrl}/dashboard/profile`);
+  }
+
   getOrganizations(): Observable<{ organizations: any[] }> {
     return this.http.get<{ organizations: any[] }>(`${this.deanApiUrl}/organizations`);
   }
 
   getFaculty(): Observable<{ faculty: any[] }> {
     return this.http.get<{ faculty: any[] }>(`${this.deanApiUrl}/faculty`);
+  }
+
+  getOrganizationDashboard(): Observable<any> {
+    return this.http.get<any>(`${this.deanApiUrl}/organizations/dashboard`);
   }
 }

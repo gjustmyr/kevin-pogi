@@ -2,14 +2,14 @@ const { dbConfig } = require("../config/db.config.js");
 
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-	host: dbConfig.HOST,
-	dialect: dbConfig.dialect,
-	pool: {
-		max: dbConfig.pool.max,
-		min: dbConfig.pool.min,
-		acquire: dbConfig.pool.acquire,
-		idle: dbConfig.pool.idle,
-	},
+  host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle,
+  },
 });
 
 const db = {};
@@ -24,319 +24,340 @@ const User = require("./user.model")(sequelize, Sequelize);
 const Admin = require("./admin.model")(sequelize, Sequelize);
 const AcademicYear = require("./academic-year.model")(sequelize, Sequelize);
 const RequirementSubmission = require("./requirement-submission.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const RequirementFile = require("./requirement-file.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const FacultyCredential = require("./faculty-credential.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const CredentialCertificate = require("./credential-certificate.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const PersonalDataSheet = require("./personal-data-sheet.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const PDSChild = require("./pds-child.model")(sequelize, Sequelize);
 const PDSEducation = require("./pds-education.model")(sequelize, Sequelize);
 const PDSEligibility = require("./pds-eligibility.model")(sequelize, Sequelize);
 const PDSWorkExperience = require("./pds-work-experience.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const PDSVoluntaryWork = require("./pds-voluntary-work.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const PDSTraining = require("./pds-training.model")(sequelize, Sequelize);
 const PDSOtherInfo = require("./pds-other-info.model")(sequelize, Sequelize);
 const PDSReference = require("./pds-reference.model")(sequelize, Sequelize);
+const FacultyClearance = require("./faculty-clearance.model")(
+  sequelize,
+  Sequelize,
+);
 const Announcement = require("./announcement.model")(sequelize, Sequelize);
 const AnnouncementRead = require("./announcement-read.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const OrganizationAdviser = require("./organization-adviser.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const OrganizationMember = require("./organization-member.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const DocumentType = require("./document-type.model")(sequelize, Sequelize);
 const OrganizationDocument = require("./organization-document.model")(
-	sequelize,
-	Sequelize,
+  sequelize,
+  Sequelize,
 );
 const OrganizationPositionTemplate =
-	require("./organization-position-template.model")(sequelize, Sequelize);
+  require("./organization-position-template.model")(sequelize, Sequelize);
 
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 Admin.belongsTo(User, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 
 /* User → Dean (1:1) */
 User.hasOne(Dean, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 Dean.belongsTo(User, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 
 /* User → Faculty (1:1) */
 User.hasOne(Faculty, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 Faculty.belongsTo(User, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 
 /* User → Organization (1:1) */
 User.hasOne(Organization, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 Organization.belongsTo(User, {
-	foreignKey: "user_id",
+  foreignKey: "user_id",
 });
 
 /* Faculty → Organizations (1:1 - one faculty assigned to organization) */
 Faculty.hasOne(Organization, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 Organization.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 /* RequirementSubmission Relationships */
 Faculty.hasMany(RequirementSubmission, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 RequirementSubmission.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 AcademicYear.hasMany(RequirementSubmission, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 RequirementSubmission.belongsTo(AcademicYear, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 
 /* RequirementFile Relationships */
 RequirementSubmission.hasMany(RequirementFile, {
-	foreignKey: "submission_id",
-	as: "files",
+  foreignKey: "submission_id",
+  as: "files",
 });
 RequirementFile.belongsTo(RequirementSubmission, {
-	foreignKey: "submission_id",
+  foreignKey: "submission_id",
 });
 
 /* FacultyCredential Relationships */
 Faculty.hasOne(FacultyCredential, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
+  as: "faculty_credential",
 });
 FacultyCredential.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 /* CredentialCertificate Relationships */
 FacultyCredential.hasMany(CredentialCertificate, {
-	foreignKey: "credential_id",
-	as: "credential_certificates",
+  foreignKey: "credential_id",
+  as: "credential_certificates",
 });
 CredentialCertificate.belongsTo(FacultyCredential, {
-	foreignKey: "credential_id",
+  foreignKey: "credential_id",
 });
 
 /* PersonalDataSheet Relationships */
 Faculty.hasOne(PersonalDataSheet, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 PersonalDataSheet.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 /* PDS Children Relationships */
 PersonalDataSheet.hasMany(PDSChild, {
-	foreignKey: "pds_id",
-	as: "children",
+  foreignKey: "pds_id",
+  as: "children",
 });
 PDSChild.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Education Relationships */
 PersonalDataSheet.hasMany(PDSEducation, {
-	foreignKey: "pds_id",
-	as: "education",
+  foreignKey: "pds_id",
+  as: "education",
 });
 PDSEducation.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Eligibility Relationships */
 PersonalDataSheet.hasMany(PDSEligibility, {
-	foreignKey: "pds_id",
-	as: "eligibilities",
+  foreignKey: "pds_id",
+  as: "eligibilities",
 });
 PDSEligibility.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Work Experience Relationships */
 PersonalDataSheet.hasMany(PDSWorkExperience, {
-	foreignKey: "pds_id",
-	as: "work_experiences",
+  foreignKey: "pds_id",
+  as: "work_experiences",
 });
 PDSWorkExperience.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Voluntary Work Relationships */
 PersonalDataSheet.hasMany(PDSVoluntaryWork, {
-	foreignKey: "pds_id",
-	as: "voluntary_works",
+  foreignKey: "pds_id",
+  as: "voluntary_works",
 });
 PDSVoluntaryWork.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Training Relationships */
 PersonalDataSheet.hasMany(PDSTraining, {
-	foreignKey: "pds_id",
-	as: "trainings",
+  foreignKey: "pds_id",
+  as: "trainings",
 });
 PDSTraining.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS Other Info Relationships */
 PersonalDataSheet.hasMany(PDSOtherInfo, {
-	foreignKey: "pds_id",
-	as: "other_info",
+  foreignKey: "pds_id",
+  as: "other_info",
 });
 PDSOtherInfo.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
 });
 
 /* PDS References Relationships */
 PersonalDataSheet.hasMany(PDSReference, {
-	foreignKey: "pds_id",
-	as: "references",
+  foreignKey: "pds_id",
+  as: "references",
 });
 PDSReference.belongsTo(PersonalDataSheet, {
-	foreignKey: "pds_id",
+  foreignKey: "pds_id",
+});
+
+/* FacultyClearance Relationships */
+Faculty.hasMany(FacultyClearance, {
+  foreignKey: "faculty_id",
+  as: "clearances",
+});
+FacultyClearance.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+AcademicYear.hasMany(FacultyClearance, {
+  foreignKey: "academic_year_id",
+});
+FacultyClearance.belongsTo(AcademicYear, {
+  foreignKey: "academic_year_id",
 });
 
 /* Announcement Relationships */
 Dean.hasMany(Announcement, {
-	foreignKey: "dean_id",
-	as: "announcements",
+  foreignKey: "dean_id",
+  as: "announcements",
 });
 Announcement.belongsTo(Dean, {
-	foreignKey: "dean_id",
+  foreignKey: "dean_id",
 });
 
 Announcement.hasMany(AnnouncementRead, {
-	foreignKey: "announcement_id",
-	as: "reads",
+  foreignKey: "announcement_id",
+  as: "reads",
 });
 AnnouncementRead.belongsTo(Announcement, {
-	foreignKey: "announcement_id",
+  foreignKey: "announcement_id",
 });
 
 Faculty.hasMany(AnnouncementRead, {
-	foreignKey: "faculty_id",
-	as: "announcement_reads",
+  foreignKey: "faculty_id",
+  as: "announcement_reads",
 });
 AnnouncementRead.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 /* Organization Adviser Relationships */
 Organization.hasMany(OrganizationAdviser, {
-	foreignKey: "organization_id",
-	as: "advisers",
+  foreignKey: "organization_id",
+  as: "advisers",
 });
 OrganizationAdviser.belongsTo(Organization, {
-	foreignKey: "organization_id",
+  foreignKey: "organization_id",
 });
 
 Faculty.hasMany(OrganizationAdviser, {
-	foreignKey: "faculty_id",
-	as: "adviser_assignments",
+  foreignKey: "faculty_id",
+  as: "adviser_assignments",
 });
 OrganizationAdviser.belongsTo(Faculty, {
-	foreignKey: "faculty_id",
+  foreignKey: "faculty_id",
 });
 
 /* Organization Member Relationships */
 Organization.hasMany(OrganizationMember, {
-	foreignKey: "organization_id",
-	as: "members",
+  foreignKey: "organization_id",
+  as: "members",
 });
 OrganizationMember.belongsTo(Organization, {
-	foreignKey: "organization_id",
+  foreignKey: "organization_id",
 });
 
 AcademicYear.hasMany(OrganizationMember, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 OrganizationMember.belongsTo(AcademicYear, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 
 /* Self-referential relationship for member hierarchy */
 OrganizationMember.hasMany(OrganizationMember, {
-	foreignKey: "parent_member_id",
-	as: "subordinates",
+  foreignKey: "parent_member_id",
+  as: "subordinates",
 });
 OrganizationMember.belongsTo(OrganizationMember, {
-	foreignKey: "parent_member_id",
-	as: "supervisor",
+  foreignKey: "parent_member_id",
+  as: "supervisor",
 });
 
 /* Organization Document Relationships */
 Organization.hasMany(OrganizationDocument, {
-	foreignKey: "organization_id",
-	as: "documents",
+  foreignKey: "organization_id",
+  as: "documents",
 });
 OrganizationDocument.belongsTo(Organization, {
-	foreignKey: "organization_id",
+  foreignKey: "organization_id",
 });
 
 DocumentType.hasMany(OrganizationDocument, {
-	foreignKey: "document_type_id",
+  foreignKey: "document_type_id",
 });
 OrganizationDocument.belongsTo(DocumentType, {
-	foreignKey: "document_type_id",
+  foreignKey: "document_type_id",
 });
 
 AcademicYear.hasMany(OrganizationDocument, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 OrganizationDocument.belongsTo(AcademicYear, {
-	foreignKey: "academic_year_id",
+  foreignKey: "academic_year_id",
 });
 
 User.hasMany(OrganizationDocument, {
-	foreignKey: "reviewed_by",
-	as: "reviewed_documents",
+  foreignKey: "reviewed_by",
+  as: "reviewed_documents",
 });
 OrganizationDocument.belongsTo(User, {
-	foreignKey: "reviewed_by",
-	as: "reviewer",
+  foreignKey: "reviewed_by",
+  as: "reviewer",
 });
 
 db.Dean = Dean;
@@ -345,6 +366,7 @@ db.Organization = Organization;
 db.User = User;
 db.Admin = Admin;
 db.AcademicYear = AcademicYear;
+db.FacultyClearance = FacultyClearance;
 db.RequirementSubmission = RequirementSubmission;
 db.RequirementFile = RequirementFile;
 db.FacultyCredential = FacultyCredential;

@@ -183,4 +183,15 @@ export class DeanAnnouncementsComponent implements OnInit {
   getReadCount(announcement: Announcement): number {
     return announcement.reads ? announcement.reads.length : 0;
   }
+
+  getTotalReads(): number {
+    return this.announcements().reduce((total, ann) => total + this.getReadCount(ann), 0);
+  }
+
+  getEngagementRate(): number {
+    const total = this.announcements().length;
+    if (total === 0) return 0;
+    const withReads = this.announcements().filter((ann) => this.getReadCount(ann) > 0).length;
+    return Math.round((withReads / total) * 100);
+  }
 }

@@ -5,6 +5,7 @@ import { Auth } from '../../../services/auth/auth';
 import { OrganizationService } from '../../../services/organization.service';
 import { OrganizationMembersComponent } from '../../organization/members/organization-members';
 import { OrganizationDocumentsComponent } from '../../organization/documents/organization-documents';
+import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 
 interface OrganizationStats {
   totalMembers: number;
@@ -20,7 +21,12 @@ interface OrganizationStats {
 @Component({
   selector: 'app-organization-dashboard',
   standalone: true,
-  imports: [CommonModule, OrganizationMembersComponent, OrganizationDocumentsComponent],
+  imports: [
+    CommonModule,
+    OrganizationMembersComponent,
+    OrganizationDocumentsComponent,
+    ChangePasswordModal,
+  ],
   templateUrl: './organization.html',
 })
 export class OrganizationDashboard implements OnInit {
@@ -31,6 +37,7 @@ export class OrganizationDashboard implements OnInit {
   activeTab = signal<'dashboard' | 'members' | 'documents' | 'advisers'>('dashboard');
   isSidebarOpen = signal(true);
   isUserMenuOpen = signal(false);
+  isChangePasswordOpen = signal(false);
 
   organizationName = signal('');
   advisers = signal<any[]>([]);

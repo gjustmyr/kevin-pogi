@@ -14,6 +14,9 @@ router.get("/", requirementController.getMyRequirements);
 // Get statistics for faculty's requirements
 router.get("/statistics", requirementController.getMyStatistics);
 
+// Get faculty's clearance status for a specific academic year + semester
+router.get("/period-clearance", requirementController.getMyPeriodClearance);
+
 // Submit a requirement (with multiple file uploads - max 10 files)
 router.post(
 	"/submit",
@@ -26,6 +29,12 @@ router.post(
 	"/:submission_id/add-files",
 	upload.array("files", 10),
 	requirementController.addFiles,
+);
+
+// Download a specific file from a requirement submission
+router.get(
+	"/:submission_id/files/:file_id/download",
+	requirementController.downloadFile,
 );
 
 // Delete a specific file from a requirement submission

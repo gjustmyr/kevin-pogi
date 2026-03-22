@@ -22,7 +22,7 @@
     <div class="flex space-x-2">
       <button
         (click)="toggleViewMode('list')"
-        [class.bg-blue-600]="viewMode() === 'list'"
+        [class.bg-green-600]="viewMode() === 'list'"
         [class.text-white]="viewMode() === 'list'"
         [class.bg-gray-200]="viewMode() !== 'list'"
         [class.text-gray-700]="viewMode() !== 'list'"
@@ -32,7 +32,7 @@
       </button>
       <button
         (click)="toggleViewMode('hierarchy')"
-        [class.bg-blue-600]="viewMode() === 'hierarchy'"
+        [class.bg-green-600]="viewMode() === 'hierarchy'"
         [class.text-white]="viewMode() === 'hierarchy'"
         [class.bg-gray-200]="viewMode() !== 'hierarchy'"
         [class.text-gray-700]="viewMode() !== 'hierarchy'"
@@ -43,7 +43,7 @@
     </div>
     <button
       (click)="openAddModal()"
-      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+      class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
     >
       <i class="fas fa-plus mr-2"></i>Add Member
     </button>
@@ -59,7 +59,7 @@
           [(ngModel)]="searchQuery"
           (ngModelChange)="applyFilters()"
           placeholder="SR Code or Name"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
       <div>
@@ -67,7 +67,7 @@
         <select
           [(ngModel)]="selectedAcademicYear"
           (ngModelChange)="applyFilters()"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option [ngValue]="undefined">All Terms</option>
           @for (year of academicYears(); track year.academic_year_id) {
@@ -82,7 +82,7 @@
         <select
           [(ngModel)]="selectedPosition"
           (ngModelChange)="applyFilters()"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option [ngValue]="undefined">All Positions</option>
           @for (position of positions(); track position.position_id) {
@@ -96,7 +96,7 @@
             type="checkbox"
             [(ngModel)]="showActiveOnly"
             (ngModelChange)="applyFilters()"
-            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-green-500"
           />
           <span class="text-sm font-medium text-gray-700">Active Only</span>
         </label>
@@ -214,7 +214,7 @@
             @for (page of [].constructor(totalPages()); track $index) {
               <button
                 (click)="changePage($index + 1)"
-                [class.bg-blue-600]="currentPage() === $index + 1"
+                [class.bg-green-600]="currentPage() === $index + 1"
                 [class.text-white]="currentPage() === $index + 1"
                 [class.border-blue-600]="currentPage() === $index + 1"
                 class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -262,7 +262,7 @@
                   <div class="font-bold text-lg text-blue-900">{{ getMemberFullName(root) }}</div>
                   <div class="text-sm text-blue-700">{{ root.position }} | {{ root.sr_code }}</div>
                 </div>
-                <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-xs font-semibold">
+                <span class="px-3 py-1 bg-green-600 text-white rounded-full text-xs font-semibold">
                   {{ root.year_level }}
                 </span>
               </div>
@@ -345,11 +345,11 @@
               type="text"
               [(ngModel)]="autoPopulateSearch"
               placeholder="Enter SR Code or Name"
-              class="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="flex-1 px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <button
               (click)="searchMemberHistory()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
               Search
             </button>
@@ -370,7 +370,7 @@
                 [(ngModel)]="memberForm().sr_code"
                 name="sr_code"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -381,7 +381,7 @@
                 [(ngModel)]="memberForm().year_level"
                 name="year_level"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="1st Year">1st Year</option>
                 <option value="2nd Year">2nd Year</option>
@@ -402,7 +402,7 @@
                 [(ngModel)]="memberForm().first_name"
                 name="first_name"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -411,7 +411,7 @@
                 type="text"
                 [(ngModel)]="memberForm().middle_name"
                 name="middle_name"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -423,7 +423,7 @@
                 [(ngModel)]="memberForm().last_name"
                 name="last_name"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -435,7 +435,7 @@
                 type="email"
                 [(ngModel)]="memberForm().email"
                 name="email"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -444,7 +444,7 @@
                 type="text"
                 [(ngModel)]="memberForm().contact_number"
                 name="contact_number"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -458,7 +458,7 @@
                 [(ngModel)]="memberForm().position"
                 name="position"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select Position</option>
                 @for (position of positions(); track position.position_id) {
@@ -475,7 +475,7 @@
               <select
                 [(ngModel)]="memberForm().parent_member_id"
                 name="parent_member_id"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option [ngValue]="undefined">None (Top Level)</option>
                 @for (member of getPotentialSupervisors(); track member.member_id) {
@@ -496,7 +496,7 @@
                 [(ngModel)]="memberForm().academic_year_id"
                 name="academic_year_id"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option [ngValue]="undefined">Select Term</option>
                 @for (year of academicYears(); track year.academic_year_id) {
@@ -515,7 +515,7 @@
                 [(ngModel)]="memberForm().term_start_date"
                 name="term_start_date"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -537,7 +537,7 @@
             <button
               type="submit"
               [disabled]="loading()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
               @if (loading()) {
                 <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -577,7 +577,7 @@
               <select
                 [(ngModel)]="memberForm().year_level"
                 name="year_level"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="1st Year">1st Year</option>
                 <option value="2nd Year">2nd Year</option>
@@ -595,7 +595,7 @@
                 type="text"
                 [(ngModel)]="memberForm().first_name"
                 name="first_name"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -604,7 +604,7 @@
                 type="text"
                 [(ngModel)]="memberForm().middle_name"
                 name="middle_name"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -613,7 +613,7 @@
                 type="text"
                 [(ngModel)]="memberForm().last_name"
                 name="last_name"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -625,7 +625,7 @@
                 type="email"
                 [(ngModel)]="memberForm().email"
                 name="email"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div>
@@ -634,7 +634,7 @@
                 type="text"
                 [(ngModel)]="memberForm().contact_number"
                 name="contact_number"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
@@ -645,7 +645,7 @@
               <select
                 [(ngModel)]="memberForm().position"
                 name="position"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 @for (position of positions(); track position.position_id) {
                   <option [value]="position.position_name">
@@ -659,7 +659,7 @@
               <select
                 [(ngModel)]="memberForm().parent_member_id"
                 name="parent_member_id"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option [ngValue]="undefined">None (Top Level)</option>
                 @for (member of getPotentialSupervisors(); track member.member_id) {
@@ -678,7 +678,7 @@
                 type="date"
                 [(ngModel)]="memberForm().term_end_date"
                 name="term_end_date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <div class="flex items-center">
@@ -687,7 +687,7 @@
                   type="checkbox"
                   [(ngModel)]="memberForm().is_active"
                   name="is_active"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-green-500"
                 />
                 <span class="text-sm font-medium text-gray-700">Active Member</span>
               </label>
@@ -711,7 +711,7 @@
             <button
               type="submit"
               [disabled]="loading()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
               @if (loading()) {
                 <i class="fas fa-spinner fa-spin mr-2"></i>

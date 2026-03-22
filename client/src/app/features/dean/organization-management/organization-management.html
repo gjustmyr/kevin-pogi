@@ -4,7 +4,7 @@
     <div class="flex gap-2">
       <button
         (click)="openCreateModal()"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
+        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
       >
         + Add Organization
       </button>
@@ -15,11 +15,11 @@
         [(ngModel)]="searchQuery"
         (keyup.enter)="searchOrganizations()"
         placeholder="Search organizations..."
-        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
       />
       <button
         (click)="searchOrganizations()"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
+        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
       >
         Search
       </button>
@@ -27,7 +27,7 @@
   </div>
 
   <!-- Table -->
-  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div class="relative overflow-x-auto border border-gray-200 border-dashed rounded-lg">
     <table class="w-full text-sm text-left text-gray-500">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
@@ -95,7 +95,7 @@
         } @else {
           <button
             (click)="changePage(page)"
-            [class.bg-blue-600]="page === currentPage()"
+            [class.bg-green-600]="page === currentPage()"
             [class.text-white]="page === currentPage()"
             class="px-3 py-1 border rounded hover:bg-gray-100"
           >
@@ -126,7 +126,7 @@
             type="text"
             [(ngModel)]="createForm.organization_name"
             name="organization_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             required
           />
         </div>
@@ -136,7 +136,7 @@
             [(ngModel)]="createForm.description"
             name="description"
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
           ></textarea>
         </div>
         <div class="mb-4">
@@ -144,7 +144,7 @@
           <select
             [(ngModel)]="createForm.faculty_id"
             name="faculty_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             required
           >
             <option value="0">Select Faculty</option>
@@ -161,22 +161,16 @@
             type="email"
             [(ngModel)]="createForm.email"
             name="email"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             required
           />
           <p class="text-xs text-gray-500 mt-1">Organization login email</p>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-          <input
-            type="password"
-            [(ngModel)]="createForm.password"
-            name="password"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            required
-            minlength="8"
-          />
-          <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+        <div class="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <p class="text-sm text-blue-800">
+            <i class="fas fa-info-circle mr-1"></i>
+            A secure password will be automatically generated and displayed after creation.
+          </p>
         </div>
         <div class="flex justify-end gap-2">
           <button
@@ -188,7 +182,7 @@
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
             Create
           </button>
@@ -210,7 +204,7 @@
             type="text"
             [(ngModel)]="editForm.organization_name"
             name="organization_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             required
           />
         </div>
@@ -220,7 +214,7 @@
             [(ngModel)]="editForm.description"
             name="description"
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
           ></textarea>
         </div>
         <div class="mb-4">
@@ -228,7 +222,7 @@
           <select
             [(ngModel)]="editForm.faculty_id"
             name="faculty_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             required
           >
             <option value="0">Select Faculty</option>
@@ -249,7 +243,7 @@
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
             Update
           </button>

@@ -2,15 +2,16 @@
   <!-- Info Banner -->
   <div class="mb-4 p-4 bg-purple-50 border-l-4 border-purple-500 text-purple-700 rounded">
     <p class="text-sm">
-      <strong>Note:</strong> This is a read-only view. Organizations are managed by their
-      respective department deans.
+      <strong>Note:</strong> This is a read-only view. Organizations are managed by their respective
+      department deans.
     </p>
   </div>
 
   <!-- Action Bar -->
   <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
     <div class="text-sm text-gray-600 flex items-center">
-      Total: <span class="font-semibold ml-1">{{ totalItems() }}</span>&nbsp;organization(s)
+      Total: <span class="font-semibold ml-1">{{ totalItems() }}</span
+      >&nbsp;organization(s)
     </div>
     <div class="flex gap-2">
       <input
@@ -30,7 +31,7 @@
   </div>
 
   <!-- Table -->
-  <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div class="relative overflow-x-auto border border-gray-200 border-dashed rounded-lg">
     <table class="w-full text-sm text-left text-gray-500">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
@@ -59,9 +60,7 @@
               </td>
               <td class="px-6 py-4 font-semibold text-gray-900">{{ org.organization_name }}</td>
               <td class="px-6 py-4">
-                <span
-                  class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-semibold"
-                >
+                <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-semibold">
                   {{ org.department }}
                 </span>
               </td>

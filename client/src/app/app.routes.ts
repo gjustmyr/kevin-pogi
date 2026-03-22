@@ -15,6 +15,7 @@ import { DeanAnnouncementsComponent } from './features/dean/announcements/announ
 import { FacultyAnnouncementsComponent } from './features/faculty/announcements/announcements';
 import { DeanOrganizationAdvisersComponent } from './features/dean/organization-advisers/dean-organization-advisers';
 import { DeanOrganizationDocumentsComponent } from './features/dean/organization-documents/dean-organization-documents';
+import { DeanOrganizationDashboard } from './features/dean/organization-dashboard/organization-dashboard';
 
 export const routes: Routes = [
   {
@@ -55,6 +56,11 @@ export const routes: Routes = [
   {
     path: 'dean/organization-documents',
     component: DeanOrganizationDocumentsComponent,
+    canActivate: [authGuard, roleGuard(['dean'])],
+  },
+  {
+    path: 'dean/organization-dashboard',
+    component: DeanOrganizationDashboard,
     canActivate: [authGuard, roleGuard(['dean'])],
   },
   {

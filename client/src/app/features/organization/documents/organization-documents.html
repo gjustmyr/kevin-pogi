@@ -22,7 +22,7 @@
     <div class="flex space-x-2">
       <button
         (click)="switchViewMode('documents')"
-        [class.bg-blue-600]="viewMode() === 'documents'"
+        [class.bg-green-600]="viewMode() === 'documents'"
         [class.text-white]="viewMode() === 'documents'"
         [class.bg-gray-200]="viewMode() !== 'documents'"
         [class.text-gray-700]="viewMode() !== 'documents'"
@@ -32,7 +32,7 @@
       </button>
       <button
         (click)="switchViewMode('checklist')"
-        [class.bg-blue-600]="viewMode() === 'checklist'"
+        [class.bg-green-600]="viewMode() === 'checklist'"
         [class.text-white]="viewMode() === 'checklist'"
         [class.bg-gray-200]="viewMode() !== 'checklist'"
         [class.text-gray-700]="viewMode() !== 'checklist'"
@@ -43,7 +43,7 @@
     </div>
     <button
       (click)="openSubmitModal()"
-      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+      class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
     >
       <i class="fas fa-upload mr-2"></i>Submit Document
     </button>
@@ -59,9 +59,8 @@
           <select
             [(ngModel)]="selectedAcademicYear"
             (ngModelChange)="applyFilters()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option [ngValue]="undefined">All Years</option>
             @for (year of academicYears(); track year.academic_year_id) {
               <option [ngValue]="year.academic_year_id">
                 {{ year.year_start }}-{{ year.year_end }}
@@ -74,12 +73,12 @@
           <select
             [(ngModel)]="selectedSemester"
             (ngModelChange)="applyFilters()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option [ngValue]="undefined">All Semesters</option>
             <option value="1st Semester">1st Semester</option>
             <option value="2nd Semester">2nd Semester</option>
-            <option value="Summer">Summer</option>
+            <option value="Summer 1">Summer 1</option>
+            <option value="Summer 2">Summer 2</option>
           </select>
         </div>
         <div>
@@ -87,7 +86,7 @@
           <select
             [(ngModel)]="selectedDocumentType"
             (ngModelChange)="applyFilters()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option [ngValue]="undefined">All Types</option>
             @for (type of documentTypes(); track type.document_type_id) {
@@ -100,7 +99,7 @@
           <select
             [(ngModel)]="selectedStatus"
             (ngModelChange)="applyFilters()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <option [ngValue]="undefined">All Status</option>
             <option value="pending">Pending Review</option>
@@ -248,7 +247,7 @@
             @for (page of [].constructor(totalPages()); track $index) {
               <button
                 (click)="changePage($index + 1)"
-                [class.bg-blue-600]="currentPage() === $index + 1"
+                [class.bg-green-600]="currentPage() === $index + 1"
                 [class.text-white]="currentPage() === $index + 1"
                 class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
@@ -280,7 +279,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
             <select
               [(ngModel)]="selectedAcademicYear"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option [ngValue]="undefined">Select Academic Year</option>
               @for (year of academicYears(); track year.academic_year_id) {
@@ -294,19 +293,20 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
             <select
               [(ngModel)]="selectedSemester"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option [ngValue]="undefined">Select Semester</option>
               <option value="1st Semester">1st Semester</option>
               <option value="2nd Semester">2nd Semester</option>
-              <option value="Summer">Summer</option>
+              <option value="Summer 1">Summer 1</option>
+              <option value="Summer 2">Summer 2</option>
             </select>
           </div>
         </div>
         <button
           (click)="refreshChecklist()"
           [disabled]="!selectedAcademicYear() || !selectedSemester()"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <i class="fas fa-sync-alt mr-2"></i>Load Checklist
         </button>
@@ -392,7 +392,7 @@
                   ) {
                     <button
                       (click)="openSubmitModal()"
-                      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
                     >
                       <i class="fas fa-upload mr-2"></i>
                       {{ item.submitted ? 'Resubmit' : 'Submit' }}
@@ -442,7 +442,7 @@
               [(ngModel)]="documentForm().document_type_id"
               name="document_type_id"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option [ngValue]="undefined">Select Document Type</option>
               @for (type of documentTypes(); track type.document_type_id) {
@@ -465,7 +465,7 @@
                 [(ngModel)]="documentForm().academic_year_id"
                 name="academic_year_id"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option [ngValue]="undefined">Select Year</option>
                 @for (year of academicYears(); track year.academic_year_id) {
@@ -483,11 +483,12 @@
                 [(ngModel)]="documentForm().semester"
                 name="semester"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
-                <option value="Summer">Summer</option>
+                <option value="Summer 1">Summer 1</option>
+                <option value="Summer 2">Summer 2</option>
               </select>
             </div>
           </div>
@@ -502,7 +503,7 @@
               name="document_title"
               required
               placeholder="e.g., March 2026 Membership List"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -515,7 +516,7 @@
               (change)="onFileSelected($event)"
               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <p class="text-xs text-gray-600 mt-1">
               Accepted: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 10MB)
@@ -546,7 +547,7 @@
             <button
               type="submit"
               [disabled]="loading()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
               @if (loading()) {
                 <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -575,7 +576,7 @@
               type="text"
               [(ngModel)]="documentForm().document_title"
               name="document_title"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -587,7 +588,7 @@
               type="file"
               (change)="onFileSelected($event)"
               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <p class="text-xs text-gray-600 mt-1">Leave empty to keep current file</p>
             @if (selectedFile()) {
@@ -614,7 +615,7 @@
             <button
               type="submit"
               [disabled]="loading()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
               @if (loading()) {
                 <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -712,7 +713,10 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Term</label>
               <p class="text-gray-900">
                 @if (selectedDocument()!.AcademicYear) {
-                  {{ selectedDocument()!.AcademicYear!.year_start }}-{{ selectedDocument()!.AcademicYear!.year_end }} -
+                  {{ selectedDocument()!.AcademicYear!.year_start }}-{{
+                    selectedDocument()!.AcademicYear!.year_end
+                  }}
+                  -
                   {{ selectedDocument()!.semester }}
                 }
               </p>
@@ -771,7 +775,7 @@
                 selectedDocument()!.original_filename
               )
             "
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
             <i class="fas fa-download mr-2"></i>Download
           </button>

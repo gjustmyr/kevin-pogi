@@ -55,11 +55,6 @@ exports.createAcademicYear = async (req, res) => {
       });
     }
 
-    // If setting as active, deactivate all others
-    if (is_active) {
-      await AcademicYear.update({ is_active: false }, { where: {} });
-    }
-
     const academicYear = await AcademicYear.create({
       year_start,
       year_end,
@@ -86,11 +81,6 @@ exports.updateAcademicYear = async (req, res) => {
 
     if (!academicYear) {
       return res.status(404).json({ message: "Academic year not found" });
-    }
-
-    // If setting as active, deactivate all others
-    if (is_active) {
-      await AcademicYear.update({ is_active: false }, { where: {} });
     }
 
     await academicYear.update({

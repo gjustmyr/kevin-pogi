@@ -56,6 +56,7 @@ exports.getFacultyDemographics = async (req, res) => {
         },
         {
           model: db.FacultyCredential,
+          as: "faculty_credential",
           required: false, // LEFT JOIN to include faculty without credentials
           attributes: [
             "education",
@@ -343,8 +344,8 @@ exports.getFacultyDemographics = async (req, res) => {
       }
 
       // Credential status
-      if (faculty.FacultyCredential) {
-        const cred = faculty.FacultyCredential;
+      if (faculty.faculty_credential) {
+        const cred = faculty.faculty_credential;
         if (cred.status === "validated") credentialStatusStats.validated++;
         else if (cred.status === "pending") credentialStatusStats.pending++;
         else if (cred.status === "returned") credentialStatusStats.returned++;
@@ -405,10 +406,10 @@ exports.getFacultyDemographics = async (req, res) => {
 
       // Professional License from Faculty Credentials
       if (
-        faculty.FacultyCredential &&
-        faculty.FacultyCredential.professional_license
+        faculty.faculty_credential &&
+        faculty.faculty_credential.professional_license
       ) {
-        const license = faculty.FacultyCredential.professional_license.trim();
+        const license = faculty.faculty_credential.professional_license.trim();
         if (
           license &&
           license.toLowerCase() !== "none" &&
@@ -424,11 +425,11 @@ exports.getFacultyDemographics = async (req, res) => {
 
       // Appointment Nature
       if (
-        faculty.FacultyCredential &&
-        faculty.FacultyCredential.appointment_nature
+        faculty.faculty_credential &&
+        faculty.faculty_credential.appointment_nature
       ) {
         const nature =
-          faculty.FacultyCredential.appointment_nature.toLowerCase();
+          faculty.faculty_credential.appointment_nature.toLowerCase();
         if (nature.includes("permanent")) appointmentNatureStats.permanent++;
         else if (nature.includes("temporary"))
           appointmentNatureStats.temporary++;

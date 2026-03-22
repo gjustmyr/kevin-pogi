@@ -25,7 +25,7 @@ interface Certificate {
             <button
               type="button"
               (click)="startEditing()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               <i class="fas fa-edit mr-2"></i>Edit
             </button>
@@ -458,7 +458,7 @@ interface Certificate {
                           <button
                             type="button"
                             (click)="downloadCertificate(cert.id)"
-                            class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition flex items-center gap-1"
+                            class="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition flex items-center gap-1"
                           >
                             <i class="fas fa-eye"></i>
                             View

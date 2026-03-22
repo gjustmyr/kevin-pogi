@@ -77,26 +77,26 @@ app.use("/api/academic-years", require("./routes/academic-year-shared.routes"));
 app.use("/api/announcements", announcementRoutes);
 
 app.get("/api/hello", (req, res) => {
-	res.json({ message: "Hello from the backend!" });
+  res.json({ message: "Hello from the backend!" });
 });
 
 const PORT = process.env.PORT || 3000;
 
 // Test database connection and sync models
 db.sequelize
-	.authenticate()
-	.then(() => {
-		console.log("Database connection successful!");
-		// Sync models with database (creates tables if they don't exist)
-		return db.sequelize.sync({ alter: true });
-	})
-	.then(() => {
-		console.log("Database tables synced!");
-	})
-	.catch((err) => {
-		console.error("Database error:", err.message);
-	});
+  .authenticate()
+  .then(() => {
+    console.log("Database connection successful!");
+    // Sync models with database (creates tables if they don't exist)
+    return db.sequelize.sync({ alter: true });
+  })
+  .then(() => {
+    console.log("Database tables synced!");
+  })
+  .catch((err) => {
+    console.error("Database error:", err.message);
+  });
 
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

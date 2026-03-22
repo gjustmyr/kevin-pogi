@@ -466,3 +466,91 @@ exports.downloadRequirement = async (req, res) => {
 		res.status(500).json({ message: "Error downloading requirement" });
 	}
 };
+
+// Download a specific file by file_id
+exports.downloadFile = async (req, res) => {
+	try {
+		const facultyUserId = req.user.user_id;
+		const { submission_id, file_id } = req.params;
+
+		// Get faculty profile
+		const faculty = await db.Faculty.findOne({
+			where: { user_id: facultyUserId },
+		});
+
+		if (!faculty) {
+			return res.status(404).json({ message: "Faculty profile not found" });
+		}
+
+		// Verify the submission belongs to this faculty
+		const submission = await db.RequirementSubmission.findOne({
+			where: { submission_id, faculty_id: faculty.faculty_id },
+		});
+
+		if (!submission) {
+			return res.status(404).json({ message: "Submission not found" });
+		}
+
+		// Find the specific file
+		const file = await db.RequirementFile.findOne({
+			where: { file_id, submission_id },
+		});
+
+		if (!file) {
+			return res.status(404).json({ message: "File not found" });
+		}
+
+		// Check file exists on disk
+		try {
+			await fs.access(file.file_path);
+		} catch (err) {
+			return res.status(404).json({ message: "File not found on disk" });
+		}
+
+		res.download(file.file_path, file.file_name);
+	} catch (error) {
+		console.error("Download file error:", error);
+		res.status(500).json({ message: "Error downloading file" });
+	}
+};
+
+// Get faculty's clearance for a specific academic year + semester
+exports.getMyPeriodClearance = async (req, res) => {
+	try {
+		const facultyUserId = req.user.user_id;
+		const { academic_year_id, semester } = req.query;
+
+		const faculty = await db.Faculty.findOne({
+			where: { user_id: facultyUserId },
+		});
+
+		if (!faculty) {
+			return res.status(404).json({ message: "Faculty not found" });
+		}
+
+		if (!academic_year_id || !semester) {
+			return res.json({ clearance: null });
+		}
+
+		const clearance = await db.FacultyClearance.findOne({
+			where: {
+				faculty_id: faculty.faculty_id,
+				academic_year_id,
+				semester,
+			},
+		});
+
+		res.json({
+			clearance: clearance
+				? {
+						clearance_status: clearance.clearance_status,
+						clearance_remarks: clearance.clearance_remarks,
+						clearance_date: clearance.clearance_date,
+					}
+				: null,
+		});
+	} catch (error) {
+		console.error("Get period clearance error:", error);
+		res.status(500).json({ message: "Error fetching clearance" });
+	}
+};

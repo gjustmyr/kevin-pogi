@@ -25,7 +25,15 @@ export interface CreateOrganizationData {
   description?: string;
   faculty_id: number;
   email: string;
-  password: string;
+}
+
+export interface CreateOrganizationResponse {
+  message: string;
+  organization: Organization;
+  credentials: {
+    email: string;
+    password: string;
+  };
 }
 
 export interface UpdateOrganizationData {
@@ -62,8 +70,8 @@ export class DeanOrganizationService {
     return this.http.get<OrganizationResponse>(this.apiUrl, { params });
   }
 
-  createOrganization(data: CreateOrganizationData): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  createOrganization(data: CreateOrganizationData): Observable<CreateOrganizationResponse> {
+    return this.http.post<CreateOrganizationResponse>(this.apiUrl, data);
   }
 
   updateOrganization(id: number, data: UpdateOrganizationData): Observable<any> {

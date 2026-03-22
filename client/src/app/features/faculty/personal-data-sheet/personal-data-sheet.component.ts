@@ -56,6 +56,15 @@ export class PersonalDataSheetComponent implements OnInit {
   photoPreview = signal<string>('');
   signaturePreview = signal<string>('');
 
+  // Checkbox states for optional sections
+  hasNoSpouse = false;
+  hasNoChildren = false;
+  fatherInfoNA = false;
+  motherInfoNA = false;
+  hasNoWorkExperience = false;
+  hasNoVoluntaryWork = false;
+  hasNoTraining = false;
+
   // For adding items to arrays
   newChild: PDSChild = { child_name: '', date_of_birth: '' };
   newEducation: PDSEducation = {
@@ -281,6 +290,63 @@ export class PersonalDataSheetComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Toggle methods for optional sections
+  toggleSpouseFields() {
+    if (this.hasNoSpouse) {
+      const currentPDS = this.pds();
+      currentPDS.spouse_surname = 'N/A';
+      currentPDS.spouse_first_name = 'N/A';
+      currentPDS.spouse_middle_name = 'N/A';
+      currentPDS.spouse_occupation = 'N/A';
+      currentPDS.spouse_employer = 'N/A';
+      currentPDS.spouse_business_address = 'N/A';
+      currentPDS.spouse_telephone = 'N/A';
+      this.pds.set(currentPDS);
+    } else {
+      const currentPDS = this.pds();
+      currentPDS.spouse_surname = '';
+      currentPDS.spouse_first_name = '';
+      currentPDS.spouse_middle_name = '';
+      currentPDS.spouse_occupation = '';
+      currentPDS.spouse_employer = '';
+      currentPDS.spouse_business_address = '';
+      currentPDS.spouse_telephone = '';
+      this.pds.set(currentPDS);
+    }
+  }
+
+  toggleFatherInfo() {
+    if (this.fatherInfoNA) {
+      const currentPDS = this.pds();
+      currentPDS.father_surname = 'N/A';
+      currentPDS.father_first_name = 'N/A';
+      currentPDS.father_middle_name = 'N/A';
+      this.pds.set(currentPDS);
+    } else {
+      const currentPDS = this.pds();
+      currentPDS.father_surname = '';
+      currentPDS.father_first_name = '';
+      currentPDS.father_middle_name = '';
+      this.pds.set(currentPDS);
+    }
+  }
+
+  toggleMotherInfo() {
+    if (this.motherInfoNA) {
+      const currentPDS = this.pds();
+      currentPDS.mother_surname = 'N/A';
+      currentPDS.mother_first_name = 'N/A';
+      currentPDS.mother_middle_name = 'N/A';
+      this.pds.set(currentPDS);
+    } else {
+      const currentPDS = this.pds();
+      currentPDS.mother_surname = '';
+      currentPDS.mother_first_name = '';
+      currentPDS.mother_middle_name = '';
+      this.pds.set(currentPDS);
+    }
   }
 
   // Helper methods for managing arrays

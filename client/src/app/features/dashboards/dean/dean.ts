@@ -10,6 +10,7 @@ import { DeanFacultyCredentialsView } from '../../dean/faculty-credentials-view/
 import { DeanAnnouncementsComponent } from '../../dean/announcements/announcements';
 import { DeanOrganizationAdvisersComponent } from '../../dean/organization-advisers/dean-organization-advisers';
 import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
+import { DeanOrganizationDashboard } from '../../dean/organization-dashboard/organization-dashboard';
 import {
   DeanRequirementService,
   DepartmentStatistics,
@@ -21,6 +22,8 @@ import {
   EducationAnalytics,
   ResearchAnalytics,
 } from '../../../services/dean-analytics.service';
+import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
+import { DeanService, Dean } from '../../../services/dean.service';
 
 @Component({
   selector: 'app-dean-dashboard',
@@ -35,6 +38,8 @@ import {
     DeanAnnouncementsComponent,
     DeanOrganizationAdvisersComponent,
     DeanOrganizationDocumentsComponent,
+    DeanOrganizationDashboard,
+    ChangePasswordModal,
   ],
   template: `
     <!-- Sidebar -->
@@ -55,8 +60,8 @@ import {
           <li>
             <button
               (click)="selectTab('dashboard')"
-              [class.bg-blue-50]="activeTab() === 'dashboard'"
-              [class.text-blue-600]="activeTab() === 'dashboard'"
+              [class.bg-green-50]="activeTab() === 'dashboard'"
+              [class.text-green-600]="activeTab() === 'dashboard'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,8 +88,8 @@ import {
           <li>
             <button
               (click)="selectTab('faculty')"
-              [class.bg-blue-50]="activeTab() === 'faculty'"
-              [class.text-blue-600]="activeTab() === 'faculty'"
+              [class.bg-green-50]="activeTab() === 'faculty'"
+              [class.text-green-600]="activeTab() === 'faculty'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,8 +107,8 @@ import {
           <li>
             <button
               (click)="selectTab('organization')"
-              [class.bg-blue-50]="activeTab() === 'organization'"
-              [class.text-blue-600]="activeTab() === 'organization'"
+              [class.bg-green-50]="activeTab() === 'organization'"
+              [class.text-green-600]="activeTab() === 'organization'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,8 +127,8 @@ import {
           <li>
             <button
               (click)="selectTab('accomplishments')"
-              [class.bg-blue-50]="activeTab() === 'accomplishments'"
-              [class.text-blue-600]="activeTab() === 'accomplishments'"
+              [class.bg-green-50]="activeTab() === 'accomplishments'"
+              [class.text-green-600]="activeTab() === 'accomplishments'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,8 +147,8 @@ import {
           <li>
             <button
               (click)="selectTab('credentials')"
-              [class.bg-blue-50]="activeTab() === 'credentials'"
-              [class.text-blue-600]="activeTab() === 'credentials'"
+              [class.bg-green-50]="activeTab() === 'credentials'"
+              [class.text-green-600]="activeTab() === 'credentials'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,8 +167,8 @@ import {
           <li>
             <button
               (click)="selectTab('announcements')"
-              [class.bg-blue-50]="activeTab() === 'announcements'"
-              [class.text-blue-600]="activeTab() === 'announcements'"
+              [class.bg-green-50]="activeTab() === 'announcements'"
+              [class.text-green-600]="activeTab() === 'announcements'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,8 +193,8 @@ import {
           <li>
             <button
               (click)="selectTab('org-advisers')"
-              [class.bg-blue-50]="activeTab() === 'org-advisers'"
-              [class.text-blue-600]="activeTab() === 'org-advisers'"
+              [class.bg-green-50]="activeTab() === 'org-advisers'"
+              [class.text-green-600]="activeTab() === 'org-advisers'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,8 +213,8 @@ import {
           <li>
             <button
               (click)="selectTab('org-documents')"
-              [class.bg-blue-50]="activeTab() === 'org-documents'"
-              [class.text-blue-600]="activeTab() === 'org-documents'"
+              [class.bg-green-50]="activeTab() === 'org-documents'"
+              [class.text-green-600]="activeTab() === 'org-documents'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,15 +260,7 @@ import {
           (click)="toggleUserMenu()"
           class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-          <span class="font-medium">Dean</span>
+          <span class="font-medium">{{ deanName() || 'Dean' }}</span>
           <svg
             class="w-4 h-4 transition-transform"
             [class.rotate-180]="isUserMenuOpen()"
@@ -282,31 +279,25 @@ import {
 
         @if (isUserMenuOpen()) {
           <div
-            class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg"
+            class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg"
           >
             <button
-              disabled
-              class="flex items-center w-full px-4 py-2 text-gray-400 cursor-not-allowed rounded-t-lg"
+              (click)="isChangePasswordOpen.set(true); isUserMenuOpen.set(false)"
+              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-t-lg transition"
             >
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                 />
               </svg>
-              <span>Settings</span>
+              <span>Change Password</span>
             </button>
             <button
               (click)="logout()"
-              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-b-lg transition"
+              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-b-lg transition"
             >
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -332,39 +323,48 @@ import {
             <nav class="flex space-x-8">
               <button
                 (click)="dashboardSubTab.set('overview')"
-                [class.border-blue-500]="dashboardSubTab() === 'overview'"
-                [class.text-blue-600]="dashboardSubTab() === 'overview'"
+                [class.border-green-500]="dashboardSubTab() === 'overview'"
+                [class.text-green-600]="dashboardSubTab() === 'overview'"
                 [class.border-transparent]="dashboardSubTab() !== 'overview'"
                 [class.text-gray-500]="dashboardSubTab() !== 'overview'"
-                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-blue-600 hover:border-blue-300 transition"
+                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition"
               >
                 Requirements & Clearance
               </button>
               <button
                 (click)="selectDashboardSubTab('analytics')"
-                [class.border-blue-500]="dashboardSubTab() === 'analytics'"
-                [class.text-blue-600]="dashboardSubTab() === 'analytics'"
+                [class.border-green-500]="dashboardSubTab() === 'analytics'"
+                [class.text-green-600]="dashboardSubTab() === 'analytics'"
                 [class.border-transparent]="dashboardSubTab() !== 'analytics'"
                 [class.text-gray-500]="dashboardSubTab() !== 'analytics'"
-                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-blue-600 hover:border-blue-300 transition"
+                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition"
               >
                 Faculty Analytics
+              </button>
+              <button
+                (click)="selectDashboardSubTab('organization-analytics')"
+                [class.border-green-500]="dashboardSubTab() === 'organization-analytics'"
+                [class.text-green-600]="dashboardSubTab() === 'organization-analytics'"
+                [class.border-transparent]="dashboardSubTab() !== 'organization-analytics'"
+                [class.text-gray-500]="dashboardSubTab() !== 'organization-analytics'"
+                class="py-4 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition"
+              >
+                Organization Analytics
               </button>
             </nav>
           </div>
 
           @if (dashboardSubTab() === 'overview') {
             <!-- Filters -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
                   <select
                     [(ngModel)]="selectedAcademicYear"
                     (change)="loadDepartmentStats()"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                   >
-                    <option [value]="0">All Years</option>
                     @for (year of academicYearsList(); track year.academic_year_id) {
                       <option [value]="year.academic_year_id">
                         {{ year.year_start }}-{{ year.year_end }}
@@ -378,11 +378,12 @@ import {
                   <select
                     [(ngModel)]="selectedSemester"
                     (change)="loadDepartmentStats()"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                   >
-                    <option value="">All Semesters</option>
-                    <option value="1st Sem">1st Semester</option>
-                    <option value="2nd Sem">2nd Semester</option>
+                    <option value="1st Semester">1st Semester</option>
+                    <option value="2nd Semester">2nd Semester</option>
+                    <option value="Summer 1">Summer 1</option>
+                    <option value="Summer 2">Summer 2</option>
                   </select>
                 </div>
               </div>
@@ -391,7 +392,7 @@ import {
             @if (loading()) {
               <div class="text-center py-12">
                 <div
-                  class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+                  class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-green-600 border-r-transparent"
                 ></div>
                 <p class="mt-4 text-gray-600">Loading dashboard...</p>
               </div>
@@ -463,7 +464,7 @@ import {
               <!-- Charts and Visualizations -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Status Distribution Chart -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">
                     Requirements Status Distribution
                   </h3>
@@ -538,7 +539,7 @@ import {
                 </div>
 
                 <!-- Overall Completion -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Overall Completion Rate</h3>
                   <div class="flex items-center justify-center mb-6">
                     <div class="relative w-64 h-64">
@@ -598,7 +599,7 @@ import {
               </div>
 
               <!-- Faculty Clearance Status -->
-              <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-6">Faculty Clearance Status</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <!-- Cleared Faculties -->
@@ -787,7 +788,7 @@ import {
               <!-- Charts Row 1 -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Gender Distribution -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Gender Distribution</h3>
                   <div class="flex items-center justify-center mb-6">
                     <div class="relative w-64 h-64">
@@ -839,7 +840,7 @@ import {
                 </div>
 
                 <!-- Age Distribution -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Age Distribution</h3>
                   <div class="space-y-4">
                     <div>
@@ -939,7 +940,7 @@ import {
               <!-- Charts Row 2: Demographics -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Civil Status -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Civil Status</h3>
                   <div class="space-y-4">
                     <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -1014,7 +1015,7 @@ import {
                 </div>
 
                 <!-- Credential Status -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Credential Status</h3>
                   <div class="space-y-4">
                     <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -1101,7 +1102,7 @@ import {
               <!-- Charts Row 3: Academic -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Educational Attainment -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Educational Attainment</h3>
                   <div class="space-y-4">
                     <div class="flex items-center justify-between p-3 bg-indigo-50 rounded-lg">
@@ -1159,7 +1160,7 @@ import {
                 </div>
 
                 <!-- Currently Enrolled -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Currently Enrolled</h3>
                   @if (educationAnalytics()) {
                     <div class="space-y-4">
@@ -1205,7 +1206,7 @@ import {
               <!-- Charts Row 4: Certifications & Trainings -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Certifications & Eligibility -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Certifications & Eligibility</h3>
                   <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
@@ -1292,7 +1293,7 @@ import {
                 </div>
 
                 <!-- Trainings & Seminars -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Trainings & Seminars</h3>
                   <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
@@ -1328,7 +1329,7 @@ import {
                       </div>
                       <div class="w-full bg-gray-200 rounded-full h-3">
                         <div
-                          class="bg-blue-600 h-full rounded-full"
+                          class="bg-green-600 h-full rounded-full"
                           [style.width.%]="
                             (facultyDemographics()!.training.faculty_with_trainings /
                               facultyDemographics()!.total_faculty) *
@@ -1438,7 +1439,7 @@ import {
               <!-- Charts Row 5: Research & Publications -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Research & Publications -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
                   <h3 class="text-lg font-bold text-gray-800 mb-6">Research & Publications</h3>
                   @if (researchAnalytics()) {
                     <div class="space-y-4">
@@ -1486,6 +1487,10 @@ import {
               </div>
             }
           }
+
+          @if (dashboardSubTab() === 'organization-analytics') {
+            <app-dean-organization-dashboard />
+          }
         </div>
       }
       @if (activeTab() === 'faculty') {
@@ -1510,6 +1515,10 @@ import {
         <app-dean-organization-documents />
       }
     </div>
+
+    @if (isChangePasswordOpen()) {
+      <app-change-password-modal (close)="isChangePasswordOpen.set(false)" />
+    }
   `,
   styles: [],
 })
@@ -1518,6 +1527,8 @@ export class DeanDashboard implements OnInit {
   activeTab = signal<string>('dashboard');
   dashboardSubTab = signal<string>('overview');
   isUserMenuOpen = signal(false);
+  isChangePasswordOpen = signal(false);
+  deanName = signal<string>('');
 
   // Dashboard data
   loading = signal(false);
@@ -1536,21 +1547,48 @@ export class DeanDashboard implements OnInit {
     private requirementService: DeanRequirementService,
     private dropdownService: DropdownService,
     private analyticsService: DeanAnalyticsService,
+    private deanService: DeanService,
   ) {}
 
   ngOnInit() {
+    this.loadDeanProfile();
     this.loadAcademicYears();
     this.loadDepartmentStats();
+  }
+
+  loadDeanProfile() {
+    this.deanService.getProfile().subscribe({
+      next: (dean: Dean) => {
+        const fullName = dean.middle_name
+          ? `${dean.first_name} ${dean.middle_name} ${dean.last_name}`
+          : `${dean.first_name} ${dean.last_name}`;
+        this.deanName.set(fullName);
+      },
+      error: (error: any) => {
+        console.error('Error loading dean profile:', error);
+        // Fallback to email-based name
+        const user = this.authService.currentUser();
+        if (user) {
+          const emailName = user.email.split('@')[0];
+          const formattedName = emailName
+            .split('.')
+            .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
+          this.deanName.set(formattedName);
+        }
+      },
+    });
   }
 
   loadAcademicYears() {
     this.dropdownService.getAcademicYears().subscribe({
       next: (years) => {
         this.academicYearsList.set(years);
-        const currentYear = years.find((y) => y.is_active === 1);
-        if (currentYear) {
-          this.selectedAcademicYear.set(currentYear.academic_year_id);
+        // Set latest (first) academic year and semester as default
+        if (years.length > 0) {
+          this.selectedAcademicYear.set(years[0].academic_year_id);
         }
+        this.selectedSemester.set('1st Semester');
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -1596,6 +1634,8 @@ export class DeanDashboard implements OnInit {
     this.dashboardSubTab.set(subTab);
     if (subTab === 'analytics') {
       this.loadAnalytics();
+    } else if (subTab === 'organization-analytics') {
+      // Organization dashboard loads its own data via ngOnInit
     }
   }
 

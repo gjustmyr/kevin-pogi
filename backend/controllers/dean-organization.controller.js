@@ -2,6 +2,18 @@ const db = require("../models");
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 
+// Generate secure random password
+const generatePassword = () => {
+  const length = 12;
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
+
 // Get all organizations for dean's department
 exports.getOrganizations = async (req, res) => {
   try {
@@ -78,13 +90,12 @@ exports.createOrganization = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    const { organization_name, description, faculty_id, email, password } =
-      req.body;
+    const { organization_name, description, faculty_id, email } = req.body;
 
-    if (!organization_name || !faculty_id || !email || !password) {
+    if (!organization_name || !faculty_id || !email) {
       await transaction.rollback();
       return res.status(400).json({
-        message: "Organization name, faculty, email, and password are required",
+        message: "Organization name, faculty, and email are required",
       });
     }
 
@@ -124,8 +135,9 @@ exports.createOrganization = async (req, res) => {
       });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate secure password
+    const generatedPassword = generatePassword();
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
 
     // Create user account
     const user = await db.User.create(
@@ -154,6 +166,10 @@ exports.createOrganization = async (req, res) => {
     res.status(201).json({
       message: "Organization created successfully",
       organization,
+      credentials: {
+        email,
+        password: generatedPassword,
+      },
     });
   } catch (error) {
     await transaction.rollback();

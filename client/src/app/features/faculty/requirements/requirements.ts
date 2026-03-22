@@ -60,11 +60,13 @@ export class FacultyRequirements implements OnInit {
     this.dropdownService.getAcademicYears().subscribe({
       next: (years) => {
         this.academicYearsList.set(years);
-        const currentYear = years.find((y) => y.is_active === 1);
-        if (currentYear) {
-          this.selectedAcademicYear.set(currentYear.academic_year_id);
-          this.submitForm.academic_year_id = currentYear.academic_year_id;
+        // Set latest (first) academic year and semester as default
+        if (years.length > 0) {
+          this.selectedAcademicYear.set(years[0].academic_year_id);
+          this.submitForm.academic_year_id = years[0].academic_year_id;
         }
+        this.selectedSemester.set('1st Semester');
+        this.submitForm.semester = '1st Semester';
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -326,6 +328,10 @@ export class FacultyRequirements implements OnInit {
     this.requirementService.downloadRequirement(submission_id);
   }
 
+  downloadSingleFile(submission_id: number, file_id: number, fileName: string) {
+    this.requirementService.downloadSingleFile(submission_id, file_id, fileName);
+  }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'validated':
@@ -350,5 +356,16 @@ export class FacultyRequirements implements OnInit {
       default:
         return status;
     }
+  }
+
+  getSemesterLabel(semester: string): string {
+    const map: Record<string, string> = {
+      '1st Sem': '1st Semester',
+      '2nd Sem': '2nd Semester',
+      'Midterm 1': '1st Semester',
+      'Midterm 2': '2nd Semester',
+      Summer: 'Summer 1',
+    };
+    return map[semester] ?? semester;
   }
 }

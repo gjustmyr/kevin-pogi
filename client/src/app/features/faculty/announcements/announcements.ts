@@ -110,4 +110,25 @@ export class FacultyAnnouncementsComponent implements OnInit {
     }
     return 'Dean';
   }
+
+  getDeanInitials(announcement: Announcement): string {
+    if (announcement.Dean) {
+      const first = announcement.Dean.first_name.charAt(0);
+      const last = announcement.Dean.last_name.charAt(0);
+      return `${first}${last}`;
+    }
+    return 'D';
+  }
+
+  getTimeAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+    return this.formatDate(dateString);
+  }
 }

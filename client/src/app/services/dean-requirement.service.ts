@@ -24,6 +24,11 @@ export interface FacultyRequirementsResponse {
     clearance_date?: string;
   };
   requirements: RequirementSubmission[];
+  period_clearance: {
+    clearance_status: 'pending' | 'cleared' | 'withholding';
+    clearance_remarks?: string;
+    clearance_date?: string;
+  } | null;
   statistics: {
     total_requirements: number;
     validated: number;
@@ -138,25 +143,43 @@ export class DeanRequirementService {
     return this.http.put(`${this.apiUrl}/${submission_id}/return`, { remarks });
   }
 
-  // Get download URL for a requirement
-  getDownloadUrl(submission_id: number): string {
-    return `${this.apiUrl}/${submission_id}/download`;
+  // Download a requirement file (authenticated)
+  downloadRequirement(submission_id: number, fileName?: string): void {
+    this.http
+      .get(`${this.apiUrl}/${submission_id}/download`, { responseType: 'blob', observe: 'response' })
+      .subscribe({
+        next: (response) => {
+          const blob = response.body!;
+          const disposition = response.headers.get('Content-Disposition');
+          let name = fileName ?? `requirement_${submission_id}`;
+          if (disposition) {
+            const match = disposition.match(/filename[^;=\n]*=(?:(['"]))?(.*?)\1/);
+            if (match?.[2]) name = match[2];
+          }
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = name;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => console.error('Download failed', err),
+      });
   }
 
-  // Download a requirement file
-  downloadRequirement(submission_id: number): void {
-    window.open(this.getDownloadUrl(submission_id), '_blank');
-  }
-
-  // Set faculty clearance status (manual override or auto-calculation triggered by backend)
+  // Set faculty clearance status (manual override)
   setFacultyClearanceStatus(
     faculty_id: number,
     status: 'pending' | 'cleared' | 'withholding',
     remarks?: string,
+    academic_year_id?: number,
+    semester?: string,
   ): Observable<any> {
     return this.http.put(`${this.apiUrl}/faculty/${faculty_id}/clearance-status`, {
       status,
       remarks,
+      academic_year_id,
+      semester,
     });
   }
 }

@@ -115,6 +115,11 @@ export class OrganizationDocumentsComponent implements OnInit {
     this.academicYearService.getAcademicYears().subscribe({
       next: (response: AcademicYearsResponse) => {
         this.academicYears.set(response.academicYears);
+        // Set latest (first) academic year and semester as default
+        if (response.academicYears.length > 0) {
+          this.selectedAcademicYear.set(response.academicYears[0].academic_year_id);
+        }
+        this.selectedSemester.set('1st Semester');
       },
       error: (error: any) => {
         console.error('Failed to load academic years:', error);
