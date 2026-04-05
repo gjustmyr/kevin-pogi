@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 export interface SuperadminStatistics {
   total_faculty: number;
   total_deans: number;
-  total_files: number;
+  total_organizations: number;
   files_by_status: {
     pending: number;
     returned: number;

@@ -247,153 +247,106 @@ import {
     <div class="pt-20 pl-4 pr-4 pb-4 transition-all duration-300" [class.ml-64]="isSidebarOpen()">
       @if (activeTab() === 'dashboard') {
         <div class="space-y-6">
-          <!-- Statistics Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Total Faculty -->
+          <!-- Main Statistics Cards - What Superadmin Manages -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Total Deans (Primary Management) -->
+            <div
+              class="bg-linear-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6"
+            >
+              <div>
+                <h3 class="text-sm font-medium opacity-90 mb-1">Total Deans</h3>
+                <p class="text-4xl font-bold">{{ statistics().total_deans }}</p>
+                <p class="text-xs opacity-80 mt-1">College department heads</p>
+              </div>
+            </div>
+
+            <!-- Total Faculty (View Only) -->
             <div
               class="bg-linear-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6"
             >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
-                  <p class="text-4xl font-bold">{{ statistics().total_faculty }}</p>
-                </div>
-                <div class="text-5xl opacity-30">
-                  <i class="fas fa-users"></i>
-                </div>
+              <div>
+                <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
+                <p class="text-4xl font-bold">{{ statistics().total_faculty }}</p>
+                <p class="text-xs opacity-80 mt-1">Across all departments</p>
               </div>
             </div>
 
-            <!-- Total Deans -->
+            <!-- Total Organizations -->
             <div
               class="bg-linear-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6"
             >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Deans</h3>
-                  <p class="text-4xl font-bold">{{ statistics().total_deans }}</p>
-                </div>
-                <div class="text-5xl opacity-30">
-                  <i class="fas fa-user-tie"></i>
-                </div>
-              </div>
-            </div>
-
-            <!-- Total Files -->
-            <div
-              class="bg-linear-to-br from-indigo-500 to-indigo-600 text-white rounded-lg shadow-lg p-6"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium opacity-90 mb-1">Total Files</h3>
-                  <p class="text-4xl font-bold">{{ statistics().total_files.toLocaleString() }}</p>
-                </div>
-                <div class="text-5xl opacity-30">
-                  <i class="fas fa-file-alt"></i>
-                </div>
+              <div>
+                <h3 class="text-sm font-medium opacity-90 mb-1">Total Organizations</h3>
+                <p class="text-4xl font-bold">{{ statistics().total_organizations }}</p>
+                <p class="text-xs opacity-80 mt-1">Student organizations</p>
               </div>
             </div>
           </div>
 
-          <!-- Files by Status -->
-          <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-6">Files by Status</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Pending -->
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <div class="flex items-center">
-                    <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span class="text-sm font-medium text-gray-700">Pending Review</span>
-                  </div>
-                  <span class="text-sm font-semibold text-yellow-600">
-                    {{ statistics().files_by_status.pending.toLocaleString() }}
-                  </span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div
-                    class="bg-yellow-500 h-full rounded-full transition-all duration-500"
-                    [style.width.%]="
-                      statistics().total_files > 0
-                        ? (statistics().files_by_status.pending / statistics().total_files) * 100
-                        : 0
-                    "
-                  ></div>
-                </div>
+          <!-- Management Overview -->
+          <div class="p-6 border border-gray-200 rounded-lg bg-white">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">System Management Overview</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Dean Management -->
+              <div class="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <h4 class="font-semibold text-gray-800 mb-1">Dean Management</h4>
+                <p class="text-2xl font-bold text-green-600 mb-1">{{ statistics().total_deans }}</p>
+                <p class="text-xs text-gray-600">Create, edit, and manage dean accounts</p>
               </div>
 
-              <!-- Returned -->
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <div class="flex items-center">
-                    <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                    <span class="text-sm font-medium text-gray-700">Returned</span>
-                  </div>
-                  <span class="text-sm font-semibold text-red-600">
-                    {{ statistics().files_by_status.returned.toLocaleString() }}
-                  </span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div
-                    class="bg-red-500 h-full rounded-full transition-all duration-500"
-                    [style.width.%]="
-                      statistics().total_files > 0
-                        ? (statistics().files_by_status.returned / statistics().total_files) * 100
-                        : 0
-                    "
-                  ></div>
-                </div>
+              <!-- Faculty Overview -->
+              <div class="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 class="font-semibold text-gray-800 mb-1">Faculty Overview</h4>
+                <p class="text-2xl font-bold text-blue-600 mb-1">
+                  {{ statistics().total_faculty }}
+                </p>
+                <p class="text-xs text-gray-600">View-only access to all faculty</p>
+              </div>
+
+              <!-- Organization Overview -->
+              <div class="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <h4 class="font-semibold text-gray-800 mb-1">Organization Overview</h4>
+                <p class="text-2xl font-bold text-purple-600 mb-1">
+                  {{ statistics().total_organizations }}
+                </p>
+                <p class="text-xs text-gray-600">View-only access to organizations</p>
               </div>
             </div>
           </div>
 
-          <!-- Summary Cards -->
+          <!-- Quick Actions -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium text-yellow-800 mb-1">Pending Review</h3>
-                  <p class="text-3xl font-bold text-yellow-600">
-                    {{ statistics().files_by_status.pending.toLocaleString() }}
-                  </p>
-                  <p class="text-xs text-yellow-700 mt-2">
-                    {{
-                      statistics().total_files > 0
-                        ? (
-                            (statistics().files_by_status.pending / statistics().total_files) *
-                            100
-                          ).toFixed(1)
-                        : '0.0'
-                    }}% of total
-                  </p>
-                </div>
-                <div class="text-4xl text-yellow-300">
-                  <i class="fas fa-clock"></i>
-                </div>
+            <div
+              class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg p-6 cursor-pointer hover:shadow-md transition"
+              (click)="selectTab('college-department')"
+            >
+              <div>
+                <h3 class="text-lg font-semibold text-green-800 mb-2">Manage Deans</h3>
+                <p class="text-sm text-green-700 mb-3">
+                  Create and manage dean accounts for college departments
+                </p>
+                <button
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                >
+                  Go to Dean Management →
+                </button>
               </div>
             </div>
 
-            <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium text-red-800 mb-1">Returned</h3>
-                  <p class="text-3xl font-bold text-red-600">
-                    {{ statistics().files_by_status.returned.toLocaleString() }}
-                  </p>
-                  <p class="text-xs text-red-700 mt-2">
-                    {{
-                      statistics().total_files > 0
-                        ? (
-                            (statistics().files_by_status.returned / statistics().total_files) *
-                            100
-                          ).toFixed(1)
-                        : '0.0'
-                    }}% of total
-                  </p>
-                </div>
-                <div class="text-4xl text-red-300">
-                  <i class="fas fa-redo"></i>
-                </div>
+            <div
+              class="bg-gradient-to-r from-purple-50 to-purple-100 border-l-4 border-purple-500 rounded-lg p-6 cursor-pointer hover:shadow-md transition"
+              (click)="selectTab('academic-year')"
+            >
+              <div>
+                <h3 class="text-lg font-semibold text-purple-800 mb-2">Academic Settings</h3>
+                <p class="text-sm text-purple-700 mb-3">
+                  Configure academic years and semester periods
+                </p>
+                <button
+                  class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm"
+                >
+                  Go to Settings →
+                </button>
               </div>
             </div>
           </div>
@@ -427,7 +380,7 @@ export class SuperadminDashboard implements OnInit {
   statistics = signal<SuperadminStatistics>({
     total_faculty: 0,
     total_deans: 0,
-    total_files: 0,
+    total_organizations: 0,
     files_by_status: {
       pending: 0,
       returned: 0,
