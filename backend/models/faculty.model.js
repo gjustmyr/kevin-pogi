@@ -39,6 +39,12 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       comment: "Department name as text input (no longer a foreign key)",
     },
+    position_level: {
+      type: Sequelize.STRING(100),
+      allowNull: true,
+      comment:
+        "Academic position level (e.g., Lecturer 1, Professor 1, Associate Professor, etc.)",
+    },
     user_id: {
       type: Sequelize.INTEGER,
       allowNull: false,

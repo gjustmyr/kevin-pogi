@@ -7,8 +7,14 @@ exports.getDepartments = async (req, res) => {
       { department_id: 1, department_name: "College of Engineering" },
       { department_id: 2, department_name: "College of Education" },
       { department_id: 3, department_name: "College of Arts and Sciences" },
-      { department_id: 4, department_name: "College of Business Administration" },
-      { department_id: 5, department_name: "College of Information Technology" },
+      {
+        department_id: 4,
+        department_name: "College of Business Administration",
+      },
+      {
+        department_id: 5,
+        department_name: "College of Information Technology",
+      },
       { department_id: 6, department_name: "College of Nursing" },
     ];
 
@@ -23,12 +29,36 @@ exports.getDepartments = async (req, res) => {
 exports.getPrograms = async (req, res) => {
   try {
     const programs = [
-      { program_id: 1, program_name: "Bachelor of Science in Computer Science", program_acronym: "BSCS" },
-      { program_id: 2, program_name: "Bachelor of Science in Information Technology", program_acronym: "BSIT" },
-      { program_id: 3, program_name: "Bachelor of Elementary Education", program_acronym: "BEEd" },
-      { program_id: 4, program_name: "Bachelor of Secondary Education", program_acronym: "BSEd" },
-      { program_id: 5, program_name: "Bachelor of Science in Business Administration", program_acronym: "BSBA" },
-      { program_id: 6, program_name: "Bachelor of Science in Nursing", program_acronym: "BSN" },
+      {
+        program_id: 1,
+        program_name: "Bachelor of Science in Computer Science",
+        program_acronym: "BSCS",
+      },
+      {
+        program_id: 2,
+        program_name: "Bachelor of Science in Information Technology",
+        program_acronym: "BSIT",
+      },
+      {
+        program_id: 3,
+        program_name: "Bachelor of Elementary Education",
+        program_acronym: "BEEd",
+      },
+      {
+        program_id: 4,
+        program_name: "Bachelor of Secondary Education",
+        program_acronym: "BSEd",
+      },
+      {
+        program_id: 5,
+        program_name: "Bachelor of Science in Business Administration",
+        program_acronym: "BSBA",
+      },
+      {
+        program_id: 6,
+        program_name: "Bachelor of Science in Nursing",
+        program_acronym: "BSN",
+      },
     ];
 
     res.json(programs);
@@ -101,5 +131,40 @@ exports.getAcademicYears = async (req, res) => {
   } catch (error) {
     console.error("Get academic years dropdown error:", error);
     res.status(500).json({ message: "Error fetching academic years" });
+  }
+};
+
+// Get static position levels for dropdown
+exports.getPositionLevels = async (req, res) => {
+  try {
+    const positionLevels = [
+      { value: "Lecturer I", label: "Lecturer I" },
+      { value: "Lecturer II", label: "Lecturer II" },
+      { value: "Lecturer III", label: "Lecturer III" },
+      { value: "Instructor I", label: "Instructor I" },
+      { value: "Instructor II", label: "Instructor II" },
+      { value: "Instructor III", label: "Instructor III" },
+      { value: "Assistant Professor I", label: "Assistant Professor I" },
+      { value: "Assistant Professor II", label: "Assistant Professor II" },
+      { value: "Assistant Professor III", label: "Assistant Professor III" },
+      { value: "Assistant Professor IV", label: "Assistant Professor IV" },
+      { value: "Associate Professor I", label: "Associate Professor I" },
+      { value: "Associate Professor II", label: "Associate Professor II" },
+      { value: "Associate Professor III", label: "Associate Professor III" },
+      { value: "Associate Professor IV", label: "Associate Professor IV" },
+      { value: "Associate Professor V", label: "Associate Professor V" },
+      { value: "Professor I", label: "Professor I" },
+      { value: "Professor II", label: "Professor II" },
+      { value: "Professor III", label: "Professor III" },
+      { value: "Professor IV", label: "Professor IV" },
+      { value: "Professor V", label: "Professor V" },
+      { value: "Professor VI", label: "Professor VI" },
+      { value: "University Professor", label: "University Professor" },
+    ];
+
+    res.json(positionLevels);
+  } catch (error) {
+    console.error("Get position levels dropdown error:", error);
+    res.status(500).json({ message: "Error fetching position levels" });
   }
 };

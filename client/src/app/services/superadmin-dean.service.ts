@@ -12,6 +12,7 @@ export interface Dean {
   email: string;
   contact_number?: string;
   department: string;
+  position_level?: string;
   user_id: number;
   createdAt?: string;
   updatedAt?: string;
@@ -32,6 +33,7 @@ export interface CreateDeanData {
   email: string;
   contact_number?: string;
   department: string;
+  position_level?: string;
 }
 
 export interface UpdateDeanData {
@@ -42,6 +44,7 @@ export interface UpdateDeanData {
   email: string;
   contact_number?: string;
   department: string;
+  position_level?: string;
 }
 
 @Injectable({

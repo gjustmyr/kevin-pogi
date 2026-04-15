@@ -7,7 +7,11 @@ import {
   CreateDeanData,
   UpdateDeanData,
 } from '../../../services/superadmin-dean.service';
-import { DropdownService, DropdownDepartment } from '../../../services/dropdown.service';
+import {
+  DropdownService,
+  DropdownDepartment,
+  DropdownPositionLevel,
+} from '../../../services/dropdown.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -19,6 +23,7 @@ import Swal from 'sweetalert2';
 export class SuperadminDeanManagement implements OnInit {
   deansList = signal<Dean[]>([]);
   departmentsList = signal<DropdownDepartment[]>([]);
+  positionLevels = signal<DropdownPositionLevel[]>([]);
   loading = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
@@ -39,6 +44,7 @@ export class SuperadminDeanManagement implements OnInit {
     email: '',
     contact_number: '',
     department: '',
+    position_level: '',
   };
   editForm = {
     dean_id: 0,
@@ -49,6 +55,7 @@ export class SuperadminDeanManagement implements OnInit {
     email: '',
     contact_number: '',
     department: '',
+    position_level: '',
   };
 
   constructor(
@@ -58,6 +65,7 @@ export class SuperadminDeanManagement implements OnInit {
 
   ngOnInit() {
     this.loadDepartments();
+    this.loadPositionLevels();
     this.loadDeans();
   }
 
@@ -69,6 +77,13 @@ export class SuperadminDeanManagement implements OnInit {
       error: (error) => {
         console.error('Error loading departments:', error);
       },
+    });
+  }
+
+  loadPositionLevels() {
+    this.dropdownService.getPositionLevels().subscribe({
+      next: (levels) => this.positionLevels.set(levels),
+      error: (error) => console.error('Error loading position levels:', error),
     });
   }
 
@@ -154,6 +169,7 @@ export class SuperadminDeanManagement implements OnInit {
       email: '',
       contact_number: '',
       department: '',
+      position_level: '',
     };
     this.showCreateModal.set(true);
   }
@@ -256,6 +272,7 @@ export class SuperadminDeanManagement implements OnInit {
       email: dean.email,
       contact_number: dean.contact_number || '',
       department: dean.department || '',
+      position_level: dean.position_level || '',
     };
     this.showEditModal.set(true);
   }
@@ -312,6 +329,7 @@ export class SuperadminDeanManagement implements OnInit {
         email: this.editForm.email,
         contact_number: this.editForm.contact_number,
         department: this.editForm.department,
+        position_level: this.editForm.position_level,
       })
       .subscribe({
         next: () => {

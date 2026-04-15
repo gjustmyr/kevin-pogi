@@ -7,7 +7,11 @@ import {
   CreateFacultyData,
   UpdateFacultyData,
 } from '../../../services/dean-faculty.service';
-import { DropdownService, DropdownAcademicYear } from '../../../services/dropdown.service';
+import {
+  DropdownService,
+  DropdownAcademicYear,
+  DropdownPositionLevel,
+} from '../../../services/dropdown.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -26,6 +30,8 @@ export class DeanFacultyManagement implements OnInit {
   pageSize = 10;
   Math = Math;
 
+  positionLevels = signal<DropdownPositionLevel[]>([]);
+
   showCreateModal = signal(false);
   showEditModal = signal(false);
 
@@ -36,6 +42,7 @@ export class DeanFacultyManagement implements OnInit {
     last_name: '',
     email: '',
     contact_number: '',
+    position_level: '',
   };
   editForm = {
     faculty_id: 0,
@@ -45,6 +52,7 @@ export class DeanFacultyManagement implements OnInit {
     last_name: '',
     email: '',
     contact_number: '',
+    position_level: '',
   };
 
   constructor(
@@ -54,6 +62,14 @@ export class DeanFacultyManagement implements OnInit {
 
   ngOnInit() {
     this.loadFaculty();
+    this.loadPositionLevels();
+  }
+
+  loadPositionLevels() {
+    this.dropdownService.getPositionLevels().subscribe({
+      next: (levels) => this.positionLevels.set(levels),
+      error: (error) => console.error('Error loading position levels:', error),
+    });
   }
 
   loadFaculty() {
@@ -131,6 +147,7 @@ export class DeanFacultyManagement implements OnInit {
       last_name: '',
       email: '',
       contact_number: '',
+      position_level: '',
     };
     this.showCreateModal.set(true);
   }
@@ -222,6 +239,7 @@ export class DeanFacultyManagement implements OnInit {
       last_name: faculty.last_name,
       email: faculty.email,
       contact_number: faculty.contact_number || '',
+      position_level: faculty.position_level || '',
     };
     this.showEditModal.set(true);
   }
@@ -268,6 +286,7 @@ export class DeanFacultyManagement implements OnInit {
         last_name: this.editForm.last_name,
         email: this.editForm.email,
         contact_number: this.editForm.contact_number,
+        position_level: this.editForm.position_level,
       })
       .subscribe({
         next: () => {

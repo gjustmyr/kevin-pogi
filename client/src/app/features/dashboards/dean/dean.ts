@@ -1,4 +1,4 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../../services/auth/auth';
@@ -7,7 +7,6 @@ import { DeanFacultyManagement } from '../../dean/faculty-management/faculty-man
 import { DeanOrganizationManagement } from '../../dean/organization-management/organization-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
 import { DeanFacultyCredentialsView } from '../../dean/faculty-credentials-view/faculty-credentials-view';
-import { DeanAnnouncementsComponent } from '../../dean/announcements/announcements';
 import { DeanOrganizationAdvisersComponent } from '../../dean/organization-advisers/dean-organization-advisers';
 import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
 import { DeanOrganizationDashboard } from '../../dean/organization-dashboard/organization-dashboard';
@@ -21,9 +20,13 @@ import {
   FacultyDemographics,
   EducationAnalytics,
   ResearchAnalytics,
+  FacultyInvolvementResponse,
 } from '../../../services/dean-analytics.service';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 import { DeanService, Dean } from '../../../services/dean.service';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-dean-dashboard',
@@ -35,7 +38,6 @@ import { DeanService, Dean } from '../../../services/dean.service';
     DeanOrganizationManagement,
     DeanRequirementsMonitoring,
     DeanFacultyCredentialsView,
-    DeanAnnouncementsComponent,
     DeanOrganizationAdvisersComponent,
     DeanOrganizationDocumentsComponent,
     DeanOrganizationDashboard,
@@ -103,26 +105,6 @@ import { DeanService, Dean } from '../../../services/dean.service';
             </button>
           </li>
 
-          <!-- Organization -->
-          <li>
-            <button
-              (click)="selectTab('organization')"
-              [class.bg-green-50]="activeTab() === 'organization'"
-              [class.text-green-600]="activeTab() === 'organization'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9.143 4H4.857A.857.857 0 0 0 4 4.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 10 9.143V4.857A.857.857 0 0 0 9.143 4Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 20 9.143V4.857A.857.857 0 0 0 19.143 4Zm-10 10H4.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286A.857.857 0 0 0 9.143 14Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Organization</span>
-            </button>
-          </li>
-
           <!-- Accomplishments -->
           <li>
             <button
@@ -163,12 +145,18 @@ import { DeanService, Dean } from '../../../services/dean.service';
             </button>
           </li>
 
-          <!-- Announcements -->
+          <li class="pt-2 mt-2 border-t border-gray-200">
+            <div class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Organization Management
+            </div>
+          </li>
+
+          <!-- Organization -->
           <li>
             <button
-              (click)="selectTab('announcements')"
-              [class.bg-green-50]="activeTab() === 'announcements'"
-              [class.text-green-600]="activeTab() === 'announcements'"
+              (click)="selectTab('organization')"
+              [class.bg-green-50]="activeTab() === 'organization'"
+              [class.text-green-600]="activeTab() === 'organization'"
               class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,17 +164,11 @@ import { DeanService, Dean } from '../../../services/dean.service';
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                  d="M9.143 4H4.857A.857.857 0 0 0 4 4.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 10 9.143V4.857A.857.857 0 0 0 9.143 4Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 20 9.143V4.857A.857.857 0 0 0 19.143 4Zm-10 10H4.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286A.857.857 0 0 0 9.143 14Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z"
                 />
               </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Announcements</span>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Organizations</span>
             </button>
-          </li>
-
-          <li class="pt-2 mt-2 border-t border-gray-200">
-            <div class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Organization Management
-            </div>
           </li>
 
           <!-- Organization Advisers -->
@@ -716,7 +698,7 @@ import { DeanService, Dean } from '../../../services/dean.service';
                   </div>
                 </div>
                 <div
-                  class="bg-linear-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-6 text-white"
+                  class="bg-linear-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white"
                 >
                   <div class="flex items-center justify-between">
                     <div>
@@ -738,7 +720,7 @@ import { DeanService, Dean } from '../../../services/dean.service';
                   </div>
                 </div>
                 <div
-                  class="bg-linear-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white"
+                  class="bg-linear-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-6 text-white"
                 >
                   <div class="flex items-center justify-between">
                     <div>
@@ -1485,6 +1467,75 @@ import { DeanService, Dean } from '../../../services/dean.service';
                   }
                 </div>
               </div>
+
+              <!-- Section Divider -->
+              <div class="my-8 border-t-2 border-gray-300 relative">
+                <div
+                  class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2 bg-white px-4"
+                >
+                  <h2 class="text-xl font-bold text-gray-700">Faculty Involvement Analytics</h2>
+                </div>
+              </div>
+
+              <!-- Faculty Involvement Pie Charts -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Research Involvement Chart -->
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
+                  <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">
+                    Research-related Activities
+                  </h3>
+                  <p class="text-xs text-gray-600 text-center mb-4">(Permanent and Temporary)</p>
+                  @if (chartLoading.research) {
+                    <div class="flex items-center justify-center h-64">
+                      <div
+                        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
+                      ></div>
+                    </div>
+                  } @else {
+                    <div class="relative h-64">
+                      <canvas #researchChart></canvas>
+                    </div>
+                  }
+                </div>
+
+                <!-- Extension Involvement Chart -->
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
+                  <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">
+                    Extension Services
+                  </h3>
+                  <p class="text-xs text-gray-600 text-center mb-4">(Permanent and Temporary)</p>
+                  @if (chartLoading.extension) {
+                    <div class="flex items-center justify-center h-64">
+                      <div
+                        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-600 border-r-transparent"
+                      ></div>
+                    </div>
+                  } @else {
+                    <div class="relative h-64">
+                      <canvas #extensionChart></canvas>
+                    </div>
+                  }
+                </div>
+
+                <!-- Seminars Involvement Chart -->
+                <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
+                  <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">
+                    Seminars/Trainings/Conferences
+                  </h3>
+                  <p class="text-xs text-gray-600 text-center mb-4">(Permanent and Temporary)</p>
+                  @if (chartLoading.seminars) {
+                    <div class="flex items-center justify-center h-64">
+                      <div
+                        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"
+                      ></div>
+                    </div>
+                  } @else {
+                    <div class="relative h-64">
+                      <canvas #seminarsChart></canvas>
+                    </div>
+                  }
+                </div>
+              </div>
             }
           }
 
@@ -1505,9 +1556,6 @@ import { DeanService, Dean } from '../../../services/dean.service';
       @if (activeTab() === 'credentials') {
         <app-dean-faculty-credentials-view />
       }
-      @if (activeTab() === 'announcements') {
-        <app-dean-announcements />
-      }
       @if (activeTab() === 'org-advisers') {
         <app-dean-organization-advisers />
       }
@@ -1522,7 +1570,11 @@ import { DeanService, Dean } from '../../../services/dean.service';
   `,
   styles: [],
 })
-export class DeanDashboard implements OnInit {
+export class DeanDashboard implements OnInit, AfterViewInit {
+  @ViewChild('researchChart') researchChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('extensionChart') extensionChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('seminarsChart') seminarsChartRef!: ElementRef<HTMLCanvasElement>;
+
   isSidebarOpen = signal(true);
   activeTab = signal<string>('dashboard');
   dashboardSubTab = signal<string>('overview');
@@ -1542,6 +1594,28 @@ export class DeanDashboard implements OnInit {
   educationAnalytics = signal<EducationAnalytics | null>(null);
   researchAnalytics = signal<ResearchAnalytics | null>(null);
 
+  // Chart data
+  private charts: { [key: string]: Chart } = {};
+  chartLoading = {
+    research: false,
+    extension: false,
+    seminars: false,
+  };
+
+  // Color palette for faculty
+  private readonly COLORS: string[] = [
+    '#E67E22', // Orange
+    '#3498DB', // Blue
+    '#27AE60', // Green
+    '#8B4513', // Brown
+    '#16697A', // Teal
+    '#2C5F2D', // Dark Green
+    '#9B59B6', // Purple
+    '#E74C3C', // Red
+    '#F39C12', // Yellow
+    '#1ABC9C', // Turquoise
+  ];
+
   constructor(
     public authService: Auth,
     private requirementService: DeanRequirementService,
@@ -1554,6 +1628,15 @@ export class DeanDashboard implements OnInit {
     this.loadDeanProfile();
     this.loadAcademicYears();
     this.loadDepartmentStats();
+  }
+
+  ngAfterViewInit() {
+    // Charts will be created when Faculty Analytics tab is selected
+  }
+
+  ngOnDestroy() {
+    // Clean up charts
+    Object.values(this.charts).forEach((chart) => chart.destroy());
   }
 
   loadDeanProfile() {
@@ -1634,6 +1717,10 @@ export class DeanDashboard implements OnInit {
     this.dashboardSubTab.set(subTab);
     if (subTab === 'analytics') {
       this.loadAnalytics();
+      // Load pie charts after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        this.loadFacultyInvolvementCharts();
+      }, 100);
     } else if (subTab === 'organization-analytics') {
       // Organization dashboard loads its own data via ngOnInit
     }
@@ -1684,10 +1771,123 @@ export class DeanDashboard implements OnInit {
       organization: 'Organization Management',
       accomplishments: 'Accomplishments Monitoring',
       credentials: 'Faculty Credentials',
-      announcements: 'Announcements',
       'org-advisers': 'Organization Advisers',
       'org-documents': 'Organization Documents Review',
     };
     return titles[this.activeTab()] || 'Dashboard';
+  }
+
+  // Faculty Involvement Charts
+  loadFacultyInvolvementCharts() {
+    this.loadChart('research', 'researchChart');
+    this.loadChart('extension', 'extensionChart');
+    this.loadChart('seminars', 'seminarsChart');
+  }
+
+  private loadChart(chartType: 'research' | 'extension' | 'seminars', chartRefName: string) {
+    this.chartLoading[chartType] = true;
+
+    let observable;
+    switch (chartType) {
+      case 'research':
+        observable = this.analyticsService.getResearchInvolvement();
+        break;
+      case 'extension':
+        observable = this.analyticsService.getExtensionInvolvement();
+        break;
+      case 'seminars':
+        observable = this.analyticsService.getSeminarsInvolvement();
+        break;
+    }
+
+    observable.subscribe({
+      next: (response: FacultyInvolvementResponse) => {
+        this.chartLoading[chartType] = false;
+        setTimeout(() => {
+          this.createPieChart(chartType, chartRefName, response);
+        }, 50);
+      },
+      error: (error: any) => {
+        this.chartLoading[chartType] = false;
+        console.error(`Error loading ${chartType} chart:`, error);
+      },
+    });
+  }
+
+  private createPieChart(chartKey: string, chartRefName: string, data: FacultyInvolvementResponse) {
+    const chartRef = (this as any)[chartRefName + 'Ref'];
+    if (!chartRef?.nativeElement) {
+      console.error(`Chart canvas ${chartRefName} not found`);
+      return;
+    }
+
+    const ctx = chartRef.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    // Destroy existing chart if it exists
+    if (this.charts[chartKey]) {
+      this.charts[chartKey].destroy();
+    }
+
+    const labels = data.data.map((item) => item.faculty_name);
+    const percentages = data.data.map((item) => parseInt(item.percentage));
+    const colors = labels.map((_, index) => this.COLORS[index % this.COLORS.length]);
+
+    const config: ChartConfiguration = {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            data: percentages,
+            backgroundColor: colors,
+            borderColor: '#ffffff',
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: {
+                size: 14,
+                family: "'Georgia', 'Times New Roman', serif",
+              },
+              padding: 15,
+              generateLabels: (chart) => {
+                const data = chart.data;
+                if (data.labels && data.labels.length && data.datasets.length) {
+                  return data.labels.map((label, i) => {
+                    const value = data.datasets[0].data[i];
+                    return {
+                      text: `${label} ${value}%`,
+                      fillStyle: (data.datasets[0].backgroundColor as string[])[i],
+                      hidden: false,
+                      index: i,
+                    };
+                  });
+                }
+                return [];
+              },
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                return `${label}: ${value}%`;
+              },
+            },
+          },
+        },
+      },
+    };
+
+    this.charts[chartKey] = new Chart(ctx, config);
   }
 }

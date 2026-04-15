@@ -35,10 +35,13 @@ const deanOrganizationManagementRoutes = require("./routes/dean-organization-man
 const deanRequirementRoutes = require("./routes/dean-requirement.routes");
 const deanFacultyCredentialsRoutes = require("./routes/dean-faculty-credentials.routes");
 const deanAnalyticsRoutes = require("./routes/dean-analytics.routes");
+const deanFacultyAnalyticsRoutes = require("./routes/dean-faculty-analytics.routes");
+const deanFacultyProfileRoutes = require("./routes/dean-faculty-profile.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
 const facultyCredentialsRoutes = require("./routes/faculty-credentials.routes");
+const facultyProfileRoutes = require("./routes/faculty-profile.routes");
 const pdsRoutes = require("./routes/pds.routes");
 const announcementRoutes = require("./routes/announcement.routes");
 
@@ -64,10 +67,13 @@ app.use("/api/dean/organization-management", deanOrganizationManagementRoutes);
 app.use("/api/dean/requirements", deanRequirementRoutes);
 app.use("/api/dean/faculty-credentials", deanFacultyCredentialsRoutes);
 app.use("/api/dean/analytics", deanAnalyticsRoutes);
+app.use("/api/dean/faculty-analytics", deanFacultyAnalyticsRoutes);
+app.use("/api/dean/faculty-profiles", deanFacultyProfileRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
 app.use("/api/faculty/credentials", facultyCredentialsRoutes);
+app.use("/api/faculty/profile", facultyProfileRoutes);
 app.use("/api/faculty/pds", pdsRoutes);
 
 // Shared routes (accessible to all authenticated users)

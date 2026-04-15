@@ -181,6 +181,21 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
           />
         </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Position Level (Optional)</label
+          >
+          <select
+            [(ngModel)]="createForm.position_level"
+            name="position_level"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
+          >
+            <option value="">Select Position Level</option>
+            @for (level of positionLevels(); track level.value) {
+              <option [value]="level.value">{{ level.label }}</option>
+            }
+          </select>
+        </div>
         <div class="flex justify-end gap-2">
           <button
             type="button"
@@ -269,6 +284,21 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
           />
         </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Position Level (Optional)</label
+          >
+          <select
+            [(ngModel)]="editForm.position_level"
+            name="position_level"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
+          >
+            <option value="">Select Position Level</option>
+            @for (level of positionLevels(); track level.value) {
+              <option [value]="level.value">{{ level.label }}</option>
+            }
+          </select>
+        </div>
         <div class="flex justify-end gap-2">
           <button
             type="button"
@@ -288,4 +318,3 @@
     </div>
   </div>
 }
-

@@ -82,6 +82,31 @@ const OrganizationDocument = require("./organization-document.model")(
 const OrganizationPositionTemplate =
   require("./organization-position-template.model")(sequelize, Sequelize);
 
+// New Faculty Profile Models
+const FacultyPersonalProfile = require("./faculty-personal-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const FacultyAcademicProfile = require("./faculty-academic-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const FacultyEmploymentProfile = require("./faculty-employment-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const FacultyProfessionalMembership =
+  require("./faculty-professional-membership.model")(sequelize, Sequelize);
+const FacultyAwards = require("./faculty-awards.model")(sequelize, Sequelize);
+const FacultySeminarsTrainings = require("./faculty-seminars-trainings.model")(
+  sequelize,
+  Sequelize,
+);
+const FacultyResearchActivities =
+  require("./faculty-research-activities.model")(sequelize, Sequelize);
+const FacultyExtensionActivities =
+  require("./faculty-extension-activities.model")(sequelize, Sequelize);
+
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
   foreignKey: "user_id",
@@ -360,6 +385,71 @@ OrganizationDocument.belongsTo(User, {
   as: "reviewer",
 });
 
+/* Faculty Profile Relationships */
+Faculty.hasOne(FacultyPersonalProfile, {
+  foreignKey: "faculty_id",
+  as: "personal_profile",
+});
+FacultyPersonalProfile.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyAcademicProfile, {
+  foreignKey: "faculty_id",
+  as: "academic_profiles",
+});
+FacultyAcademicProfile.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyEmploymentProfile, {
+  foreignKey: "faculty_id",
+  as: "employment_profiles",
+});
+FacultyEmploymentProfile.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyProfessionalMembership, {
+  foreignKey: "faculty_id",
+  as: "professional_memberships",
+});
+FacultyProfessionalMembership.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyAwards, {
+  foreignKey: "faculty_id",
+  as: "awards",
+});
+FacultyAwards.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultySeminarsTrainings, {
+  foreignKey: "faculty_id",
+  as: "seminars_trainings",
+});
+FacultySeminarsTrainings.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyResearchActivities, {
+  foreignKey: "faculty_id",
+  as: "research_activities",
+});
+FacultyResearchActivities.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
+Faculty.hasMany(FacultyExtensionActivities, {
+  foreignKey: "faculty_id",
+  as: "extension_activities",
+});
+FacultyExtensionActivities.belongsTo(Faculty, {
+  foreignKey: "faculty_id",
+});
+
 db.Dean = Dean;
 db.Faculty = Faculty;
 db.Organization = Organization;
@@ -387,5 +477,15 @@ db.OrganizationMember = OrganizationMember;
 db.DocumentType = DocumentType;
 db.OrganizationDocument = OrganizationDocument;
 db.OrganizationPositionTemplate = OrganizationPositionTemplate;
+
+// New Faculty Profile Models
+db.FacultyPersonalProfile = FacultyPersonalProfile;
+db.FacultyAcademicProfile = FacultyAcademicProfile;
+db.FacultyEmploymentProfile = FacultyEmploymentProfile;
+db.FacultyProfessionalMembership = FacultyProfessionalMembership;
+db.FacultyAwards = FacultyAwards;
+db.FacultySeminarsTrainings = FacultySeminarsTrainings;
+db.FacultyResearchActivities = FacultyResearchActivities;
+db.FacultyExtensionActivities = FacultyExtensionActivities;
 
 module.exports = db;

@@ -7,7 +7,13 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create-superadmin": "node create-superadmin.js",
+    "create-superadmin-quick": "node create-superadmin-quick.js",
+    "reset-db": "node reset-database.js",
+    "clear-data": "node clear-data.js",
+    "insert-academic-years": "node insert-academic-years.js",
+    "add-passport-photo": "node add-passport-photo-column.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

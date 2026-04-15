@@ -41,6 +41,11 @@ export interface DropdownAcademicYear {
   is_active: number;
 }
 
+export interface DropdownPositionLevel {
+  value: string;
+  label: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -75,5 +80,9 @@ export class DropdownService {
 
   getAcademicYears(): Observable<DropdownAcademicYear[]> {
     return this.http.get<DropdownAcademicYear[]>(`${this.apiUrl}/academic-years`);
+  }
+
+  getPositionLevels(): Observable<DropdownPositionLevel[]> {
+    return this.http.get<DropdownPositionLevel[]>(`${this.apiUrl}/position-levels`);
   }
 }

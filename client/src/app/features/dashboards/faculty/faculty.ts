@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
 import { FacultyRequirements } from '../../faculty/requirements/requirements';
-import { FacultyCredentials } from '../../faculty/credentials/credentials';
+import { FacultyMyProfile } from '../../faculty/my-profile/my-profile';
 import { PersonalDataSheetComponent } from '../../faculty/personal-data-sheet/personal-data-sheet.component';
-import { FacultyAnnouncementsComponent } from '../../faculty/announcements/announcements';
 import {
   FacultyRequirementService,
   RequirementSubmission,
@@ -25,9 +24,8 @@ interface Assignment {
     CommonModule,
     RouterModule,
     FacultyRequirements,
-    FacultyCredentials,
+    FacultyMyProfile,
     PersonalDataSheetComponent,
-    FacultyAnnouncementsComponent,
     FormsModule,
     ChangePasswordModal,
   ],
@@ -94,7 +92,7 @@ interface Assignment {
             </button>
           </li>
 
-          <!-- Credentials -->
+          <!-- My Profile -->
           <li>
             <button
               (click)="selectTab('credentials')"
@@ -107,10 +105,10 @@ interface Assignment {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Credentials</span>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">My Profile</span>
             </button>
           </li>
 
@@ -131,26 +129,6 @@ interface Assignment {
                 />
               </svg>
               <span class="flex-1 ms-3 whitespace-nowrap text-left">Personal Data Sheet</span>
-            </button>
-          </li>
-
-          <!-- Announcements -->
-          <li>
-            <button
-              (click)="selectTab('announcements')"
-              [class.bg-green-50]="activeTab() === 'announcements'"
-              [class.text-green-600]="activeTab() === 'announcements'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Announcements</span>
             </button>
           </li>
         </ul>
@@ -716,13 +694,10 @@ interface Assignment {
         <app-faculty-requirements />
       }
       @if (activeTab() === 'credentials') {
-        <app-faculty-credentials />
+        <app-faculty-my-profile />
       }
       @if (activeTab() === 'pds') {
         <app-personal-data-sheet />
-      }
-      @if (activeTab() === 'announcements') {
-        <app-faculty-announcements />
       }
     </div>
 
@@ -910,11 +885,9 @@ export class FacultyDashboard implements OnInit {
       case 'accomplishments':
         return 'Accomplishments';
       case 'credentials':
-        return 'Credentials';
+        return 'My Profile';
       case 'pds':
         return 'Personal Data Sheet';
-      case 'announcements':
-        return 'Announcements';
       default:
         return 'Faculty Portal';
     }

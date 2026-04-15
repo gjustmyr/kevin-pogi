@@ -122,11 +122,26 @@ export interface ResearchAnalytics {
   percentage_with_publications: string;
 }
 
+export interface FacultyData {
+  faculty_id: number;
+  faculty_name: string;
+  count: number;
+  percentage: string;
+}
+
+export interface FacultyInvolvementResponse {
+  title: string;
+  subtitle: string;
+  data: FacultyData[];
+  total: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class DeanAnalyticsService {
   private apiUrl = `${environment.apiUrl}/dean/analytics`;
+  private facultyAnalyticsUrl = `${environment.apiUrl}/dean/faculty-analytics`;
 
   constructor(private http: HttpClient) {}
 
@@ -140,5 +155,36 @@ export class DeanAnalyticsService {
 
   getResearchAnalytics(): Observable<ResearchAnalytics> {
     return this.http.get<ResearchAnalytics>(`${this.apiUrl}/research`);
+  }
+
+  // Faculty Profile Analytics - Pie Charts
+  getResearchInvolvement(academicYearId?: number): Observable<FacultyInvolvementResponse> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<FacultyInvolvementResponse>(
+      `${this.facultyAnalyticsUrl}/research-involvement`,
+      options,
+    );
+  }
+
+  getExtensionInvolvement(academicYearId?: number): Observable<FacultyInvolvementResponse> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<FacultyInvolvementResponse>(
+      `${this.facultyAnalyticsUrl}/extension-involvement`,
+      options,
+    );
+  }
+
+  getSeminarsInvolvement(academicYearId?: number): Observable<FacultyInvolvementResponse> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<FacultyInvolvementResponse>(
+      `${this.facultyAnalyticsUrl}/seminars-involvement`,
+      options,
+    );
   }
 }

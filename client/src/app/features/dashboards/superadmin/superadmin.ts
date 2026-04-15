@@ -256,7 +256,6 @@ import {
               <div>
                 <h3 class="text-sm font-medium opacity-90 mb-1">Total Deans</h3>
                 <p class="text-4xl font-bold">{{ statistics().total_deans }}</p>
-                <p class="text-xs opacity-80 mt-1">College department heads</p>
               </div>
             </div>
 
@@ -267,7 +266,6 @@ import {
               <div>
                 <h3 class="text-sm font-medium opacity-90 mb-1">Total Faculty</h3>
                 <p class="text-4xl font-bold">{{ statistics().total_faculty }}</p>
-                <p class="text-xs opacity-80 mt-1">Across all departments</p>
               </div>
             </div>
 
@@ -278,7 +276,6 @@ import {
               <div>
                 <h3 class="text-sm font-medium opacity-90 mb-1">Total Organizations</h3>
                 <p class="text-4xl font-bold">{{ statistics().total_organizations }}</p>
-                <p class="text-xs opacity-80 mt-1">Student organizations</p>
               </div>
             </div>
           </div>

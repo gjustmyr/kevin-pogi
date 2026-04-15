@@ -1,6 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
+const { sendAccountCredentials } = require("../utils/email");
 
 // Generate secure random password
 const generatePassword = () => {
@@ -163,13 +164,29 @@ exports.createOrganization = async (req, res) => {
 
     await transaction.commit();
 
+    // Send credentials via email (non-blocking)
+    let emailSent = false;
+    try {
+      const emailResult = await sendAccountCredentials(
+        email,
+        organization_name,
+        generatedPassword,
+        "organization",
+      );
+      emailSent = emailResult.success;
+
+      if (!emailResult.success) {
+        console.error("Failed to send email:", emailResult.error);
+      }
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+    }
+
     res.status(201).json({
       message: "Organization created successfully",
       organization,
-      credentials: {
-        email,
-        password: generatedPassword,
-      },
+      emailSent,
+      generatedPassword: !emailSent ? generatedPassword : undefined,
     });
   } catch (error) {
     await transaction.rollback();
