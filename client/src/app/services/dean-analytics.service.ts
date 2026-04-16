@@ -187,4 +187,45 @@ export class DeanAnalyticsService {
       options,
     );
   }
+
+  // PDF Generation - Detailed Data
+  getExtensionActivitiesDetails(academicYearId?: number): Observable<any> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/extension-activities-details`, options);
+  }
+
+  getResearchActivitiesDetails(academicYearId?: number): Observable<any> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/research-activities-details`, options);
+  }
+
+  getSeminarsTrainingsDetails(academicYearId?: number): Observable<any> {
+    const options = academicYearId
+      ? { params: { academic_year_id: academicYearId.toString() } }
+      : {};
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/seminars-trainings-details`, options);
+  }
+
+  // PDF Generation - Single Faculty
+  getExtensionActivitiesByFaculty(facultyId: number): Observable<any> {
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/extension-activities-by-faculty`, {
+      params: { faculty_id: facultyId.toString() },
+    });
+  }
+
+  getResearchActivitiesByFaculty(facultyId: number): Observable<any> {
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/research-activities-by-faculty`, {
+      params: { faculty_id: facultyId.toString() },
+    });
+  }
+
+  getSeminarsTrainingsByFaculty(facultyId: number): Observable<any> {
+    return this.http.get<any>(`${this.facultyAnalyticsUrl}/seminars-trainings-by-faculty`, {
+      params: { faculty_id: facultyId.toString() },
+    });
+  }
 }

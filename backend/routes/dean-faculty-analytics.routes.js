@@ -38,4 +38,38 @@ router.get(
 // Get comprehensive dashboard analytics (all charts data)
 router.get("/dashboard", deanFacultyAnalyticsController.getDashboardAnalytics);
 
+// Get detailed extension activities for PDF generation
+router.get(
+  "/extension-activities-details",
+  deanFacultyAnalyticsController.getExtensionActivitiesDetails,
+);
+
+// Get detailed research activities for PDF generation
+router.get(
+  "/research-activities-details",
+  deanFacultyAnalyticsController.getResearchActivitiesDetails,
+);
+
+// Get detailed seminars/trainings for PDF generation
+router.get(
+  "/seminars-trainings-details",
+  deanFacultyAnalyticsController.getSeminarsTrainingsDetails,
+);
+
+// Get detailed data for single faculty PDF generation
+router.get(
+  "/extension-activities-by-faculty",
+  deanFacultyAnalyticsController.getExtensionActivitiesDetailsByFaculty,
+);
+
+router.get(
+  "/research-activities-by-faculty",
+  deanFacultyAnalyticsController.getResearchActivitiesDetailsByFaculty,
+);
+
+router.get(
+  "/seminars-trainings-by-faculty",
+  deanFacultyAnalyticsController.getSeminarsTrainingsDetailsByFaculty,
+);
+
 module.exports = router;

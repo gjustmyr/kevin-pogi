@@ -59,12 +59,53 @@
               <td class="px-6 py-4 text-sm">{{ faculty.email }}</td>
               <td class="px-6 py-4 text-sm">{{ faculty.contact_number || 'N/A' }}</td>
               <td class="px-6 py-4 text-sm">
-                <button (click)="openEditModal(faculty)" class="text-blue-600 hover:underline mr-3">
-                  Edit
-                </button>
-                <button (click)="openDeleteModal(faculty)" class="text-red-600 hover:underline">
-                  Delete
-                </button>
+                <div class="flex items-center gap-2">
+                  <button (click)="openEditModal(faculty)" class="text-blue-600 hover:underline">
+                    Edit
+                  </button>
+                  <button (click)="openDeleteModal(faculty)" class="text-red-600 hover:underline">
+                    Delete
+                  </button>
+                  <div class="relative">
+                    <button
+                      (click)="togglePDFMenu(faculty.faculty_id)"
+                      class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center gap-1"
+                    >
+                      <i class="fas fa-file-pdf"></i>
+                      <span>PDF</span>
+                      <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    @if (showPDFMenu() === faculty.faculty_id) {
+                      <!-- Backdrop to close menu when clicking outside -->
+                      <div (click)="showPDFMenu.set(null)" class="fixed inset-0 z-10"></div>
+                      <div
+                        class="absolute right-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20"
+                      >
+                        <button
+                          (click)="generateFacultyPDF(faculty, 'extension')"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2 rounded-t-lg"
+                        >
+                          <i class="fas fa-hands-helping text-green-600"></i>
+                          <span>Extension Services</span>
+                        </button>
+                        <button
+                          (click)="generateFacultyPDF(faculty, 'research')"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2"
+                        >
+                          <i class="fas fa-flask text-blue-600"></i>
+                          <span>Research Activities</span>
+                        </button>
+                        <button
+                          (click)="generateFacultyPDF(faculty, 'seminars')"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2 rounded-b-lg"
+                        >
+                          <i class="fas fa-chalkboard-teacher text-purple-600"></i>
+                          <span>Seminars/Trainings</span>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
               </td>
             </tr>
           }

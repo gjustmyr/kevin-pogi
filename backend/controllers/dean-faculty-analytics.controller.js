@@ -344,6 +344,232 @@ exports.getMembershipStatistics = async (req, res) => {
   }
 };
 
+// Get detailed faculty extension activities for PDF generation
+exports.getExtensionActivitiesDetails = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const academicYearId = req.query.academic_year_id;
+
+    // Get all faculty in dean's department with extension activities
+    const faculty = await db.Faculty.findAll({
+      where: { department: dean.department },
+      include: [
+        {
+          model: db.FacultyExtensionActivities,
+          as: "extension_activities",
+          required: true,
+          where: academicYearId
+            ? {
+                date_from: {
+                  [Op.gte]: db.sequelize.literal(
+                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+                date_to: {
+                  [Op.lte]: db.sequelize.literal(
+                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+              }
+            : undefined,
+        },
+      ],
+      order: [
+        [
+          { model: db.FacultyExtensionActivities, as: "extension_activities" },
+          "date_from",
+          "DESC",
+        ],
+      ],
+    });
+
+    // Format data for PDF
+    const facultyList = faculty.map((f) => ({
+      faculty_name:
+        `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
+      activities: f.extension_activities.map((activity) => ({
+        title: activity.title_of_extension_ppa,
+        date_from: activity.date_from,
+        date_to: activity.date_to,
+        beneficiary: activity.beneficiary,
+        location: activity.location,
+      })),
+    }));
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Extension Services (Permanent and Temporary)",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get extension activities details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching extension activities details" });
+  }
+};
+
+// Get detailed faculty research activities for PDF generation
+exports.getResearchActivitiesDetails = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const academicYearId = req.query.academic_year_id;
+
+    // Get all faculty in dean's department with research activities
+    const faculty = await db.Faculty.findAll({
+      where: { department: dean.department },
+      include: [
+        {
+          model: db.FacultyResearchActivities,
+          as: "research_activities",
+          required: true,
+          where: academicYearId
+            ? {
+                date_from: {
+                  [Op.gte]: db.sequelize.literal(
+                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+                date_to: {
+                  [Op.lte]: db.sequelize.literal(
+                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+              }
+            : undefined,
+        },
+      ],
+      order: [
+        [
+          { model: db.FacultyResearchActivities, as: "research_activities" },
+          "date_from",
+          "DESC",
+        ],
+      ],
+    });
+
+    // Format data for PDF
+    const facultyList = faculty.map((f) => ({
+      faculty_name:
+        `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
+      activities: f.research_activities.map((activity) => ({
+        title: activity.title_of_research,
+        category: activity.category,
+        date: activity.date_from,
+        sponsoring_agency: activity.sponsoring_agency,
+      })),
+    }));
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Research-related Seminars/Workshops/Trainings/Conferences (Permanent and Temporary)",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get research activities details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching research activities details" });
+  }
+};
+
+// Get detailed faculty seminars/trainings for PDF generation
+exports.getSeminarsTrainingsDetails = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const academicYearId = req.query.academic_year_id;
+
+    // Get all faculty in dean's department with seminars/trainings
+    const faculty = await db.Faculty.findAll({
+      where: { department: dean.department },
+      include: [
+        {
+          model: db.FacultySeminarsTrainings,
+          as: "seminars_trainings",
+          required: true,
+          where: academicYearId
+            ? {
+                date_from: {
+                  [Op.gte]: db.sequelize.literal(
+                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+                date_to: {
+                  [Op.lte]: db.sequelize.literal(
+                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                  ),
+                },
+              }
+            : undefined,
+        },
+      ],
+      order: [
+        [
+          { model: db.FacultySeminarsTrainings, as: "seminars_trainings" },
+          "date_from",
+          "DESC",
+        ],
+      ],
+    });
+
+    // Format data for PDF
+    const facultyList = faculty.map((f) => ({
+      faculty_name:
+        `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
+      activities: f.seminars_trainings.map((activity) => ({
+        title: activity.title_of_seminar,
+        category: activity.category,
+        date: activity.date_from,
+        sponsoring_agency: activity.sponsoring_agency,
+      })),
+    }));
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Seminars/Workshops/Trainings/Conferences",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get seminars trainings details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching seminars trainings details" });
+  }
+};
+
 // Get comprehensive faculty analytics dashboard
 exports.getDashboardAnalytics = async (req, res) => {
   try {
@@ -439,5 +665,162 @@ exports.getDashboardAnalytics = async (req, res) => {
   } catch (error) {
     console.error("Get dashboard analytics error:", error);
     res.status(500).json({ message: "Error fetching dashboard analytics" });
+  }
+};
+
+// Get detailed faculty extension activities for single faculty PDF generation
+exports.getExtensionActivitiesDetailsByFaculty = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const dean = await db.Dean.findOne({ where: { user_id: deanId } });
+    if (!dean)
+      return res.status(404).json({ message: "Dean profile not found" });
+
+    const facultyId = req.query.faculty_id;
+    if (!facultyId)
+      return res.status(400).json({ message: "Faculty ID is required" });
+
+    const faculty = await db.Faculty.findOne({
+      where: { faculty_id: facultyId, department: dean.department },
+      include: [
+        {
+          model: db.FacultyExtensionActivities,
+          as: "extension_activities",
+          required: false,
+        },
+      ],
+    });
+
+    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+
+    const facultyList = [
+      {
+        faculty_name:
+          `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
+        activities: (faculty.extension_activities || []).map((activity) => ({
+          title: activity.title_of_extension_ppa,
+          date_from: activity.date_from,
+          date_to: activity.date_to,
+          beneficiary: activity.beneficiary,
+          location: activity.location,
+        })),
+      },
+    ];
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Extension Services (Permanent and Temporary)",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get extension activities details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching extension activities details" });
+  }
+};
+
+// Get detailed faculty research activities for single faculty PDF generation
+exports.getResearchActivitiesDetailsByFaculty = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const dean = await db.Dean.findOne({ where: { user_id: deanId } });
+    if (!dean)
+      return res.status(404).json({ message: "Dean profile not found" });
+
+    const facultyId = req.query.faculty_id;
+    if (!facultyId)
+      return res.status(400).json({ message: "Faculty ID is required" });
+
+    const faculty = await db.Faculty.findOne({
+      where: { faculty_id: facultyId, department: dean.department },
+      include: [
+        {
+          model: db.FacultyResearchActivities,
+          as: "research_activities",
+          required: false,
+        },
+      ],
+    });
+
+    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+
+    const facultyList = [
+      {
+        faculty_name:
+          `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
+        activities: (faculty.research_activities || []).map((activity) => ({
+          title: activity.title_of_research,
+          category: activity.category,
+          date: activity.date_from,
+          sponsoring_agency: activity.sponsoring_agency,
+        })),
+      },
+    ];
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Research-related Seminars/Workshops/Trainings/Conferences (Permanent and Temporary)",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get research activities details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching research activities details" });
+  }
+};
+
+// Get detailed faculty seminars/trainings for single faculty PDF generation
+exports.getSeminarsTrainingsDetailsByFaculty = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const dean = await db.Dean.findOne({ where: { user_id: deanId } });
+    if (!dean)
+      return res.status(404).json({ message: "Dean profile not found" });
+
+    const facultyId = req.query.faculty_id;
+    if (!facultyId)
+      return res.status(400).json({ message: "Faculty ID is required" });
+
+    const faculty = await db.Faculty.findOne({
+      where: { faculty_id: facultyId, department: dean.department },
+      include: [
+        {
+          model: db.FacultySeminarsTrainings,
+          as: "seminars_trainings",
+          required: false,
+        },
+      ],
+    });
+
+    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+
+    const facultyList = [
+      {
+        faculty_name:
+          `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
+        activities: (faculty.seminars_trainings || []).map((activity) => ({
+          title: activity.title_of_seminar,
+          category: activity.category,
+          date: activity.date_from,
+          sponsoring_agency: activity.sponsoring_agency,
+        })),
+      },
+    ];
+
+    res.json({
+      title:
+        "List of Faculty Involvement in Seminars/Workshops/Trainings/Conferences",
+      department: dean.department,
+      facultyList,
+    });
+  } catch (error) {
+    console.error("Get seminars trainings details error:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching seminars trainings details" });
   }
 };

@@ -12,6 +12,7 @@ import {
   DropdownAcademicYear,
   DropdownPositionLevel,
 } from '../../../services/dropdown.service';
+import { DeanAnalyticsService } from '../../../services/dean-analytics.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -58,7 +59,231 @@ export class DeanFacultyManagement implements OnInit {
   constructor(
     private facultyService: DeanFacultyService,
     private dropdownService: DropdownService,
+    private analyticsService: DeanAnalyticsService,
   ) {}
+
+  showPDFMenu = signal<number | null>(null);
+
+  togglePDFMenu(facultyId: number) {
+    if (this.showPDFMenu() === facultyId) {
+      this.showPDFMenu.set(null);
+    } else {
+      this.showPDFMenu.set(facultyId);
+    }
+  }
+
+  generateFacultyPDF(faculty: Faculty, type: 'extension' | 'research' | 'seminars') {
+    this.showPDFMenu.set(null);
+
+    let observable;
+    switch (type) {
+      case 'extension':
+        observable = this.analyticsService.getExtensionActivitiesByFaculty(faculty.faculty_id);
+        break;
+      case 'research':
+        observable = this.analyticsService.getResearchActivitiesByFaculty(faculty.faculty_id);
+        break;
+      case 'seminars':
+        observable = this.analyticsService.getSeminarsTrainingsByFaculty(faculty.faculty_id);
+        break;
+    }
+
+    observable.subscribe({
+      next: (data: any) => {
+        if (
+          !data.facultyList ||
+          data.facultyList.length === 0 ||
+          data.facultyList[0].activities.length === 0
+        ) {
+          Swal.fire({
+            icon: 'info',
+            title: 'No Data',
+            text: `No ${type} activities found for this faculty member.`,
+            confirmButtonColor: '#2563eb',
+          });
+          return;
+        }
+        this.createPDF(data, type, faculty);
+      },
+      error: (error: any) => {
+        console.error(`Error generating ${type} PDF:`, error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to generate PDF. Please try again.',
+          confirmButtonColor: '#2563eb',
+        });
+      },
+    });
+  }
+
+  private createPDF(data: any, type: string, faculty: Faculty) {
+    const { jsPDF } = (window as any).jspdf;
+    const doc = new jsPDF();
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    let yPosition = margin;
+
+    // Title
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    const title = data.title;
+    const titleLines = doc.splitTextToSize(title, pageWidth - 2 * margin);
+    doc.text(titleLines, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += titleLines.length * 6 + 5;
+
+    // Academic Year
+    const currentYear = new Date().getFullYear();
+    doc.setFontSize(11);
+    doc.text(`FY ${currentYear}-${currentYear + 1}`, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+
+    // Faculty Name
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Faculty Name: ${data.facultyList[0].faculty_name.toUpperCase()}`, margin, yPosition);
+    yPosition += 8;
+
+    // Table headers
+    const headers = this.getTableHeaders(type);
+    const columnWidths = this.getColumnWidths(type, pageWidth, margin);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(margin, yPosition, pageWidth - 2 * margin, 7);
+
+    let xPosition = margin + 2;
+    headers.forEach((header: string, index: number) => {
+      doc.text(header, xPosition, yPosition + 5);
+      xPosition += columnWidths[index];
+    });
+    yPosition += 7;
+
+    // Table rows
+    doc.setFont('helvetica', 'normal');
+    data.facultyList[0].activities.forEach((activity: any, activityIndex: number) => {
+      const rowData = this.getRowData(activity, type, activityIndex + 1);
+      const rowHeight = this.calculateRowHeight(doc, rowData, columnWidths, pageWidth, margin);
+
+      // Check if we need a new page
+      if (yPosition + rowHeight > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
+      doc.rect(margin, yPosition, pageWidth - 2 * margin, rowHeight);
+
+      xPosition = margin + 2;
+      rowData.forEach((cellData: string, index: number) => {
+        const cellLines = doc.splitTextToSize(cellData, columnWidths[index] - 4);
+        doc.text(cellLines, xPosition, yPosition + 4);
+        xPosition += columnWidths[index];
+      });
+
+      yPosition += rowHeight;
+    });
+
+    // Save PDF
+    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+    const facultyName = `${faculty.last_name}_${faculty.first_name}`.replace(/\s+/g, '_');
+    const fileName = `${facultyName}_${typeLabel}_Report_${currentYear}.pdf`;
+    doc.save(fileName);
+  }
+
+  private getTableHeaders(type: string): string[] {
+    switch (type) {
+      case 'extension':
+        return [
+          'No.',
+          'Title of Extension PPAs',
+          'Date of Implementation',
+          'Beneficiary',
+          'Location',
+        ];
+      case 'research':
+        return ['No.', 'Title of Research', 'Category', 'Date', 'Sponsoring Agency'];
+      case 'seminars':
+        return [
+          'No.',
+          'Title of Seminar/Workshop/Training/Conference Attended',
+          'Category (Local, National, International)',
+          'Date',
+          'Sponsoring Agency',
+        ];
+      default:
+        return [];
+    }
+  }
+
+  private getColumnWidths(type: string, pageWidth: number, margin: number): number[] {
+    const totalWidth = pageWidth - 2 * margin;
+    switch (type) {
+      case 'extension':
+        return [12, totalWidth * 0.35, totalWidth * 0.18, totalWidth * 0.22, totalWidth * 0.13];
+      case 'research':
+      case 'seminars':
+        return [12, totalWidth * 0.4, totalWidth * 0.15, totalWidth * 0.15, totalWidth * 0.18];
+      default:
+        return [];
+    }
+  }
+
+  private getRowData(activity: any, type: string, rowNumber: number): string[] {
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+    switch (type) {
+      case 'extension':
+        const dateRange = activity.date_to
+          ? `${formatDate(activity.date_from)} - ${formatDate(activity.date_to)}`
+          : formatDate(activity.date_from);
+        return [
+          rowNumber.toString(),
+          activity.title || '',
+          dateRange,
+          activity.beneficiary || '',
+          activity.location || '',
+        ];
+      case 'research':
+        return [
+          rowNumber.toString(),
+          activity.title || '',
+          activity.category || '',
+          formatDate(activity.date),
+          activity.sponsoring_agency || '',
+        ];
+      case 'seminars':
+        return [
+          rowNumber.toString(),
+          activity.title || '',
+          activity.category || '',
+          formatDate(activity.date),
+          activity.sponsoring_agency || '',
+        ];
+      default:
+        return [];
+    }
+  }
+
+  private calculateRowHeight(
+    doc: any,
+    rowData: string[],
+    columnWidths: number[],
+    pageWidth: number,
+    margin: number,
+  ): number {
+    let maxLines = 1;
+    rowData.forEach((cellData: string, index: number) => {
+      const lines = doc.splitTextToSize(cellData, columnWidths[index] - 4);
+      maxLines = Math.max(maxLines, lines.length);
+    });
+    return Math.max(7, maxLines * 4 + 3);
+  }
 
   ngOnInit() {
     this.loadFaculty();
