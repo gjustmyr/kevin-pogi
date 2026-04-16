@@ -760,12 +760,11 @@
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
                     <h4 class="font-semibold text-gray-800">{{ seminar.title }}</h4>
-                    <p class="text-gray-600">{{ seminar.type }} | {{ seminar.organizer }}</p>
-                    <p class="text-sm text-gray-500">
-                      {{ seminar.date_from }} - {{ seminar.date_to }} |
-                      {{ seminar.number_of_hours }} hours
+                    <p class="text-gray-600">{{ seminar.category }}</p>
+                    <p class="text-sm text-gray-500">{{ seminar.date }}</p>
+                    <p class="text-sm text-gray-600">
+                      Sponsoring Agency: {{ seminar.sponsoring_agency }}
                     </p>
-                    <p class="text-sm text-gray-600">Role: {{ seminar.role }}</p>
                     @if (seminar.certificate_file) {
                       <a
                         [href]="apiUrl + seminar.certificate_file"
@@ -821,19 +820,12 @@
               <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ activity.activity_title }}</h4>
-                    <p class="text-gray-600">
-                      {{ activity.activity_type }} | {{ activity.organizer }}
+                    <h4 class="font-semibold text-gray-800">{{ activity.research_title }}</h4>
+                    <p class="text-gray-600">{{ activity.category }}</p>
+                    <p class="text-sm text-gray-500">{{ activity.date }}</p>
+                    <p class="text-sm text-gray-600">
+                      Sponsoring Agency: {{ activity.sponsoring_agency }}
                     </p>
-                    <p class="text-sm text-gray-500">
-                      {{ activity.date_from }} - {{ activity.date_to }}
-                    </p>
-                    <p class="text-sm text-gray-600">Role: {{ activity.role }}</p>
-                    @if (activity.research_title) {
-                      <p class="text-sm text-gray-600 mt-1">
-                        Research: {{ activity.research_title }}
-                      </p>
-                    }
                     @if (activity.certificate_file) {
                       <a
                         [href]="apiUrl + activity.certificate_file"
@@ -889,21 +881,10 @@
               <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ activity.activity_title }}</h4>
-                    <p class="text-gray-600">
-                      {{ activity.activity_type }} | {{ activity.beneficiary }}
-                    </p>
-                    <p class="text-sm text-gray-500">
-                      {{ activity.date_from }} - {{ activity.date_to }} |
-                      {{ activity.number_of_hours }} hours
-                    </p>
-                    <p class="text-sm text-gray-600">Role: {{ activity.role }}</p>
-                    <p class="text-sm text-gray-600">
-                      Beneficiaries: {{ activity.number_of_beneficiaries }}
-                    </p>
-                    @if (activity.description) {
-                      <p class="text-sm text-gray-600 mt-1">{{ activity.description }}</p>
-                    }
+                    <h4 class="font-semibold text-gray-800">{{ activity.extension_title }}</h4>
+                    <p class="text-gray-600">{{ activity.beneficiary }}</p>
+                    <p class="text-sm text-gray-500">{{ activity.date_of_implementation }}</p>
+                    <p class="text-sm text-gray-600">Location: {{ activity.location }}</p>
                     @if (activity.documentation_file) {
                       <a
                         [href]="apiUrl + activity.documentation_file"
@@ -1350,7 +1331,9 @@
         </h3>
         <form (ngSubmit)="saveSeminar()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Title</label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Title of Seminar/Workshop/Training/Conference Attended</label
+            >
             <input
               type="text"
               [(ngModel)]="seminarForm().title"
@@ -1360,82 +1343,40 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Type</label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Category (Local, National, International)</label
+            >
             <select
-              [(ngModel)]="seminarForm().type"
-              name="type"
+              [(ngModel)]="seminarForm().category"
+              name="category"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             >
-              <option value="">Select Type</option>
-              <option value="Seminar">Seminar</option>
-              <option value="Training">Training</option>
-              <option value="Conference">Conference</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Webinar">Webinar</option>
-              <option value="Symposium">Symposium</option>
+              <option value="">Select Category</option>
+              <option value="Local">Local</option>
+              <option value="National">National</option>
+              <option value="International">International</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Organizer</label>
+            <label class="block text-sm font-medium text-gray-700">Date</label>
+            <input
+              type="date"
+              [(ngModel)]="seminarForm().date"
+              name="date"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Sponsoring Agency</label>
             <input
               type="text"
-              [(ngModel)]="seminarForm().organizer"
-              name="organizer"
+              [(ngModel)]="seminarForm().sponsoring_agency"
+              name="sponsoring_agency"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Venue</label>
-            <input
-              type="text"
-              [(ngModel)]="seminarForm().venue"
-              name="venue"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date From</label>
-              <input
-                type="date"
-                [(ngModel)]="seminarForm().date_from"
-                name="date_from"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date To</label>
-              <input
-                type="date"
-                [(ngModel)]="seminarForm().date_to"
-                name="date_to"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Number of Hours</label>
-            <input
-              type="number"
-              [(ngModel)]="seminarForm().number_of_hours"
-              name="number_of_hours"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Role</label>
-            <select
-              [(ngModel)]="seminarForm().role"
-              name="role"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            >
-              <option value="">Select Role</option>
-              <option value="Participant">Participant</option>
-              <option value="Speaker">Speaker</option>
-              <option value="Resource Person">Resource Person</option>
-              <option value="Facilitator">Facilitator</option>
-              <option value="Organizer">Organizer</option>
-            </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Certificate File</label>
@@ -1477,83 +1418,42 @@
         </h3>
         <form (ngSubmit)="saveResearch()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Activity Title</label>
+            <label class="block text-sm font-medium text-gray-700">Title of Research</label>
             <input
               type="text"
-              [(ngModel)]="researchForm().activity_title"
-              name="activity_title"
+              [(ngModel)]="researchForm().research_title"
+              name="research_title"
               required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Activity Type</label>
+            <label class="block text-sm font-medium text-gray-700">Category</label>
             <input
               type="text"
-              [(ngModel)]="researchForm().activity_type"
-              name="activity_type"
+              [(ngModel)]="researchForm().category"
+              name="category"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Organizer</label>
+            <label class="block text-sm font-medium text-gray-700">Date</label>
             <input
-              type="text"
-              [(ngModel)]="researchForm().organizer"
-              name="organizer"
+              type="date"
+              [(ngModel)]="researchForm().date"
+              name="date"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Venue</label>
+            <label class="block text-sm font-medium text-gray-700">Sponsoring Agency</label>
             <input
               type="text"
-              [(ngModel)]="researchForm().venue"
-              name="venue"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date From</label>
-              <input
-                type="date"
-                [(ngModel)]="researchForm().date_from"
-                name="date_from"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date To</label>
-              <input
-                type="date"
-                [(ngModel)]="researchForm().date_to"
-                name="date_to"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Role</label>
-            <select
-              [(ngModel)]="researchForm().role"
-              name="role"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            >
-              <option value="">Select Role</option>
-              <option value="Participant">Participant</option>
-              <option value="Presenter">Presenter</option>
-              <option value="Researcher">Researcher</option>
-              <option value="Facilitator">Facilitator</option>
-              <option value="Organizer">Organizer</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Research Title</label>
-            <input
-              type="text"
-              [(ngModel)]="researchForm().research_title"
-              name="research_title"
+              [(ngModel)]="researchForm().sponsoring_agency"
+              name="sponsoring_agency"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
@@ -1597,21 +1497,22 @@
         </h3>
         <form (ngSubmit)="saveExtension()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Activity Title</label>
+            <label class="block text-sm font-medium text-gray-700">Title of Extension PPAs</label>
             <input
               type="text"
-              [(ngModel)]="extensionForm().activity_title"
-              name="activity_title"
+              [(ngModel)]="extensionForm().extension_title"
+              name="extension_title"
               required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Activity Type</label>
+            <label class="block text-sm font-medium text-gray-700">Date of Implementation</label>
             <input
-              type="text"
-              [(ngModel)]="extensionForm().activity_type"
-              name="activity_type"
+              type="date"
+              [(ngModel)]="extensionForm().date_of_implementation"
+              name="date_of_implementation"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
@@ -1621,79 +1522,19 @@
               type="text"
               [(ngModel)]="extensionForm().beneficiary"
               name="beneficiary"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Venue</label>
+            <label class="block text-sm font-medium text-gray-700">Location</label>
             <input
               type="text"
-              [(ngModel)]="extensionForm().venue"
-              name="venue"
+              [(ngModel)]="extensionForm().location"
+              name="location"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date From</label>
-              <input
-                type="date"
-                [(ngModel)]="extensionForm().date_from"
-                name="date_from"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Date To</label>
-              <input
-                type="date"
-                [(ngModel)]="extensionForm().date_to"
-                name="date_to"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Number of Hours</label>
-            <input
-              type="number"
-              [(ngModel)]="extensionForm().number_of_hours"
-              name="number_of_hours"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Role</label>
-            <select
-              [(ngModel)]="extensionForm().role"
-              name="role"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            >
-              <option value="">Select Role</option>
-              <option value="Coordinator">Coordinator</option>
-              <option value="Member">Member</option>
-              <option value="Resource Person">Resource Person</option>
-              <option value="Facilitator">Facilitator</option>
-              <option value="Participant">Participant</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Number of Beneficiaries</label>
-            <input
-              type="number"
-              [(ngModel)]="extensionForm().number_of_beneficiaries"
-              name="number_of_beneficiaries"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              [(ngModel)]="extensionForm().description"
-              name="description"
-              rows="3"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-            ></textarea>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Documentation File</label>

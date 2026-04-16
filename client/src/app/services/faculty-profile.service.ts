@@ -90,13 +90,9 @@ export interface SeminarTraining {
   id?: number;
   faculty_id?: number;
   title?: string;
-  type?: string;
-  organizer?: string;
-  venue?: string;
-  date_from?: string;
-  date_to?: string;
-  number_of_hours?: number;
-  role?: string;
+  category?: string;
+  date?: string;
+  sponsoring_agency?: string;
   certificate_file?: string;
 }
 
@@ -104,14 +100,10 @@ export interface SeminarTraining {
 export interface ResearchActivity {
   id?: number;
   faculty_id?: number;
-  activity_title?: string;
-  activity_type?: string;
-  organizer?: string;
-  venue?: string;
-  date_from?: string;
-  date_to?: string;
-  role?: string;
   research_title?: string;
+  category?: string;
+  date?: string;
+  sponsoring_agency?: string;
   certificate_file?: string;
 }
 
@@ -119,16 +111,10 @@ export interface ResearchActivity {
 export interface ExtensionActivity {
   id?: number;
   faculty_id?: number;
-  activity_title?: string;
-  activity_type?: string;
+  extension_title?: string;
+  date_of_implementation?: string;
   beneficiary?: string;
-  venue?: string;
-  date_from?: string;
-  date_to?: string;
-  number_of_hours?: number;
-  role?: string;
-  number_of_beneficiaries?: number;
-  description?: string;
+  location?: string;
   documentation_file?: string;
 }
 

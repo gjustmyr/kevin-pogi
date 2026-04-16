@@ -12,30 +12,22 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       title: {
+        type: Sequelize.STRING(500),
+        allowNull: false,
+      },
+      category: {
+        type: Sequelize.ENUM("Local", "National", "International"),
+        allowNull: false,
+      },
+      date: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+      },
+      sponsoring_agency: {
         type: Sequelize.STRING(300),
         allowNull: false,
       },
-      organizer: {
-        type: Sequelize.STRING(200),
-        allowNull: true,
-      },
-      date_from: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      date_to: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      venue: {
-        type: Sequelize.STRING(300),
-        allowNull: true,
-      },
-      type: {
-        type: Sequelize.STRING(100),
-        allowNull: true,
-      },
-      file_path: {
+      certificate_file: {
         type: Sequelize.STRING(500),
         allowNull: true,
       },

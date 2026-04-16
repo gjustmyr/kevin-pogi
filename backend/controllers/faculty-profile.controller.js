@@ -438,7 +438,7 @@ exports.getSeminarsTrainings = async (req, res) => {
 
     const seminars = await db.FacultySeminarsTrainings.findAll({
       where: { faculty_id: facultyId },
-      order: [["date_from", "DESC"]],
+      order: [["date", "DESC"]],
     });
 
     res.json({ seminars });
@@ -538,7 +538,7 @@ exports.getResearchActivities = async (req, res) => {
 
     const activities = await db.FacultyResearchActivities.findAll({
       where: { faculty_id: facultyId },
-      order: [["date_from", "DESC"]],
+      order: [["date", "DESC"]],
     });
 
     res.json({ activities });
@@ -638,7 +638,7 @@ exports.getExtensionActivities = async (req, res) => {
 
     const activities = await db.FacultyExtensionActivities.findAll({
       where: { faculty_id: facultyId },
-      order: [["date_from", "DESC"]],
+      order: [["date_of_implementation", "DESC"]],
     });
 
     res.json({ activities });

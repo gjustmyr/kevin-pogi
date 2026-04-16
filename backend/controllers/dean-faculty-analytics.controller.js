@@ -27,15 +27,15 @@ exports.getResearchInvolvement = async (req, res) => {
           required: false,
           where: academicYearId
             ? {
-                date_from: {
-                  [Op.gte]: db.sequelize.literal(
-                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
-                },
-                date_to: {
-                  [Op.lte]: db.sequelize.literal(
-                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
+                date: {
+                  [Op.between]: [
+                    db.sequelize.literal(
+                      `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                    db.sequelize.literal(
+                      `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                  ],
                 },
               }
             : undefined,
@@ -99,15 +99,15 @@ exports.getExtensionInvolvement = async (req, res) => {
           required: false,
           where: academicYearId
             ? {
-                date_from: {
-                  [Op.gte]: db.sequelize.literal(
-                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
-                },
-                date_to: {
-                  [Op.lte]: db.sequelize.literal(
-                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
+                date_of_implementation: {
+                  [Op.between]: [
+                    db.sequelize.literal(
+                      `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                    db.sequelize.literal(
+                      `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                  ],
                 },
               }
             : undefined,
@@ -170,15 +170,15 @@ exports.getSeminarsInvolvement = async (req, res) => {
           required: false,
           where: academicYearId
             ? {
-                date_from: {
-                  [Op.gte]: db.sequelize.literal(
-                    `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
-                },
-                date_to: {
-                  [Op.lte]: db.sequelize.literal(
-                    `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
-                  ),
+                date: {
+                  [Op.between]: [
+                    db.sequelize.literal(
+                      `(SELECT start_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                    db.sequelize.literal(
+                      `(SELECT end_date FROM academic_years WHERE academic_year_id = ${academicYearId})`,
+                    ),
+                  ],
                 },
               }
             : undefined,
@@ -398,9 +398,8 @@ exports.getExtensionActivitiesDetails = async (req, res) => {
       faculty_name:
         `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
       activities: f.extension_activities.map((activity) => ({
-        title: activity.title_of_extension_ppa,
-        date_from: activity.date_from,
-        date_to: activity.date_to,
+        title: activity.extension_title,
+        date: activity.date_of_implementation,
         beneficiary: activity.beneficiary,
         location: activity.location,
       })),
@@ -474,9 +473,9 @@ exports.getResearchActivitiesDetails = async (req, res) => {
       faculty_name:
         `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
       activities: f.research_activities.map((activity) => ({
-        title: activity.title_of_research,
+        title: activity.research_title,
         category: activity.category,
-        date: activity.date_from,
+        date: activity.date,
         sponsoring_agency: activity.sponsoring_agency,
       })),
     }));
@@ -549,9 +548,9 @@ exports.getSeminarsTrainingsDetails = async (req, res) => {
       faculty_name:
         `${f.last_name}, ${f.first_name} ${f.middle_name || ""}`.trim(),
       activities: f.seminars_trainings.map((activity) => ({
-        title: activity.title_of_seminar,
+        title: activity.title,
         category: activity.category,
-        date: activity.date_from,
+        date: activity.date,
         sponsoring_agency: activity.sponsoring_agency,
       })),
     }));
@@ -698,9 +697,8 @@ exports.getExtensionActivitiesDetailsByFaculty = async (req, res) => {
         faculty_name:
           `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
         activities: (faculty.extension_activities || []).map((activity) => ({
-          title: activity.title_of_extension_ppa,
-          date_from: activity.date_from,
-          date_to: activity.date_to,
+          title: activity.extension_title,
+          date: activity.date_of_implementation,
           beneficiary: activity.beneficiary,
           location: activity.location,
         })),
@@ -751,9 +749,9 @@ exports.getResearchActivitiesDetailsByFaculty = async (req, res) => {
         faculty_name:
           `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
         activities: (faculty.research_activities || []).map((activity) => ({
-          title: activity.title_of_research,
+          title: activity.research_title,
           category: activity.category,
-          date: activity.date_from,
+          date: activity.date,
           sponsoring_agency: activity.sponsoring_agency,
         })),
       },
@@ -803,9 +801,9 @@ exports.getSeminarsTrainingsDetailsByFaculty = async (req, res) => {
         faculty_name:
           `${faculty.last_name}, ${faculty.first_name} ${faculty.middle_name || ""}`.trim(),
         activities: (faculty.seminars_trainings || []).map((activity) => ({
-          title: activity.title_of_seminar,
+          title: activity.title,
           category: activity.category,
-          date: activity.date_from,
+          date: activity.date,
           sponsoring_agency: activity.sponsoring_agency,
         })),
       },

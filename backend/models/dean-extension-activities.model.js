@@ -11,27 +11,23 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      title: {
+      extension_title: {
+        type: Sequelize.STRING(500),
+        allowNull: false,
+      },
+      date_of_implementation: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+      },
+      beneficiary: {
         type: Sequelize.STRING(300),
         allowNull: false,
       },
-      date_from: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      date_to: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      venue: {
+      location: {
         type: Sequelize.STRING(300),
-        allowNull: true,
+        allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      file_path: {
+      documentation_file: {
         type: Sequelize.STRING(500),
         allowNull: true,
       },

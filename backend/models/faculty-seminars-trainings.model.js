@@ -15,46 +15,17 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(500),
         allowNull: false,
       },
-      type: {
-        type: Sequelize.ENUM(
-          "Seminar",
-          "Training",
-          "Conference",
-          "Workshop",
-          "Webinar",
-          "Symposium",
-        ),
+      category: {
+        type: Sequelize.ENUM("Local", "National", "International"),
         allowNull: false,
       },
-      organizer: {
-        type: Sequelize.STRING(300),
-        allowNull: false,
-      },
-      venue: {
-        type: Sequelize.STRING(300),
-        allowNull: true,
-      },
-      date_from: {
+      date: {
         type: Sequelize.DATEONLY,
         allowNull: false,
       },
-      date_to: {
-        type: Sequelize.DATEONLY,
+      sponsoring_agency: {
+        type: Sequelize.STRING(300),
         allowNull: false,
-      },
-      number_of_hours: {
-        type: Sequelize.DECIMAL(5, 2),
-        allowNull: true,
-      },
-      role: {
-        type: Sequelize.ENUM(
-          "Participant",
-          "Speaker",
-          "Resource Person",
-          "Facilitator",
-          "Organizer",
-        ),
-        defaultValue: "Participant",
       },
       certificate_file: {
         type: Sequelize.STRING(500),
