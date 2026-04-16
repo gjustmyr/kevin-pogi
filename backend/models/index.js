@@ -107,6 +107,35 @@ const FacultyResearchActivities =
 const FacultyExtensionActivities =
   require("./faculty-extension-activities.model")(sequelize, Sequelize);
 
+// Dean Profile Models
+const DeanPersonalProfile = require("./dean-personal-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const DeanAcademicProfile = require("./dean-academic-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const DeanEmploymentProfile = require("./dean-employment-profile.model")(
+  sequelize,
+  Sequelize,
+);
+const DeanProfessionalMembership =
+  require("./dean-professional-membership.model")(sequelize, Sequelize);
+const DeanAwards = require("./dean-awards.model")(sequelize, Sequelize);
+const DeanSeminarsTrainings = require("./dean-seminars-trainings.model")(
+  sequelize,
+  Sequelize,
+);
+const DeanResearchActivities = require("./dean-research-activities.model")(
+  sequelize,
+  Sequelize,
+);
+const DeanExtensionActivities = require("./dean-extension-activities.model")(
+  sequelize,
+  Sequelize,
+);
+
 /* User → Admin (1:1) */
 User.hasOne(Admin, {
   foreignKey: "user_id",
@@ -450,6 +479,71 @@ FacultyExtensionActivities.belongsTo(Faculty, {
   foreignKey: "faculty_id",
 });
 
+/* Dean Profile Relationships */
+Dean.hasOne(DeanPersonalProfile, {
+  foreignKey: "dean_id",
+  as: "personal_profile",
+});
+DeanPersonalProfile.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanAcademicProfile, {
+  foreignKey: "dean_id",
+  as: "academic_profiles",
+});
+DeanAcademicProfile.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanEmploymentProfile, {
+  foreignKey: "dean_id",
+  as: "employment_profiles",
+});
+DeanEmploymentProfile.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanProfessionalMembership, {
+  foreignKey: "dean_id",
+  as: "professional_memberships",
+});
+DeanProfessionalMembership.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanAwards, {
+  foreignKey: "dean_id",
+  as: "awards",
+});
+DeanAwards.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanSeminarsTrainings, {
+  foreignKey: "dean_id",
+  as: "seminars_trainings",
+});
+DeanSeminarsTrainings.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanResearchActivities, {
+  foreignKey: "dean_id",
+  as: "research_activities",
+});
+DeanResearchActivities.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
+Dean.hasMany(DeanExtensionActivities, {
+  foreignKey: "dean_id",
+  as: "extension_activities",
+});
+DeanExtensionActivities.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
 db.Dean = Dean;
 db.Faculty = Faculty;
 db.Organization = Organization;
@@ -487,5 +581,15 @@ db.FacultyAwards = FacultyAwards;
 db.FacultySeminarsTrainings = FacultySeminarsTrainings;
 db.FacultyResearchActivities = FacultyResearchActivities;
 db.FacultyExtensionActivities = FacultyExtensionActivities;
+
+// Dean Profile Models
+db.DeanPersonalProfile = DeanPersonalProfile;
+db.DeanAcademicProfile = DeanAcademicProfile;
+db.DeanEmploymentProfile = DeanEmploymentProfile;
+db.DeanProfessionalMembership = DeanProfessionalMembership;
+db.DeanAwards = DeanAwards;
+db.DeanSeminarsTrainings = DeanSeminarsTrainings;
+db.DeanResearchActivities = DeanResearchActivities;
+db.DeanExtensionActivities = DeanExtensionActivities;
 
 module.exports = db;

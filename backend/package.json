@@ -13,7 +13,8 @@
     "reset-db": "node reset-database.js",
     "clear-data": "node clear-data.js",
     "insert-academic-years": "node insert-academic-years.js",
-    "add-passport-photo": "node add-passport-photo-column.js"
+    "add-passport-photo": "node add-passport-photo-column.js",
+    "create-dean-profile-tables": "node create-dean-profile-tables.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
