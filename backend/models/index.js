@@ -342,7 +342,6 @@ AnnouncementRead.belongsTo(Faculty, {
 /* Organization Adviser Relationships */
 Organization.hasMany(OrganizationAdviser, {
   foreignKey: "organization_id",
-  as: "advisers",
 });
 OrganizationAdviser.belongsTo(Organization, {
   foreignKey: "organization_id",
@@ -354,6 +353,7 @@ Faculty.hasMany(OrganizationAdviser, {
 });
 OrganizationAdviser.belongsTo(Faculty, {
   foreignKey: "faculty_id",
+  as: "adviser",
 });
 
 /* Organization Member Relationships */

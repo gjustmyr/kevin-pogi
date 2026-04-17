@@ -59,6 +59,25 @@ exports.getOrganizations = async (req, res) => {
             "email",
           ],
         },
+        {
+          model: db.OrganizationAdviser,
+          where: { is_active: true },
+          required: false,
+          include: [
+            {
+              model: db.Faculty,
+              as: "adviser",
+              attributes: [
+                "faculty_id",
+                "employee_id",
+                "first_name",
+                "middle_name",
+                "last_name",
+                "email",
+              ],
+            },
+          ],
+        },
       ],
     });
 
@@ -91,39 +110,70 @@ exports.createOrganization = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    const { organization_name, description, faculty_id, email } = req.body;
+    const {
+      organization_name,
+      description,
+      email,
+      adviser_id_1,
+      adviser_id_2,
+    } = req.body;
 
-    if (!organization_name || !faculty_id || !email) {
+    if (!organization_name || !email || !adviser_id_1 || !adviser_id_2) {
       await transaction.rollback();
       return res.status(400).json({
-        message: "Organization name, faculty, and email are required",
+        message: "Organization name, email, and both advisers are required",
       });
     }
 
-    // Check if faculty exists and belongs to dean's department
-    const faculty = await db.Faculty.findOne({
+    // Validate adviser_id_1
+    if (!adviser_id_1 || adviser_id_1 === 0) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: "Adviser 1 is required",
+      });
+    }
+
+    const adviser1 = await db.Faculty.findOne({
       where: {
-        faculty_id,
+        faculty_id: adviser_id_1,
         department: dean.department,
       },
     });
 
-    if (!faculty) {
+    if (!adviser1) {
       await transaction.rollback();
       return res.status(404).json({
-        message: "Faculty not found in your department",
+        message: "Adviser 1 not found in your department",
       });
     }
 
-    // Check if faculty is already assigned to an organization
-    const existingOrg = await db.Organization.findOne({
-      where: { faculty_id },
-    });
-
-    if (existingOrg) {
+    // Validate adviser_id_2
+    if (!adviser_id_2 || adviser_id_2 === 0) {
       await transaction.rollback();
       return res.status(400).json({
-        message: "This faculty is already assigned to an organization",
+        message: "Adviser 2 is required",
+      });
+    }
+
+    const adviser2 = await db.Faculty.findOne({
+      where: {
+        faculty_id: adviser_id_2,
+        department: dean.department,
+      },
+    });
+
+    if (!adviser2) {
+      await transaction.rollback();
+      return res.status(404).json({
+        message: "Adviser 2 not found in your department",
+      });
+    }
+
+    // Check if both advisers are the same
+    if (adviser_id_1 === adviser_id_2) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: "Cannot assign the same faculty as both advisers",
       });
     }
 
@@ -156,8 +206,30 @@ exports.createOrganization = async (req, res) => {
         organization_name,
         description,
         department: dean.department,
-        faculty_id,
+        faculty_id: null,
         user_id: user.user_id,
+      },
+      { transaction },
+    );
+
+    // Create first adviser assignment
+    await db.OrganizationAdviser.create(
+      {
+        organization_id: organization.organization_id,
+        faculty_id: adviser_id_1,
+        assigned_date: new Date(),
+        is_active: true,
+      },
+      { transaction },
+    );
+
+    // Create second adviser assignment
+    await db.OrganizationAdviser.create(
+      {
+        organization_id: organization.organization_id,
+        faculty_id: adviser_id_2,
+        assigned_date: new Date(),
+        is_active: true,
       },
       { transaction },
     );
@@ -210,7 +282,7 @@ exports.updateOrganization = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    const { organization_name, description, faculty_id } = req.body;
+    const { organization_name, description } = req.body;
 
     const organization = await db.Organization.findOne({
       where: {
@@ -223,41 +295,10 @@ exports.updateOrganization = async (req, res) => {
       return res.status(404).json({ message: "Organization not found" });
     }
 
-    // Check if faculty exists and belongs to dean's department
-    const faculty = await db.Faculty.findOne({
-      where: {
-        faculty_id,
-        department: dean.department,
-      },
-    });
-
-    if (!faculty) {
-      return res.status(404).json({
-        message: "Faculty not found in your department",
-      });
-    }
-
-    // Check if faculty is being changed and if new faculty is already assigned
-    if (faculty_id !== organization.faculty_id) {
-      const existingOrg = await db.Organization.findOne({
-        where: {
-          faculty_id,
-          organization_id: { [Op.ne]: id },
-        },
-      });
-
-      if (existingOrg) {
-        return res.status(400).json({
-          message: "This faculty is already assigned to another organization",
-        });
-      }
-    }
-
     // Update organization
     await organization.update({
       organization_name,
       description,
-      faculty_id,
     });
 
     res.json({
@@ -316,5 +357,156 @@ exports.deleteOrganization = async (req, res) => {
     await transaction.rollback();
     console.error("Delete organization error:", error);
     res.status(500).json({ message: "Error deleting organization" });
+  }
+};
+
+// Assign adviser to organization
+exports.assignAdviser = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+    const { faculty_id } = req.body;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    // Check if organization exists and belongs to dean's department
+    const organization = await db.Organization.findOne({
+      where: {
+        organization_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!organization) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Check if faculty exists and belongs to dean's department
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      await transaction.rollback();
+      return res.status(404).json({
+        message: "Faculty not found in your department",
+      });
+    }
+
+    // Deactivate any existing active advisers for this organization
+    await db.OrganizationAdviser.update(
+      { is_active: false },
+      {
+        where: {
+          organization_id: id,
+          is_active: true,
+        },
+        transaction,
+      },
+    );
+
+    // Create new adviser assignment
+    const adviser = await db.OrganizationAdviser.create(
+      {
+        organization_id: id,
+        faculty_id,
+        assigned_date: new Date(),
+        is_active: true,
+      },
+      { transaction },
+    );
+
+    await transaction.commit();
+
+    // Fetch the complete adviser data
+    const adviserWithFaculty = await db.OrganizationAdviser.findOne({
+      where: { adviser_id: adviser.adviser_id },
+      include: [
+        {
+          model: db.Faculty,
+          as: "adviser",
+          attributes: [
+            "faculty_id",
+            "employee_id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "email",
+          ],
+        },
+      ],
+    });
+
+    res.json({
+      message: "Adviser assigned successfully",
+      adviser: adviserWithFaculty,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Assign adviser error:", error);
+    res.status(500).json({ message: "Error assigning adviser" });
+  }
+};
+
+// Remove adviser from organization
+exports.removeAdviser = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    // Check if organization exists and belongs to dean's department
+    const organization = await db.Organization.findOne({
+      where: {
+        organization_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Deactivate active advisers for this organization
+    const updated = await db.OrganizationAdviser.update(
+      { is_active: false },
+      {
+        where: {
+          organization_id: id,
+          is_active: true,
+        },
+      },
+    );
+
+    if (updated[0] === 0) {
+      return res.status(404).json({ message: "No active adviser found" });
+    }
+
+    res.json({ message: "Adviser removed successfully" });
+  } catch (error) {
+    console.error("Remove adviser error:", error);
+    res.status(500).json({ message: "Error removing adviser" });
   }
 };

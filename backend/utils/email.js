@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (to, subject, text, html) => {
   try {
     const mailOptions = {
-      from: `"Commission System" <${process.env.SMTP_USER}>`,
+      from: `"Batstate U" <${process.env.SMTP_USER}>`,
       to,
       subject,
       text,
@@ -71,8 +71,8 @@ const sendAccountCredentials = async (
 
   const config = roleConfig[role] || roleConfig.admin;
 
-  const subject = `${config.emoji} Your ${config.title} Account Credentials - Commission System`;
-  const text = `Hello ${firstName},\n\nYour ${role} account has been created successfully.\n\nEmail: ${email}\nPassword: ${password}\n\nPlease login and change your password immediately.\n\nBest regards,\nCommission System Team`;
+  const subject = `${config.emoji} Your ${config.title} Account Credentials - Batstate U`;
+  const text = `Hello ${firstName},\n\nYour ${role} account has been created successfully.\n\nEmail: ${email}\nPassword: ${password}\n\nPlease login and change your password immediately.\n\nBest regards,\nBatstate U Team`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -248,7 +248,7 @@ const sendAccountCredentials = async (
         <div class="header">
           <div class="header-content">
             <div class="logo">${config.emoji}</div>
-            <h1>Welcome to Commission System</h1>
+            <h1>Welcome to Batstate U</h1>
             <p>Your ${config.title} Account is Ready</p>
           </div>
         </div>
@@ -258,7 +258,7 @@ const sendAccountCredentials = async (
           
           <p class="message">
             We're excited to have you on board! Your ${role} account has been successfully created. 
-            You now have access to the Commission System where you can manage your activities.
+            You now have access to the Batstate U Centralized Management Portal where you can manage your activities.
           </p>
 
           <div class="credentials-box">
@@ -292,7 +292,7 @@ const sendAccountCredentials = async (
 
           <p class="message" style="margin-top: 30px; color: #6b7280;">
             Best regards,<br>
-            <strong style="color: #1f2937;">Commission System Team</strong>
+            <strong style="color: #1f2937;">Batstate U Team</strong>
           </p>
         </div>
 
@@ -301,7 +301,7 @@ const sendAccountCredentials = async (
             This is an automated message. Please do not reply to this email.
           </p>
           <p class="footer-text" style="font-size: 12px; color: #9ca3af;">
-            © 2026 Commission System. All rights reserved.
+            © 2026 Batstate U. All rights reserved.
           </p>
         </div>
       </div>
@@ -317,8 +317,165 @@ const sendAdminCredentials = async (email, firstName, password) => {
   return await sendAccountCredentials(email, firstName, password, "admin");
 };
 
+// Send password reset email
+const sendPasswordResetEmail = async (email, resetUrl) => {
+  const subject = "🔐 Password Reset Request - Batstate U";
+  const text = `Hello,\n\nYou requested to reset your password.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nBatstate U Team`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+          line-height: 1.6; 
+          color: #333; 
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 40px 20px;
+        }
+        .email-wrapper {
+          max-width: 600px;
+          margin: 0 auto;
+          background: #ffffff;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+          background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+          color: white;
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .logo {
+          width: 80px;
+          height: 80px;
+          background: white;
+          border-radius: 50%;
+          margin: 0 auto 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 40px;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin: 0;
+        }
+        .content {
+          padding: 40px 30px;
+        }
+        .message {
+          font-size: 16px;
+          color: #4b5563;
+          margin-bottom: 30px;
+          line-height: 1.8;
+        }
+        .reset-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+          color: white;
+          padding: 16px 40px;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 16px;
+          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+          transition: transform 0.2s;
+        }
+        .reset-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+        }
+        .button-container {
+          text-align: center;
+          margin: 30px 0;
+        }
+        .warning-box {
+          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+          border-left: 5px solid #f59e0b;
+          border-radius: 12px;
+          padding: 20px;
+          margin: 25px 0;
+        }
+        .warning-text {
+          color: #92400e;
+          font-size: 14px;
+        }
+        .footer {
+          background: #f9fafb;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e5e7eb;
+        }
+        .footer-text {
+          color: #6b7280;
+          font-size: 14px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="header">
+          <div class="logo">🔐</div>
+          <h1>Password Reset Request</h1>
+        </div>
+        
+        <div class="content">
+          <p class="message">
+            Hello,
+          </p>
+          
+          <p class="message">
+            We received a request to reset your password for your Batstate U account. 
+            Click the button below to create a new password:
+          </p>
+
+          <div class="button-container">
+            <a href="${resetUrl}" class="reset-button">Reset Password</a>
+          </div>
+
+          <div class="warning-box">
+            <p class="warning-text">
+              ⏰ This link will expire in 1 hour for security reasons.
+            </p>
+          </div>
+
+          <p class="message">
+            If you didn't request a password reset, you can safely ignore this email. 
+            Your password will remain unchanged.
+          </p>
+
+          <p class="message" style="margin-top: 30px; color: #6b7280;">
+            Best regards,<br>
+            <strong style="color: #1f2937;">Batstate U Team</strong>
+          </p>
+        </div>
+
+        <div class="footer">
+          <p class="footer-text">
+            This is an automated message. Please do not reply to this email.
+          </p>
+          <p class="footer-text" style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+            © 2026 Batstate U. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return await sendEmail(email, subject, text, html);
+};
+
 module.exports = {
   sendEmail,
   sendAccountCredentials,
   sendAdminCredentials,
+  sendPasswordResetEmail,
 };

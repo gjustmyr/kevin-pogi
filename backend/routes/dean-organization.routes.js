@@ -11,5 +11,7 @@ router.get("/", deanOrganizationController.getOrganizations);
 router.post("/", deanOrganizationController.createOrganization);
 router.put("/:id", deanOrganizationController.updateOrganization);
 router.delete("/:id", deanOrganizationController.deleteOrganization);
+router.post("/:id/assign-adviser", deanOrganizationController.assignAdviser);
+router.delete("/:id/remove-adviser", deanOrganizationController.removeAdviser);
 
 module.exports = router;

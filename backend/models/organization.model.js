@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     faculty_id: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     user_id: {
       type: Sequelize.INTEGER,

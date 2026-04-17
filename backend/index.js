@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 const authRoutes = require("./routes/auth.routes");
+const passwordResetRoutes = require("./routes/password-reset.routes");
 const superadminRoutes = require("./routes/superadmin.routes");
 const deanRoutes = require("./routes/dean.routes");
 const facultyRoutes = require("./routes/faculty.routes");
@@ -47,6 +48,7 @@ const pdsRoutes = require("./routes/pds.routes");
 const announcementRoutes = require("./routes/announcement.routes");
 
 app.use("/api/auth", authRoutes);
+app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/superadmin/dashboard", superadminRoutes);
 app.use("/api/dean/dashboard", deanRoutes);
 app.use("/api/faculty/dashboard", facultyRoutes);
