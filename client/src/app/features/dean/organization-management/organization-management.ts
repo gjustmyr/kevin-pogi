@@ -32,14 +32,14 @@ export class DeanOrganizationManagement implements OnInit {
   createForm: CreateOrganizationData = {
     organization_name: '',
     description: '',
-    faculty_id: 0,
     email: '',
+    adviser_id_1: 0,
+    adviser_id_2: 0,
   };
   editForm = {
     organization_id: 0,
     organization_name: '',
     description: '',
-    faculty_id: 0,
   };
 
   constructor(
@@ -134,8 +134,9 @@ export class DeanOrganizationManagement implements OnInit {
     this.createForm = {
       organization_name: '',
       description: '',
-      faculty_id: 0,
       email: '',
+      adviser_id_1: 0,
+      adviser_id_2: 0,
     };
     this.showCreateModal.set(true);
   }
@@ -154,11 +155,29 @@ export class DeanOrganizationManagement implements OnInit {
       });
       return;
     }
-    if (!this.createForm.faculty_id || this.createForm.faculty_id === 0) {
+    if (!this.createForm.adviser_id_1 || this.createForm.adviser_id_1 === 0) {
       Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
-        text: 'Please select a faculty',
+        text: 'Please select Adviser 1',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+    if (!this.createForm.adviser_id_2 || this.createForm.adviser_id_2 === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Validation Error',
+        text: 'Please select Adviser 2',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+    if (this.createForm.adviser_id_1 === this.createForm.adviser_id_2) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Validation Error',
+        text: 'Adviser 1 and Adviser 2 must be different faculty members',
         confirmButtonColor: '#2563eb',
       });
       return;
@@ -216,7 +235,6 @@ export class DeanOrganizationManagement implements OnInit {
       organization_id: organization.organization_id,
       organization_name: organization.organization_name,
       description: organization.description || '',
-      faculty_id: organization.faculty_id,
     };
     this.showEditModal.set(true);
   }
@@ -235,22 +253,12 @@ export class DeanOrganizationManagement implements OnInit {
       });
       return;
     }
-    if (!this.editForm.faculty_id || this.editForm.faculty_id === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Validation Error',
-        text: 'Please select a faculty',
-        confirmButtonColor: '#2563eb',
-      });
-      return;
-    }
 
     this.loading.set(true);
     this.organizationService
       .updateOrganization(this.editForm.organization_id, {
         organization_name: this.editForm.organization_name,
         description: this.editForm.description,
-        faculty_id: this.editForm.faculty_id,
       })
       .subscribe({
         next: () => {
@@ -318,5 +326,19 @@ export class DeanOrganizationManagement implements OnInit {
     return organization.faculty.middle_name
       ? `${organization.faculty.first_name} ${organization.faculty.middle_name} ${organization.faculty.last_name}`
       : `${organization.faculty.first_name} ${organization.faculty.last_name}`;
+  }
+
+  getAdviserName(organization: Organization): string {
+    if (
+      !organization.organization_advisers ||
+      organization.organization_advisers.length === 0 ||
+      !organization.organization_advisers[0].adviser
+    ) {
+      return 'N/A';
+    }
+    const adviser = organization.organization_advisers[0].adviser;
+    return adviser.middle_name
+      ? `${adviser.first_name} ${adviser.middle_name} ${adviser.last_name}`
+      : `${adviser.first_name} ${adviser.last_name}`;
   }
 }

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
+import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
+import { ResetPassword } from './features/auth/reset-password/reset-password';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { loginGuard } from './guards/login.guard';
@@ -27,6 +29,14 @@ export const routes: Routes = [
     path: 'login',
     component: Login,
     canActivate: [loginGuard], // Prevents logged-in users from accessing login page
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPassword,
+  },
+  {
+    path: 'reset-password',
+    component: ResetPassword,
   },
   {
     path: 'superadmin/dashboard',

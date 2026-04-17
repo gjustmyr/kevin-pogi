@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 import { DeanFacultyManagement } from '../../dean/faculty-management/faculty-management';
 import { DeanOrganizationManagement } from '../../dean/organization-management/organization-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
-import { DeanOrganizationAdvisersComponent } from '../../dean/organization-advisers/dean-organization-advisers';
 import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
 import { DeanOrganizationDashboard } from '../../dean/organization-dashboard/organization-dashboard';
 import { DeanMyProfile } from '../../dean/my-profile/my-profile';
@@ -37,7 +36,6 @@ Chart.register(...registerables);
     DeanFacultyManagement,
     DeanOrganizationManagement,
     DeanRequirementsMonitoring,
-    DeanOrganizationAdvisersComponent,
     DeanOrganizationDocumentsComponent,
     DeanOrganizationDashboard,
     DeanMyProfile,
@@ -171,26 +169,6 @@ Chart.register(...registerables);
             </button>
           </li>
 
-          <!-- Organization Advisers -->
-          <li>
-            <button
-              (click)="selectTab('org-advisers')"
-              [class.bg-green-50]="activeTab() === 'org-advisers'"
-              [class.text-green-600]="activeTab() === 'org-advisers'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-            >
-              <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Org Advisers</span>
-            </button>
-          </li>
-
           <!-- Organization Documents -->
           <li>
             <button
@@ -207,7 +185,7 @@ Chart.register(...registerables);
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <span class="flex-1 ms-3 whitespace-nowrap text-left">Org Documents</span>
+              <span class="flex-1 ms-3 whitespace-nowrap text-left">Organization Documents</span>
             </button>
           </li>
 
@@ -1510,9 +1488,6 @@ Chart.register(...registerables);
       @if (activeTab() === 'accomplishments') {
         <app-dean-requirements-monitoring />
       }
-      @if (activeTab() === 'org-advisers') {
-        <app-dean-organization-advisers />
-      }
       @if (activeTab() === 'org-documents') {
         <app-dean-organization-documents />
       }
@@ -1728,8 +1703,8 @@ export class DeanDashboard implements OnInit, AfterViewInit {
       organization: 'Organization Management',
       accomplishments: 'Accomplishments Monitoring',
       credentials: 'Faculty Credentials',
-      'org-advisers': 'Organization Advisers',
-      'org-documents': 'Organization Documents Review',
+      'org-documents': 'Organization Documents',
+      'my-profile': 'My Profile',
     };
     return titles[this.activeTab()] || 'Dashboard';
   }

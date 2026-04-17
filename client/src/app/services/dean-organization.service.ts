@@ -18,13 +18,31 @@ export interface Organization {
     last_name: string;
     email: string;
   };
+  organization_advisers?: OrganizationAdviser[];
+}
+
+export interface OrganizationAdviser {
+  adviser_id: number;
+  organization_id: number;
+  faculty_id: number;
+  assigned_date: string;
+  is_active: boolean;
+  adviser?: {
+    faculty_id: number;
+    employee_id: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    email: string;
+  };
 }
 
 export interface CreateOrganizationData {
   organization_name: string;
   description?: string;
-  faculty_id: number;
   email: string;
+  adviser_id_1: number;
+  adviser_id_2: number;
 }
 
 export interface CreateOrganizationResponse {
@@ -39,7 +57,6 @@ export interface CreateOrganizationResponse {
 export interface UpdateOrganizationData {
   organization_name: string;
   description?: string;
-  faculty_id: number;
 }
 
 export interface OrganizationResponse {
@@ -80,5 +97,15 @@ export class DeanOrganizationService {
 
   deleteOrganization(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  assignAdviser(organizationId: number, facultyId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${organizationId}/assign-adviser`, {
+      faculty_id: facultyId,
+    });
+  }
+
+  removeAdviser(organizationId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${organizationId}/remove-adviser`);
   }
 }

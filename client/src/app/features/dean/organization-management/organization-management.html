@@ -4,7 +4,8 @@
     <div class="flex gap-2">
       <button
         (click)="openCreateModal()"
-        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
+        [disabled]="loading()"
+        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         + Add Organization
       </button>
@@ -14,12 +15,14 @@
         type="text"
         [(ngModel)]="searchQuery"
         (keyup.enter)="searchOrganizations()"
+        [disabled]="loading()"
         placeholder="Search organizations..."
-        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
       />
       <button
         (click)="searchOrganizations()"
-        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
+        [disabled]="loading()"
+        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Search
       </button>
@@ -33,18 +36,17 @@
         <tr>
           <th scope="col" class="px-6 py-3">ID</th>
           <th scope="col" class="px-6 py-3">Organization Name</th>
-          <th scope="col" class="px-6 py-3">Assigned Faculty</th>
           <th scope="col" class="px-6 py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
         @if (loading()) {
           <tr>
-            <td colspan="4" class="px-6 py-4 text-center">Loading...</td>
+            <td colspan="3" class="px-6 py-4 text-center">Loading...</td>
           </tr>
         } @else if (organizationsList().length === 0) {
           <tr>
-            <td colspan="4" class="px-6 py-4 text-center">No organizations found</td>
+            <td colspan="3" class="px-6 py-4 text-center">No organizations found</td>
           </tr>
         } @else {
           @for (org of organizationsList(); track org.organization_id) {
@@ -52,19 +54,18 @@
               <td class="px-6 py-4 font-semibold text-gray-900">{{ org.organization_id }}</td>
               <td class="px-6 py-4 font-medium text-gray-900">{{ org.organization_name }}</td>
               <td class="px-6 py-4">
-                @if (org.faculty) {
-                  <span class="text-gray-700">{{ getFacultyName(org) }}</span>
-                  <br />
-                  <span class="text-xs text-gray-500">{{ org.faculty.email }}</span>
-                } @else {
-                  <span class="text-gray-400">No Faculty</span>
-                }
-              </td>
-              <td class="px-6 py-4">
-                <button (click)="openEditModal(org)" class="text-blue-600 hover:underline mr-3">
+                <button
+                  (click)="openEditModal(org)"
+                  [disabled]="loading()"
+                  class="text-blue-600 hover:underline mr-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Edit
                 </button>
-                <button (click)="openDeleteModal(org)" class="text-red-600 hover:underline">
+                <button
+                  (click)="openDeleteModal(org)"
+                  [disabled]="loading()"
+                  class="text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Delete
                 </button>
               </td>
@@ -116,7 +117,7 @@
 
 <!-- Create Modal -->
 @if (showCreateModal()) {
-  <div class="fixed inset-0 flex items-center justify-center z-50">
+  <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
       <h2 class="text-xl font-bold mb-4">Add New Organization</h2>
       <form (submit)="submitCreateForm(); $event.preventDefault()">
@@ -126,7 +127,8 @@
             type="text"
             [(ngModel)]="createForm.organization_name"
             name="organization_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
         </div>
@@ -136,18 +138,37 @@
             [(ngModel)]="createForm.description"
             name="description"
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
           ></textarea>
         </div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Assign Faculty</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Assign Adviser 1</label>
           <select
-            [(ngModel)]="createForm.faculty_id"
-            name="faculty_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [(ngModel)]="createForm.adviser_id_1"
+            name="adviser_id_1"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           >
-            <option value="0">Select Faculty</option>
+            <option value="0">Select Adviser 1</option>
+            @for (faculty of facultyList(); track faculty.faculty_id) {
+              <option [value]="faculty.faculty_id">
+                {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.employee_id }})
+              </option>
+            }
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Assign Adviser 2</label>
+          <select
+            [(ngModel)]="createForm.adviser_id_2"
+            name="adviser_id_2"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+            required
+          >
+            <option value="0">Select Adviser 2</option>
             @for (faculty of facultyList(); track faculty.faculty_id) {
               <option [value]="faculty.faculty_id">
                 {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.employee_id }})
@@ -161,7 +182,8 @@
             type="email"
             [(ngModel)]="createForm.email"
             name="email"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
           <p class="text-xs text-gray-500 mt-1">Organization login email</p>
@@ -176,15 +198,24 @@
           <button
             type="button"
             (click)="closeCreateModal()"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+            [disabled]="loading()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            [disabled]="loading()"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            Create
+            @if (loading()) {
+              <div
+                class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+              ></div>
+              <span>Creating...</span>
+            } @else {
+              <span>Create</span>
+            }
           </button>
         </div>
       </form>
@@ -194,7 +225,7 @@
 
 <!-- Edit Modal -->
 @if (showEditModal()) {
-  <div class="fixed inset-0 flex items-center justify-center z-50">
+  <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
       <h2 class="text-xl font-bold mb-4">Edit Organization</h2>
       <form (submit)="submitEditForm(); $event.preventDefault()">
@@ -204,7 +235,8 @@
             type="text"
             [(ngModel)]="editForm.organization_name"
             name="organization_name"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
         </div>
@@ -214,38 +246,32 @@
             [(ngModel)]="editForm.description"
             name="description"
             rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+            [disabled]="loading()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
           ></textarea>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Assign Faculty</label>
-          <select
-            [(ngModel)]="editForm.faculty_id"
-            name="faculty_id"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-            required
-          >
-            <option value="0">Select Faculty</option>
-            @for (faculty of facultyList(); track faculty.faculty_id) {
-              <option [value]="faculty.faculty_id">
-                {{ faculty.first_name }} {{ faculty.last_name }} ({{ faculty.employee_id }})
-              </option>
-            }
-          </select>
         </div>
         <div class="flex justify-end gap-2">
           <button
             type="button"
             (click)="closeEditModal()"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+            [disabled]="loading()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            [disabled]="loading()"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            Update
+            @if (loading()) {
+              <div
+                class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+              ></div>
+              <span>Updating...</span>
+            } @else {
+              <span>Update</span>
+            }
           </button>
         </div>
       </form>

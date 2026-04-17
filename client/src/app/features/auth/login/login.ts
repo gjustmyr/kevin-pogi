@@ -7,12 +7,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { Component, OnInit, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { Auth } from '../../../services/auth/auth';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
