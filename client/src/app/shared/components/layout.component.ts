@@ -47,7 +47,7 @@ import { Auth } from '../../services/auth/auth';
           @if (authService.currentUser()?.role === 'admin') {
             <h2 class="text-xl font-bold text-gray-900 text-center">Admin Portal</h2>
           } @else {
-            <h2 class="text-lg font-semibold text-gray-900">Commission System</h2>
+            <h2 class="text-lg font-semibold text-gray-900">Batstate U</h2>
             <p class="text-xs text-gray-600">{{ authService.currentUser()?.role | titlecase }}</p>
           }
         </div>
