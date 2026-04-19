@@ -61,10 +61,11 @@ export class SuperadminDeanService {
     search: string = '',
     department?: string,
   ): Observable<DeansResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString())
-      .set('search', search);
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+
+    if (search) {
+      params = params.set('search', search);
+    }
 
     if (department) {
       params = params.set('department', department);

@@ -25,6 +25,9 @@ export class SuperadminDeanManagement implements OnInit {
   departmentsList = signal<DropdownDepartment[]>([]);
   positionLevels = signal<DropdownPositionLevel[]>([]);
   loading = signal(false);
+  createLoading = signal(false);
+  updateLoading = signal(false);
+  deleteLoading = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
   totalItems = signal(0);
@@ -216,10 +219,10 @@ export class SuperadminDeanManagement implements OnInit {
       return;
     }
 
-    this.loading.set(true);
+    this.createLoading.set(true);
     this.deanService.createDean(this.createForm).subscribe({
       next: (response) => {
-        this.loading.set(false);
+        this.createLoading.set(false);
         this.closeCreateModal();
 
         if (response.emailSent) {
@@ -251,7 +254,7 @@ export class SuperadminDeanManagement implements OnInit {
         this.loadDeans();
       },
       error: (error) => {
-        this.loading.set(false);
+        this.createLoading.set(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -319,7 +322,7 @@ export class SuperadminDeanManagement implements OnInit {
       return;
     }
 
-    this.loading.set(true);
+    this.updateLoading.set(true);
     this.deanService
       .updateDean(this.editForm.dean_id, {
         employee_id: this.editForm.employee_id,
@@ -333,7 +336,7 @@ export class SuperadminDeanManagement implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.loading.set(false);
+          this.updateLoading.set(false);
           this.closeEditModal();
           Swal.fire({
             icon: 'success',
@@ -344,7 +347,7 @@ export class SuperadminDeanManagement implements OnInit {
           this.loadDeans();
         },
         error: (error) => {
-          this.loading.set(false);
+          this.updateLoading.set(false);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -366,10 +369,10 @@ export class SuperadminDeanManagement implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loading.set(true);
+        this.deleteLoading.set(true);
         this.deanService.deleteDean(dean.dean_id).subscribe({
           next: () => {
-            this.loading.set(false);
+            this.deleteLoading.set(false);
             Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -379,7 +382,7 @@ export class SuperadminDeanManagement implements OnInit {
             this.loadDeans();
           },
           error: (error) => {
-            this.loading.set(false);
+            this.deleteLoading.set(false);
             Swal.fire({
               icon: 'error',
               title: 'Error',

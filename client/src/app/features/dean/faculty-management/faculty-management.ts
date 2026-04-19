@@ -24,6 +24,9 @@ import Swal from 'sweetalert2';
 export class DeanFacultyManagement implements OnInit {
   facultyList = signal<Faculty[]>([]);
   loading = signal(false);
+  createLoading = signal(false);
+  updateLoading = signal(false);
+  deleteLoading = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
   totalItems = signal(0);
@@ -410,10 +413,10 @@ export class DeanFacultyManagement implements OnInit {
       return;
     }
 
-    this.loading.set(true);
+    this.createLoading.set(true);
     this.facultyService.createFaculty(this.createForm).subscribe({
       next: (response) => {
-        this.loading.set(false);
+        this.createLoading.set(false);
         this.closeCreateModal();
 
         if (response.emailSent) {
@@ -444,7 +447,7 @@ export class DeanFacultyManagement implements OnInit {
         this.loadFaculty();
       },
       error: (error) => {
-        this.loading.set(false);
+        this.createLoading.set(false);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -502,7 +505,7 @@ export class DeanFacultyManagement implements OnInit {
       return;
     }
 
-    this.loading.set(true);
+    this.updateLoading.set(true);
     this.facultyService
       .updateFaculty(this.editForm.faculty_id, {
         employee_id: this.editForm.employee_id,
@@ -515,7 +518,7 @@ export class DeanFacultyManagement implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.loading.set(false);
+          this.updateLoading.set(false);
           this.closeEditModal();
           Swal.fire({
             icon: 'success',
@@ -526,7 +529,7 @@ export class DeanFacultyManagement implements OnInit {
           this.loadFaculty();
         },
         error: (error) => {
-          this.loading.set(false);
+          this.updateLoading.set(false);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -548,10 +551,10 @@ export class DeanFacultyManagement implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loading.set(true);
+        this.deleteLoading.set(true);
         this.facultyService.deleteFaculty(faculty.faculty_id).subscribe({
           next: () => {
-            this.loading.set(false);
+            this.deleteLoading.set(false);
             Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -561,7 +564,7 @@ export class DeanFacultyManagement implements OnInit {
             this.loadFaculty();
           },
           error: (error) => {
-            this.loading.set(false);
+            this.deleteLoading.set(false);
             Swal.fire({
               icon: 'error',
               title: 'Error',

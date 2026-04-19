@@ -126,10 +126,12 @@ export class OrganizationMembersComponent implements OnInit {
   loadPositionTemplates() {
     this.organizationService.getPositionTemplates().subscribe({
       next: (response) => {
+        console.log('Loaded positions:', response.positions);
         this.positions.set(response.positions);
       },
       error: (error) => {
         console.error('Failed to load positions:', error);
+        this.errorMessage.set('Failed to load position options');
       },
     });
   }
