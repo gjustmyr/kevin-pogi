@@ -69,6 +69,7 @@ export interface ProfessionalMembership {
   membership_type?: string;
   date_joined?: string;
   date_ended?: string;
+  is_lifetime?: boolean;
 }
 
 // Award Interface

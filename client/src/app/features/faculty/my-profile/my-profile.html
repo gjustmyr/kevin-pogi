@@ -1153,7 +1153,9 @@
         </h3>
         <form (ngSubmit)="saveMembership()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Organization Name</label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Professional Organization Name</label
+            >
             <input
               type="text"
               [(ngModel)]="membershipForm().organization_name"
@@ -1178,7 +1180,6 @@
               <option value="Committee Chair">Committee Chair</option>
               <option value="Committee Member">Committee Member</option>
               <option value="Member">Member</option>
-              <option value="Lifetime Member">Lifetime Member</option>
               <option value="Advisor">Advisor</option>
               <option value="Other">Other</option>
             </select>
@@ -1199,9 +1200,21 @@
               <option value="Other">Other</option>
             </select>
           </div>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              [(ngModel)]="membershipForm().is_lifetime"
+              name="is_lifetime"
+              id="is_lifetime"
+              class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            />
+            <label for="is_lifetime" class="ml-2 text-sm font-medium text-gray-700">
+              Lifetime Membership
+            </label>
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date Validity (Start)</label>
+              <label class="block text-sm font-medium text-gray-700">Date Started</label>
               <input
                 type="date"
                 [(ngModel)]="membershipForm().date_joined"
@@ -1210,12 +1223,13 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date Validity (End)</label>
+              <label class="block text-sm font-medium text-gray-700">Date Validity</label>
               <input
                 type="date"
                 [(ngModel)]="membershipForm().date_ended"
                 name="date_ended"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                [disabled]="membershipForm().is_lifetime ?? false"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
             </div>
           </div>
