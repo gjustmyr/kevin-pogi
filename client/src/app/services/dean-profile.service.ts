@@ -69,8 +69,6 @@ export interface ProfessionalMembership {
   membership_type?: string;
   date_joined?: string;
   date_ended?: string;
-  is_active?: boolean;
-  membership_id?: string;
 }
 
 // Award Interface
@@ -93,6 +91,7 @@ export interface SeminarTraining {
   category?: string;
   date?: string;
   sponsoring_agency?: string;
+  training_provider?: string;
   certificate_file?: string;
 }
 

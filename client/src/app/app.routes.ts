@@ -12,6 +12,7 @@ import { OrganizationDashboard } from './features/dashboards/organization/organi
 import { AdminDashboard } from './features/dashboards/admin/admin';
 import { FacultyRequirements } from './features/faculty/requirements/requirements';
 import { PersonalDataSheetComponent } from './features/faculty/personal-data-sheet/personal-data-sheet.component';
+import { DeanPersonalDataSheetComponent } from './features/dean/personal-data-sheet/personal-data-sheet.component';
 import { DeanRequirementsMonitoring } from './features/dean/requirements-monitoring/requirements-monitoring';
 import { DeanAnnouncementsComponent } from './features/dean/announcements/announcements';
 import { FacultyAnnouncementsComponent } from './features/faculty/announcements/announcements';
@@ -71,6 +72,11 @@ export const routes: Routes = [
   {
     path: 'dean/organization-dashboard',
     component: DeanOrganizationDashboard,
+    canActivate: [authGuard, roleGuard(['dean'])],
+  },
+  {
+    path: 'dean/personal-data-sheet',
+    component: DeanPersonalDataSheetComponent,
     canActivate: [authGuard, roleGuard(['dean'])],
   },
   {

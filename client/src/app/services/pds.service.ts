@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 export interface PersonalDataSheet {
   pds_id?: number;
   faculty_id?: number;
-  
+
   // I. Personal Information
   surname: string;
   first_name: string;
@@ -27,7 +27,7 @@ export interface PersonalDataSheet {
   agency_employee_no?: string;
   citizenship_type: 'Filipino' | 'Dual Citizenship' | 'By Naturalization';
   dual_citizenship_country?: string;
-  
+
   // Residential Address
   residential_house_no?: string;
   residential_street?: string;
@@ -36,7 +36,7 @@ export interface PersonalDataSheet {
   residential_city: string;
   residential_province: string;
   residential_zip_code?: string;
-  
+
   // Permanent Address
   permanent_house_no?: string;
   permanent_street?: string;
@@ -45,12 +45,12 @@ export interface PersonalDataSheet {
   permanent_city: string;
   permanent_province: string;
   permanent_zip_code?: string;
-  
+
   // Contact
   telephone_no?: string;
   mobile_no: string;
   email_address: string;
-  
+
   // II. Family Background
   spouse_surname?: string;
   spouse_first_name?: string;
@@ -67,7 +67,7 @@ export interface PersonalDataSheet {
   mother_surname?: string;
   mother_first_name?: string;
   mother_middle_name?: string;
-  
+
   // Questionnaire
   q34_a_answer?: boolean;
   q34_a_details?: string;
@@ -97,21 +97,21 @@ export interface PersonalDataSheet {
   q43_id_no?: string;
   q44_answer?: boolean;
   q44_id_no?: string;
-  
+
   // Files
   photo_path?: string;
   signature_path?: string;
   government_issued_id?: string;
   government_id_number?: string;
   government_id_date_issued?: string;
-  
+
   // Status
   status?: 'draft' | 'submitted' | 'approved' | 'returned';
   submitted_at?: string;
   approved_by?: number;
   approved_at?: string;
   remarks?: string;
-  
+
   // Related data
   children?: PDSChild[];
   education?: PDSEducation[];
@@ -238,5 +238,10 @@ export class PDSService {
   // Submit PDS for approval
   submitPDS(): Observable<any> {
     return this.http.post(`${this.apiUrl}/submit`, {});
+  }
+
+  // Import data from My Profile
+  importFromProfile(): Observable<PersonalDataSheet> {
+    return this.http.post<PersonalDataSheet>(`${this.apiUrl}/import-from-profile`, {});
   }
 }

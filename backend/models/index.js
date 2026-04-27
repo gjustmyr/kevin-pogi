@@ -226,6 +226,13 @@ PersonalDataSheet.belongsTo(Faculty, {
   foreignKey: "faculty_id",
 });
 
+Dean.hasOne(PersonalDataSheet, {
+  foreignKey: "dean_id",
+});
+PersonalDataSheet.belongsTo(Dean, {
+  foreignKey: "dean_id",
+});
+
 /* PDS Children Relationships */
 PersonalDataSheet.hasMany(PDSChild, {
   foreignKey: "pds_id",

@@ -73,12 +73,10 @@ CREATE TABLE IF NOT EXISTS faculty_professional_membership (
   id INT PRIMARY KEY AUTO_INCREMENT,
   faculty_id INT NOT NULL,
   organization_name VARCHAR(300) NOT NULL,
-  position_held VARCHAR(200),
+  position VARCHAR(200),
   membership_type ENUM('Regular', 'Associate', 'Fellow', 'Honorary', 'Student', 'Other'),
   date_joined DATE,
   date_ended DATE,
-  is_active BOOLEAN DEFAULT TRUE,
-  membership_id_number VARCHAR(100),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id) ON DELETE CASCADE

@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(300),
         allowNull: false,
       },
-      position_held: {
+      position: {
         type: Sequelize.STRING(200),
         allowNull: true,
       },
@@ -36,14 +36,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       date_ended: {
         type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      is_active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-      },
-      membership_id_number: {
-        type: Sequelize.STRING(100),
         allowNull: true,
       },
     },

@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const controller = require("../controllers/pds.controller");
+const controller = require("../controllers/dean-pds.controller");
 const verifyToken = require("../middleware/auth.middleware");
 
 // All routes require authentication
 router.use(verifyToken);
 
-// GET: Retrieve faculty's PDS
+// GET: Retrieve dean's PDS
 router.get("/", controller.getPDS);
 
 // POST: Create or update PDS

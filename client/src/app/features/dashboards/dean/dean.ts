@@ -2,13 +2,14 @@ import { Component, signal, OnInit, ViewChild, ElementRef, AfterViewInit } from 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../../services/auth/auth';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { DeanFacultyManagement } from '../../dean/faculty-management/faculty-management';
 import { DeanOrganizationManagement } from '../../dean/organization-management/organization-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
 import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
 import { DeanOrganizationDashboard } from '../../dean/organization-dashboard/organization-dashboard';
 import { DeanMyProfile } from '../../dean/my-profile/my-profile';
+import { DeanPersonalDataSheetComponent } from '../../dean/personal-data-sheet/personal-data-sheet.component';
 import {
   DeanRequirementService,
   DepartmentStatistics,
@@ -39,6 +40,7 @@ Chart.register(...registerables);
     DeanOrganizationDocumentsComponent,
     DeanOrganizationDashboard,
     DeanMyProfile,
+    DeanPersonalDataSheetComponent,
     ChangePasswordModal,
   ],
   templateUrl: './dean.html',
@@ -92,6 +94,7 @@ export class DeanDashboard implements OnInit, AfterViewInit {
 
   constructor(
     public authService: Auth,
+    private router: Router,
     private requirementService: DeanRequirementService,
     private dropdownService: DropdownService,
     private analyticsService: DeanAnalyticsService,
@@ -247,6 +250,7 @@ export class DeanDashboard implements OnInit, AfterViewInit {
       credentials: 'Faculty Credentials',
       'org-documents': 'Organization Documents',
       'my-profile': 'My Profile',
+      pds: 'Personal Data Sheet',
     };
     return titles[this.activeTab()] || 'Dashboard';
   }

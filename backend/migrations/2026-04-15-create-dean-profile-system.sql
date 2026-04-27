@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS dean_professional_memberships (
   membership_type VARCHAR(100) NULL COMMENT 'Regular, Associate, Fellow, etc.',
   date_joined DATE NULL,
   date_ended DATE NULL,
-  is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (dean_id) REFERENCES deans(dean_id) ON DELETE CASCADE

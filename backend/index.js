@@ -39,6 +39,7 @@ const deanAnalyticsRoutes = require("./routes/dean-analytics.routes");
 const deanFacultyAnalyticsRoutes = require("./routes/dean-faculty-analytics.routes");
 const deanFacultyProfileRoutes = require("./routes/dean-faculty-profile.routes");
 const deanProfileRoutes = require("./routes/dean-profile.routes");
+const deanPDSRoutes = require("./routes/dean-pds.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
@@ -73,6 +74,7 @@ app.use("/api/dean/analytics", deanAnalyticsRoutes);
 app.use("/api/dean/faculty-analytics", deanFacultyAnalyticsRoutes);
 app.use("/api/dean/faculty-profiles", deanFacultyProfileRoutes);
 app.use("/api/dean/profile", deanProfileRoutes);
+app.use("/api/dean/pds", deanPDSRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);

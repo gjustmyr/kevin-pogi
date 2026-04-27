@@ -31,10 +31,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATEONLY,
         allowNull: true,
       },
-      is_active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-      },
     },
     {
       timestamps: true,

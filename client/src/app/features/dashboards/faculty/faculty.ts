@@ -41,6 +41,11 @@ interface Assignment {
         <div class="mb-6 px-2 flex flex-col items-center">
           <img src="/assets/logo.png" alt="Logo" class="h-24 mb-3" />
           <h2 class="text-xl font-bold text-gray-900 text-center">Faculty Portal</h2>
+          @if (authService.currentUser()?.profile?.department) {
+            <p class="text-sm text-gray-600 text-center mt-1">
+              {{ authService.currentUser()?.profile?.department }}
+            </p>
+          }
         </div>
 
         <ul class="space-y-2 font-medium">

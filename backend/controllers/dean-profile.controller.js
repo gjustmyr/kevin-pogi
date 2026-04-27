@@ -148,10 +148,16 @@ exports.deleteAcademicProfile = async (req, res) => {
 // Get all employment profiles
 exports.getEmploymentProfiles = async (req, res) => {
   try {
-    const facultyId = req.user.dean_id || req.params.facultyId;
+    const dean = await db.Dean.findOne({
+      where: { user_id: req.user.user_id },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean not found" });
+    }
 
     const profiles = await db.DeanEmploymentProfile.findAll({
-      where: { dean_id: facultyId },
+      where: { dean_id: dean.dean_id },
       order: [["date_from", "DESC"]],
     });
 
@@ -165,12 +171,19 @@ exports.getEmploymentProfiles = async (req, res) => {
 // Create employment profile
 exports.createEmploymentProfile = async (req, res) => {
   try {
-    const facultyId = req.user.dean_id;
+    const dean = await db.Dean.findOne({
+      where: { user_id: req.user.user_id },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean not found" });
+    }
+
     const profileData = req.body;
 
     const profile = await db.DeanEmploymentProfile.create({
       ...profileData,
-      dean_id: facultyId,
+      dean_id: dean.dean_id,
     });
 
     res.status(201).json({
@@ -187,11 +200,18 @@ exports.createEmploymentProfile = async (req, res) => {
 exports.updateEmploymentProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const facultyId = req.user.dean_id;
+    const dean = await db.Dean.findOne({
+      where: { user_id: req.user.user_id },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean not found" });
+    }
+
     const profileData = req.body;
 
     const profile = await db.DeanEmploymentProfile.findOne({
-      where: { id, dean_id: facultyId },
+      where: { id, dean_id: dean.dean_id },
     });
 
     if (!profile) {
@@ -214,10 +234,16 @@ exports.updateEmploymentProfile = async (req, res) => {
 exports.deleteEmploymentProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const facultyId = req.user.dean_id;
+    const dean = await db.Dean.findOne({
+      where: { user_id: req.user.user_id },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean not found" });
+    }
 
     const profile = await db.DeanEmploymentProfile.findOne({
-      where: { id, dean_id: facultyId },
+      where: { id, dean_id: dean.dean_id },
     });
 
     if (!profile) {

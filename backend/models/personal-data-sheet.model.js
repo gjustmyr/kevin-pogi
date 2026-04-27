@@ -8,7 +8,11 @@ module.exports = (sequelize, Sequelize) => {
     },
     faculty_id: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
+    },
+    dean_id: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
     },
 
     // I. PERSONAL INFORMATION

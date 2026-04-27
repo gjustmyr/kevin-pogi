@@ -1,8 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
-  PDSService,
+  DeanPDSService,
   PersonalDataSheet,
   PDSChild,
   PDSEducation,
@@ -12,18 +13,18 @@ import {
   PDSTraining,
   PDSOtherInfo,
   PDSReference,
-} from '../../../services/pds.service';
+} from '../../../services/dean-pds.service';
 import { PDSExcelExportService } from '../../../services/pds-excel-export.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-personal-data-sheet',
+  selector: 'app-dean-personal-data-sheet',
   imports: [CommonModule, FormsModule],
   templateUrl: './personal-data-sheet.html',
   styleUrl: './personal-data-sheet.css',
 })
-export class PersonalDataSheetComponent implements OnInit {
+export class DeanPersonalDataSheetComponent implements OnInit {
   pds = signal<PersonalDataSheet>({
     surname: '',
     first_name: '',
@@ -100,8 +101,9 @@ export class PersonalDataSheetComponent implements OnInit {
   newReference: PDSReference = { name: '', address: '', telephone_number: '' };
 
   constructor(
-    private pdsService: PDSService,
+    private pdsService: DeanPDSService,
     private pdsExcelExportService: PDSExcelExportService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -691,5 +693,9 @@ export class PersonalDataSheetComponent implements OnInit {
       });
       this.loading.set(false);
     }
+  }
+
+  goBack() {
+    this.router.navigate(['/dean']);
   }
 }

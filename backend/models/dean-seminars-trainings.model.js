@@ -27,6 +27,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(300),
         allowNull: false,
       },
+      training_provider: {
+        type: Sequelize.STRING(300),
+        allowNull: true,
+      },
       certificate_file: {
         type: Sequelize.STRING(500),
         allowNull: true,
