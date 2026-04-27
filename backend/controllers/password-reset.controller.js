@@ -25,7 +25,7 @@ exports.requestPasswordReset = async (req, res) => {
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
+    const expiresAt = new Date(Date.now() + 300000); // 5 minutes from now
 
     // Store token in database
     await db.sequelize.query(
@@ -40,10 +40,11 @@ exports.requestPasswordReset = async (req, res) => {
     const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:7282"}/reset-password?token=${resetToken}`;
 
     try {
-      await sendPasswordResetEmail(email, resetUrl);
+      const emailResult = await sendPasswordResetEmail(email, resetUrl);
+      console.log("Password reset email sent:", emailResult);
     } catch (emailError) {
       console.error("Failed to send password reset email:", emailError);
-      // Don't reveal email sending failure to user
+      // Continue anyway - don't reveal email sending failure to user for security
     }
 
     res.json({
@@ -52,6 +53,7 @@ exports.requestPasswordReset = async (req, res) => {
     });
   } catch (error) {
     console.error("Request password reset error:", error);
+    console.error("Error stack:", error.stack);
     res
       .status(500)
       .json({ message: "Error processing password reset request" });

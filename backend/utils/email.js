@@ -320,7 +320,7 @@ const sendAdminCredentials = async (email, firstName, password) => {
 // Send password reset email
 const sendPasswordResetEmail = async (email, resetUrl) => {
   const subject = "🔐 Password Reset Request - Batstate U";
-  const text = `Hello,\n\nYou requested to reset your password.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nBatstate U Team`;
+  const text = `Hello,\n\nYou requested to reset your password.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 5 minutes.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nBatstate U Team`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -442,7 +442,7 @@ const sendPasswordResetEmail = async (email, resetUrl) => {
 
           <div class="warning-box">
             <p class="warning-text">
-              ⏰ This link will expire in 1 hour for security reasons.
+              ⏰ This link will expire in 5 minutes for security reasons.
             </p>
           </div>
 

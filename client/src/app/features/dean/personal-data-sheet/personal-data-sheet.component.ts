@@ -123,7 +123,8 @@ export class DeanPersonalDataSheetComponent implements OnInit {
         }
         this.loading.set(false);
 
-        // Auto-sync with My Profile on every load
+        // Auto-sync with My Profile on every load to ensure data is always current
+        console.log('PDS loaded, syncing with My Profile...');
         this.syncWithProfile();
       },
       error: (error) => {
@@ -141,14 +142,16 @@ export class DeanPersonalDataSheetComponent implements OnInit {
 
   syncWithProfile() {
     // Silently sync PDS with My Profile data in the background
+    // This ensures PDS always has the latest data from My Profile
     this.pdsService.importFromProfile().subscribe({
       next: (data) => {
         this.pds.set(data);
-        console.log('PDS synced with My Profile');
+        console.log('✓ PDS synced with My Profile - all data is up to date');
       },
       error: (error) => {
         console.error('Sync error:', error);
         // Don't show error to user, just log it
+        // PDS will still show the previously loaded data
       },
     });
   }

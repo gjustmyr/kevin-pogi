@@ -646,14 +646,8 @@ exports.importFromProfile = async (req, res) => {
     }
 
     if (pds) {
-      // Update existing PDS (only fill empty fields)
-      const updateData = {};
-      for (const [key, value] of Object.entries(pdsData)) {
-        if (!pds[key] && value) {
-          updateData[key] = value;
-        }
-      }
-      await pds.update(updateData);
+      // Update existing PDS - always sync with latest My Profile data
+      await pds.update(pdsData);
     } else {
       // Create new PDS
       pds = await db.PersonalDataSheet.create(pdsData);
