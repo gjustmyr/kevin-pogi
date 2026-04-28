@@ -22,6 +22,7 @@ import {
   ResearchAnalytics,
   FacultyInvolvementResponse,
 } from '../../../services/dean-analytics.service';
+import { DeanOrganizationEventsComponent } from '../../dean/organization-events/dean-organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 import { DeanService, Dean } from '../../../services/dean.service';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
@@ -41,6 +42,7 @@ Chart.register(...registerables);
     DeanOrganizationDashboard,
     DeanMyProfile,
     DeanPersonalDataSheetComponent,
+    DeanOrganizationEventsComponent,
     ChangePasswordModal,
   ],
   templateUrl: './dean.html',
@@ -249,6 +251,7 @@ export class DeanDashboard implements OnInit, AfterViewInit {
       accomplishments: 'Accomplishments Monitoring',
       credentials: 'Faculty Credentials',
       'org-documents': 'Organization Documents',
+      'org-events': 'Organization Events',
       'my-profile': 'My Profile',
       pds: 'Personal Data Sheet',
     };

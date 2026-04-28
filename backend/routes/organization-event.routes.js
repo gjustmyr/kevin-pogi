@@ -1,46 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const path = require("path");
 const eventController = require("../controllers/organization-event.controller");
 const verifyToken = require("../middleware/auth.middleware");
 const checkRole = require("../middleware/role.middleware");
 
-// Configure multer for CSV upload
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === "text/csv" || file.originalname.endsWith(".csv")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only CSV files are allowed"));
-    }
+// Configure multer for PDF upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/event-files/");
   },
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "event-" + uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-// Public routes (no authentication required)
-router.get("/template/download", eventController.downloadTemplate);
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files are allowed"));
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+});
 
-// All other routes require authentication and organization role
+// All routes require authentication and organization role
 router.use(verifyToken, checkRole("organization"));
 
 // Event CRUD
 router.get("/", eventController.getEvents);
 router.get("/:id", eventController.getEvent);
-router.post("/", eventController.createEvent);
-router.put("/:id", eventController.updateEvent);
+router.post("/", upload.single("file"), eventController.createEvent);
+router.put("/:id", upload.single("file"), eventController.updateEvent);
 router.delete("/:id", eventController.deleteEvent);
 
-// Attendee management
-router.get("/:id/attendees", eventController.getAttendees);
-router.post(
-  "/:id/attendees/upload",
-  upload.single("file"),
-  eventController.uploadAttendees,
-);
-router.delete("/:id/attendees/:attendeeId", eventController.deleteAttendee);
+// File download
+router.get("/:id/download", eventController.downloadEventFile);
 
 module.exports = router;

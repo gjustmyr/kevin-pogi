@@ -1,6 +1,4 @@
 const db = require("../models");
-const csv = require("csv-parser");
-const { Readable } = require("stream");
 
 // Get all events for an organization
 exports.getEvents = async (req, res) => {
@@ -19,10 +17,8 @@ exports.getEvents = async (req, res) => {
     const events = await db.sequelize.query(
       `SELECT 
         e.*,
-        COUNT(DISTINCT a.id) as attendee_count,
         GROUP_CONCAT(DISTINCT s.sdg_number ORDER BY s.sdg_number) as sdg_numbers
       FROM organization_events e
-      LEFT JOIN organization_event_attendees a ON e.id = a.event_id
       LEFT JOIN organization_event_sdgs s ON e.id = s.event_id
       WHERE e.organization_id = ?
       GROUP BY e.id
@@ -93,20 +89,10 @@ exports.getEvent = async (req, res) => {
       },
     );
 
-    // Get Attendee count
-    const [{ count }] = await db.sequelize.query(
-      `SELECT COUNT(*) as count FROM organization_event_attendees WHERE event_id = ?`,
-      {
-        replacements: [id],
-        type: db.sequelize.QueryTypes.SELECT,
-      },
-    );
-
     res.json({
       ...event,
       sdgs: sdgs.map((s) => s.sdg_number),
       guests,
-      attendee_count: count,
     });
   } catch (error) {
     console.error("Get event error:", error);
@@ -118,6 +104,9 @@ exports.getEvent = async (req, res) => {
 exports.createEvent = async (req, res) => {
   try {
     const userId = req.user.user_id;
+
+    console.log("Create event - Request body:", req.body);
+    console.log("Create event - File:", req.file);
 
     // Get organization profile
     const organization = await db.Organization.findOne({
@@ -135,30 +124,66 @@ exports.createEvent = async (req, res) => {
       start_time,
       end_time,
       description,
-      sdgs,
-      guests,
     } = req.body;
+
+    // Parse JSON fields from FormData
+    let sdgs = [];
+    let guests = [];
+    
+    try {
+      if (req.body.sdgs) {
+        sdgs = JSON.parse(req.body.sdgs);
+      }
+    } catch (e) {
+      console.error("Error parsing SDGs:", e);
+    }
+
+    try {
+      if (req.body.guests) {
+        guests = JSON.parse(req.body.guests);
+      }
+    } catch (e) {
+      console.error("Error parsing guests:", e);
+    }
+
+    console.log("Parsed SDGs:", sdgs);
+    console.log("Parsed guests:", guests);
+
+    // Handle file upload
+    let filePath = null;
+    let originalFilename = null;
+    let fileSize = null;
+
+    if (req.file) {
+      filePath = req.file.path;
+      originalFilename = req.file.originalname;
+      fileSize = req.file.size;
+    }
 
     // Insert event
     const [result] = await db.sequelize.query(
       `INSERT INTO organization_events 
-        (organization_id, title, date_implemented, status, start_time, end_time, description)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        (organization_id, title, date_implemented, status, start_time, end_time, description, file_path, original_filename, file_size, uploaded_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       {
         replacements: [
           organization.organization_id,
           title,
           date_implemented,
           status || "Planned",
-          start_time,
-          end_time,
-          description,
+          start_time || null,
+          end_time || null,
+          description || null,
+          filePath,
+          originalFilename,
+          fileSize,
         ],
         type: db.sequelize.QueryTypes.INSERT,
       },
     );
 
     const eventId = result;
+    console.log("Event created with ID:", eventId);
 
     // Insert SDGs
     if (sdgs && sdgs.length > 0) {
@@ -183,8 +208,8 @@ exports.createEvent = async (req, res) => {
             replacements: [
               eventId,
               guest.guest_name,
-              guest.guest_title,
-              guest.guest_affiliation,
+              guest.guest_title || null,
+              guest.guest_affiliation || null,
             ],
             type: db.sequelize.QueryTypes.INSERT,
           },
@@ -197,7 +222,11 @@ exports.createEvent = async (req, res) => {
       .json({ message: "Event created successfully", id: eventId });
   } catch (error) {
     console.error("Create event error:", error);
-    res.status(500).json({ message: "Error creating event" });
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      message: "Error creating event",
+      error: error.message 
+    });
   }
 };
 
@@ -206,6 +235,9 @@ exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.user_id;
+
+    console.log("Update event - Request body:", req.body);
+    console.log("Update event - File:", req.file);
 
     // Get organization profile
     const organization = await db.Organization.findOne({
@@ -223,9 +255,30 @@ exports.updateEvent = async (req, res) => {
       start_time,
       end_time,
       description,
-      sdgs,
-      guests,
     } = req.body;
+
+    // Parse JSON fields from FormData
+    let sdgs = [];
+    let guests = [];
+    
+    try {
+      if (req.body.sdgs) {
+        sdgs = JSON.parse(req.body.sdgs);
+      }
+    } catch (e) {
+      console.error("Error parsing SDGs:", e);
+    }
+
+    try {
+      if (req.body.guests) {
+        guests = JSON.parse(req.body.guests);
+      }
+    } catch (e) {
+      console.error("Error parsing guests:", e);
+    }
+
+    console.log("Parsed SDGs:", sdgs);
+    console.log("Parsed guests:", guests);
 
     // Check ownership
     const [event] = await db.sequelize.query(
@@ -240,19 +293,42 @@ exports.updateEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
+    // Handle file upload
+    let filePath = event.file_path;
+    let originalFilename = event.original_filename;
+    let fileSize = event.file_size;
+
+    if (req.file) {
+      // Delete old file if exists
+      if (event.file_path) {
+        const fs = require("fs");
+        if (fs.existsSync(event.file_path)) {
+          fs.unlinkSync(event.file_path);
+        }
+      }
+      filePath = req.file.path;
+      originalFilename = req.file.originalname;
+      fileSize = req.file.size;
+    }
+
     // Update event
     await db.sequelize.query(
       `UPDATE organization_events 
-      SET title = ?, date_implemented = ?, status = ?, start_time = ?, end_time = ?, description = ?
+      SET title = ?, date_implemented = ?, status = ?, start_time = ?, end_time = ?, description = ?,
+          file_path = ?, original_filename = ?, file_size = ?, uploaded_at = IF(? IS NOT NULL, NOW(), uploaded_at)
       WHERE id = ?`,
       {
         replacements: [
           title,
           date_implemented,
           status,
-          start_time,
-          end_time,
-          description,
+          start_time || null,
+          end_time || null,
+          description || null,
+          filePath,
+          originalFilename,
+          fileSize,
+          req.file ? 'yes' : null,
           id,
         ],
         type: db.sequelize.QueryTypes.UPDATE,
@@ -298,8 +374,8 @@ exports.updateEvent = async (req, res) => {
             replacements: [
               id,
               guest.guest_name,
-              guest.guest_title,
-              guest.guest_affiliation,
+              guest.guest_title || null,
+              guest.guest_affiliation || null,
             ],
             type: db.sequelize.QueryTypes.INSERT,
           },
@@ -310,7 +386,11 @@ exports.updateEvent = async (req, res) => {
     res.json({ message: "Event updated successfully" });
   } catch (error) {
     console.error("Update event error:", error);
-    res.status(500).json({ message: "Error updating event" });
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      message: "Error updating event",
+      error: error.message 
+    });
   }
 };
 
@@ -342,6 +422,14 @@ exports.deleteEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
+    // Delete file if exists
+    if (event.file_path) {
+      const fs = require("fs");
+      if (fs.existsSync(event.file_path)) {
+        fs.unlinkSync(event.file_path);
+      }
+    }
+
     await db.sequelize.query(`DELETE FROM organization_events WHERE id = ?`, {
       replacements: [id],
       type: db.sequelize.QueryTypes.DELETE,
@@ -354,8 +442,8 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-// Get attendees for an event
-exports.getAttendees = async (req, res) => {
+// Download event file
+exports.downloadEventFile = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.user_id;
@@ -382,211 +470,20 @@ exports.getAttendees = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const attendees = await db.sequelize.query(
-      `SELECT id, event_id, sr_code, student_name, email, year_level, section, program, department, created_at 
-       FROM organization_event_attendees 
-       WHERE event_id = ? 
-       ORDER BY student_name`,
-      {
-        replacements: [id],
-        type: db.sequelize.QueryTypes.SELECT,
-      },
-    );
+    if (!event.file_path) {
+      return res.status(404).json({ message: "No file uploaded for this event" });
+    }
 
-    res.json(attendees);
+    const fs = require("fs");
+    if (!fs.existsSync(event.file_path)) {
+      return res.status(404).json({ message: "File not found on server" });
+    }
+
+    res.download(event.file_path, event.original_filename);
   } catch (error) {
-    console.error("Get attendees error:", error);
-    res.status(500).json({ message: "Error fetching attendees" });
+    console.error("Download event file error:", error);
+    res.status(500).json({ message: "Error downloading file" });
   }
 };
 
-// Upload attendees via CSV or Excel
-exports.uploadAttendees = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.user_id;
-
-    // Get organization profile
-    const organization = await db.Organization.findOne({
-      where: { user_id: userId },
-    });
-
-    if (!organization) {
-      return res.status(404).json({ message: "Organization not found" });
-    }
-
-    // Check ownership
-    const [event] = await db.sequelize.query(
-      `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
-      {
-        replacements: [id, organization.organization_id],
-        type: db.sequelize.QueryTypes.SELECT,
-      },
-    );
-
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const results = [];
-    const errors = [];
-    let rowNumber = 1;
-
-    // Parse CSV file
-    const stream = Readable.from(req.file.buffer.toString());
-
-    stream
-      .pipe(csv())
-      .on("data", (data) => {
-        rowNumber++;
-
-        // Validate required fields
-        if (!data.sr_code || !data.student_name) {
-          errors.push(
-            `Row ${rowNumber}: Missing required fields (sr_code, student_name)`,
-          );
-          return;
-        }
-
-        // Validate email format if provided
-        if (data.email && data.email.trim()) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(data.email.trim())) {
-            errors.push(`Row ${rowNumber}: Invalid email format`);
-            return;
-          }
-        }
-
-        results.push({
-          sr_code: data.sr_code.trim(),
-          student_name: data.student_name.trim(),
-          email: data.email?.trim() || null,
-          year_level: data.year_level?.trim() || null,
-          section: data.section?.trim() || null,
-          program: data.program?.trim() || null,
-          department: data.department?.trim() || null,
-        });
-      })
-      .on("end", async () => {
-        if (errors.length > 0) {
-          return res
-            .status(400)
-            .json({ message: "CSV validation errors", errors });
-        }
-
-        await insertAttendees(id, results, res);
-      })
-      .on("error", (error) => {
-        console.error("CSV parse error:", error);
-        res.status(500).json({ message: "Error parsing CSV file" });
-      });
-  } catch (error) {
-    console.error("Upload attendees error:", error);
-    res.status(500).json({ message: "Error uploading attendees" });
-  }
-};
-
-// Helper function to insert attendees
-async function insertAttendees(eventId, results, res) {
-  try {
-    let inserted = 0;
-    let skipped = 0;
-
-    for (const attendee of results) {
-      try {
-        await db.sequelize.query(
-          `INSERT INTO organization_event_attendees 
-            (event_id, sr_code, student_name, email, year_level, section, program, department)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          {
-            replacements: [
-              eventId,
-              attendee.sr_code,
-              attendee.student_name,
-              attendee.email,
-              attendee.year_level,
-              attendee.section,
-              attendee.program,
-              attendee.department,
-            ],
-            type: db.sequelize.QueryTypes.INSERT,
-          },
-        );
-        inserted++;
-      } catch (err) {
-        if (err.original?.code === "ER_DUP_ENTRY") {
-          skipped++;
-        } else {
-          throw err;
-        }
-      }
-    }
-
-    res.json({
-      message: "Attendees uploaded successfully",
-      inserted,
-      skipped,
-      total: results.length,
-    });
-  } catch (error) {
-    console.error("Insert attendees error:", error);
-    res.status(500).json({ message: "Error inserting attendees" });
-  }
-}
-
-// Download attendee template CSV
-exports.downloadTemplate = (req, res) => {
-  const path = require("path");
-  const filePath = path.join(
-    __dirname,
-    "../public/templates/event-attendees-template.csv",
-  );
-  res.download(filePath, "event-attendees-template.csv");
-};
-
-// Delete attendee
-exports.deleteAttendee = async (req, res) => {
-  try {
-    const { id, attendeeId } = req.params;
-    const userId = req.user.user_id;
-
-    // Get organization profile
-    const organization = await db.Organization.findOne({
-      where: { user_id: userId },
-    });
-
-    if (!organization) {
-      return res.status(404).json({ message: "Organization not found" });
-    }
-
-    // Check ownership
-    const [event] = await db.sequelize.query(
-      `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
-      {
-        replacements: [id, organization.organization_id],
-        type: db.sequelize.QueryTypes.SELECT,
-      },
-    );
-
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-
-    await db.sequelize.query(
-      `DELETE FROM organization_event_attendees WHERE id = ? AND event_id = ?`,
-      {
-        replacements: [attendeeId, id],
-        type: db.sequelize.QueryTypes.DELETE,
-      },
-    );
-
-    res.json({ message: "Attendee deleted successfully" });
-  } catch (error) {
-    console.error("Delete attendee error:", error);
-    res.status(500).json({ message: "Error deleting attendee" });
-  }
-};
+module.exports = exports;
