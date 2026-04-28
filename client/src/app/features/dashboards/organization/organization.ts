@@ -5,6 +5,7 @@ import { Auth } from '../../../services/auth/auth';
 import { OrganizationService } from '../../../services/organization.service';
 import { OrganizationMembersComponent } from '../../organization/members/organization-members';
 import { OrganizationDocumentsComponent } from '../../organization/documents/organization-documents';
+import { OrganizationEventsComponent } from '../../organization/events/organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 
 interface OrganizationStats {
@@ -25,6 +26,7 @@ interface OrganizationStats {
     CommonModule,
     OrganizationMembersComponent,
     OrganizationDocumentsComponent,
+    OrganizationEventsComponent,
     ChangePasswordModal,
   ],
   templateUrl: './organization.html',
@@ -87,6 +89,8 @@ export class OrganizationDashboard implements OnInit {
         return 'Members Management';
       case 'documents':
         return 'Document Submission';
+      case 'events':
+        return 'Events Management';
       case 'advisers':
         return 'Organization Advisers';
       default:

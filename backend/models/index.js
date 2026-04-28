@@ -82,6 +82,22 @@ const OrganizationDocument = require("./organization-document.model")(
 const OrganizationPositionTemplate =
   require("./organization-position-template.model")(sequelize, Sequelize);
 
+// Organization Event Models
+const OrganizationEvent = require("./organization-event.model")(
+  sequelize,
+  Sequelize,
+);
+const OrganizationEventSDG = require("./organization-event-sdg.model")(
+  sequelize,
+  Sequelize,
+);
+const OrganizationEventGuest = require("./organization-event-guest.model")(
+  sequelize,
+  Sequelize,
+);
+const OrganizationEventAttendee =
+  require("./organization-event-attendee.model")(sequelize, Sequelize);
+
 // New Faculty Profile Models
 const FacultyPersonalProfile = require("./faculty-personal-profile.model")(
   sequelize,
@@ -578,6 +594,10 @@ db.OrganizationMember = OrganizationMember;
 db.DocumentType = DocumentType;
 db.OrganizationDocument = OrganizationDocument;
 db.OrganizationPositionTemplate = OrganizationPositionTemplate;
+db.OrganizationEvent = OrganizationEvent;
+db.OrganizationEventSDG = OrganizationEventSDG;
+db.OrganizationEventGuest = OrganizationEventGuest;
+db.OrganizationEventAttendee = OrganizationEventAttendee;
 
 // New Faculty Profile Models
 db.FacultyPersonalProfile = FacultyPersonalProfile;

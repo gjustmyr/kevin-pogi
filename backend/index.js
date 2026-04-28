@@ -48,6 +48,9 @@ const facultyProfileRoutes = require("./routes/faculty-profile.routes");
 const pdsRoutes = require("./routes/pds.routes");
 const announcementRoutes = require("./routes/announcement.routes");
 
+// Organization specific routes
+const organizationEventRoutes = require("./routes/organization-event.routes");
+
 app.use("/api/auth", authRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/superadmin/dashboard", superadminRoutes);
@@ -81,6 +84,9 @@ app.use("/api/faculty/requirements", facultyRequirementRoutes);
 app.use("/api/faculty/credentials", facultyCredentialsRoutes);
 app.use("/api/faculty/profile", facultyProfileRoutes);
 app.use("/api/faculty/pds", pdsRoutes);
+
+// Organization module routes
+app.use("/api/organization/events", organizationEventRoutes);
 
 // Shared routes (accessible to all authenticated users)
 app.use("/api/academic-years", require("./routes/academic-year-shared.routes"));

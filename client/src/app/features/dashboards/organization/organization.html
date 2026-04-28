@@ -81,6 +81,26 @@
         </button>
       </li>
 
+      <!-- Events -->
+      <li>
+        <button
+          (click)="selectTab('events')"
+          [class.bg-green-50]="activeTab() === 'events'"
+          [class.text-green-600]="activeTab() === 'events'"
+          class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+        >
+          <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          <span class="flex-1 ms-3 whitespace-nowrap text-left">Events</span>
+        </button>
+      </li>
+
       <!-- Advisers -->
       <li>
         <button
@@ -424,6 +444,8 @@
     <app-organization-members />
   } @else if (activeTab() === 'documents') {
     <app-organization-documents />
+  } @else if (activeTab() === 'events') {
+    <app-organization-events />
   } @else if (activeTab() === 'advisers') {
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex justify-between items-center mb-6">
