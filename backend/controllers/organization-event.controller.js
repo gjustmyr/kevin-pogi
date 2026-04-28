@@ -5,24 +5,43 @@ const { Readable } = require("stream");
 // Get all events for an organization
 exports.getEvents = async (req, res) => {
   try {
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     const events = await db.sequelize.query(
       `SELECT 
         e.*,
-        COUNT(DISTINCT a.id) as attendee_count
+        COUNT(DISTINCT a.id) as attendee_count,
+        GROUP_CONCAT(DISTINCT s.sdg_number ORDER BY s.sdg_number) as sdg_numbers
       FROM organization_events e
       LEFT JOIN organization_event_attendees a ON e.id = a.event_id
+      LEFT JOIN organization_event_sdgs s ON e.id = s.event_id
       WHERE e.organization_id = ?
       GROUP BY e.id
       ORDER BY e.date_implemented DESC`,
       {
-        replacements: [organizationId],
+        replacements: [organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
 
-    res.json(events);
+    // Parse SDG numbers into arrays
+    const eventsWithSDGs = events.map((event) => ({
+      ...event,
+      sdgs: event.sdg_numbers
+        ? event.sdg_numbers.split(",").map((n) => parseInt(n))
+        : [],
+    }));
+
+    res.json(eventsWithSDGs);
   } catch (error) {
     console.error("Get events error:", error);
     res.status(500).json({ message: "Error fetching events" });
@@ -33,12 +52,21 @@ exports.getEvents = async (req, res) => {
 exports.getEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
@@ -89,7 +117,17 @@ exports.getEvent = async (req, res) => {
 // Create event
 exports.createEvent = async (req, res) => {
   try {
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
     const {
       title,
       date_implemented,
@@ -108,7 +146,7 @@ exports.createEvent = async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       {
         replacements: [
-          organizationId,
+          organization.organization_id,
           title,
           date_implemented,
           status || "Planned",
@@ -167,7 +205,17 @@ exports.createEvent = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
     const {
       title,
       date_implemented,
@@ -183,7 +231,7 @@ exports.updateEvent = async (req, res) => {
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
@@ -270,13 +318,22 @@ exports.updateEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     // Check ownership
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
@@ -301,13 +358,22 @@ exports.deleteEvent = async (req, res) => {
 exports.getAttendees = async (req, res) => {
   try {
     const { id } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     // Check ownership
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
@@ -317,7 +383,10 @@ exports.getAttendees = async (req, res) => {
     }
 
     const attendees = await db.sequelize.query(
-      `SELECT * FROM organization_event_attendees WHERE event_id = ? ORDER BY student_name`,
+      `SELECT id, event_id, sr_code, student_name, email, year_level, section, program, department, created_at 
+       FROM organization_event_attendees 
+       WHERE event_id = ? 
+       ORDER BY student_name`,
       {
         replacements: [id],
         type: db.sequelize.QueryTypes.SELECT,
@@ -331,17 +400,26 @@ exports.getAttendees = async (req, res) => {
   }
 };
 
-// Upload attendees via CSV
+// Upload attendees via CSV or Excel
 exports.uploadAttendees = async (req, res) => {
   try {
     const { id } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     // Check ownership
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );
@@ -358,7 +436,7 @@ exports.uploadAttendees = async (req, res) => {
     const errors = [];
     let rowNumber = 1;
 
-    // Parse CSV
+    // Parse CSV file
     const stream = Readable.from(req.file.buffer.toString());
 
     stream
@@ -374,9 +452,19 @@ exports.uploadAttendees = async (req, res) => {
           return;
         }
 
+        // Validate email format if provided
+        if (data.email && data.email.trim()) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(data.email.trim())) {
+            errors.push(`Row ${rowNumber}: Invalid email format`);
+            return;
+          }
+        }
+
         results.push({
           sr_code: data.sr_code.trim(),
           student_name: data.student_name.trim(),
+          email: data.email?.trim() || null,
           year_level: data.year_level?.trim() || null,
           section: data.section?.trim() || null,
           program: data.program?.trim() || null,
@@ -390,49 +478,7 @@ exports.uploadAttendees = async (req, res) => {
             .json({ message: "CSV validation errors", errors });
         }
 
-        try {
-          let inserted = 0;
-          let skipped = 0;
-
-          for (const attendee of results) {
-            try {
-              await db.sequelize.query(
-                `INSERT INTO organization_event_attendees 
-                  (event_id, sr_code, student_name, year_level, section, program, department)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                {
-                  replacements: [
-                    id,
-                    attendee.sr_code,
-                    attendee.student_name,
-                    attendee.year_level,
-                    attendee.section,
-                    attendee.program,
-                    attendee.department,
-                  ],
-                  type: db.sequelize.QueryTypes.INSERT,
-                },
-              );
-              inserted++;
-            } catch (err) {
-              if (err.original?.code === "ER_DUP_ENTRY") {
-                skipped++;
-              } else {
-                throw err;
-              }
-            }
-          }
-
-          res.json({
-            message: "Attendees uploaded successfully",
-            inserted,
-            skipped,
-            total: results.length,
-          });
-        } catch (error) {
-          console.error("Insert attendees error:", error);
-          res.status(500).json({ message: "Error inserting attendees" });
-        }
+        await insertAttendees(id, results, res);
       })
       .on("error", (error) => {
         console.error("CSV parse error:", error);
@@ -444,32 +490,84 @@ exports.uploadAttendees = async (req, res) => {
   }
 };
 
+// Helper function to insert attendees
+async function insertAttendees(eventId, results, res) {
+  try {
+    let inserted = 0;
+    let skipped = 0;
+
+    for (const attendee of results) {
+      try {
+        await db.sequelize.query(
+          `INSERT INTO organization_event_attendees 
+            (event_id, sr_code, student_name, email, year_level, section, program, department)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          {
+            replacements: [
+              eventId,
+              attendee.sr_code,
+              attendee.student_name,
+              attendee.email,
+              attendee.year_level,
+              attendee.section,
+              attendee.program,
+              attendee.department,
+            ],
+            type: db.sequelize.QueryTypes.INSERT,
+          },
+        );
+        inserted++;
+      } catch (err) {
+        if (err.original?.code === "ER_DUP_ENTRY") {
+          skipped++;
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    res.json({
+      message: "Attendees uploaded successfully",
+      inserted,
+      skipped,
+      total: results.length,
+    });
+  } catch (error) {
+    console.error("Insert attendees error:", error);
+    res.status(500).json({ message: "Error inserting attendees" });
+  }
+}
+
 // Download attendee template CSV
 exports.downloadTemplate = (req, res) => {
-  const csvContent =
-    "sr_code,student_name,year_level,section,program,department\n" +
-    "21-12345,Juan Dela Cruz,3rd Year,BSIT-3A,BS Information Technology,CICS\n" +
-    "21-12346,Maria Santos,2nd Year,BSCS-2B,BS Computer Science,CICS";
-
-  res.setHeader("Content-Type", "text/csv");
-  res.setHeader(
-    "Content-Disposition",
-    "attachment; filename=attendee-template.csv",
+  const path = require("path");
+  const filePath = path.join(
+    __dirname,
+    "../public/templates/event-attendees-template.csv",
   );
-  res.send(csvContent);
+  res.download(filePath, "event-attendees-template.csv");
 };
 
 // Delete attendee
 exports.deleteAttendee = async (req, res) => {
   try {
     const { id, attendeeId } = req.params;
-    const organizationId = req.user.organization_id;
+    const userId = req.user.user_id;
+
+    // Get organization profile
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
 
     // Check ownership
     const [event] = await db.sequelize.query(
       `SELECT * FROM organization_events WHERE id = ? AND organization_id = ?`,
       {
-        replacements: [id, organizationId],
+        replacements: [id, organization.organization_id],
         type: db.sequelize.QueryTypes.SELECT,
       },
     );

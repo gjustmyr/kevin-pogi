@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '../../../services/auth/auth';
 import { OrganizationService } from '../../../services/organization.service';
+import { EventAnalyticsService, SDGEventData } from '../../../services/event-analytics.service';
 import { OrganizationMembersComponent } from '../../organization/members/organization-members';
 import { OrganizationDocumentsComponent } from '../../organization/documents/organization-documents';
 import { OrganizationEventsComponent } from '../../organization/events/organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
+import { SDGEventsChartComponent } from '../../../shared/components/sdg-events-chart/sdg-events-chart';
 
 interface OrganizationStats {
   totalMembers: number;
@@ -28,6 +30,7 @@ interface OrganizationStats {
     OrganizationDocumentsComponent,
     OrganizationEventsComponent,
     ChangePasswordModal,
+    SDGEventsChartComponent,
   ],
   templateUrl: './organization.html',
 })
@@ -35,14 +38,16 @@ export class OrganizationDashboard implements OnInit {
   authService = inject(Auth);
   private router = inject(Router);
   private organizationService = inject(OrganizationService);
+  private eventAnalyticsService = inject(EventAnalyticsService);
 
-  activeTab = signal<'dashboard' | 'members' | 'documents' | 'advisers'>('dashboard');
+  activeTab = signal<'dashboard' | 'members' | 'documents' | 'advisers' | 'events'>('dashboard');
   isSidebarOpen = signal(true);
   isUserMenuOpen = signal(false);
   isChangePasswordOpen = signal(false);
 
   organizationName = signal('');
   advisers = signal<any[]>([]);
+  sdgEventData = signal<SDGEventData[]>([]);
   stats = signal<OrganizationStats>({
     totalMembers: 0,
     activeMembers: 0,
@@ -62,9 +67,21 @@ export class OrganizationDashboard implements OnInit {
     }
     this.loadAdvisers();
     this.loadStatistics();
+    this.loadSDGEventData();
   }
 
-  selectTab(tab: 'dashboard' | 'members' | 'documents' | 'advisers') {
+  loadSDGEventData() {
+    this.eventAnalyticsService.getEventsBySDGPerYear().subscribe({
+      next: (data) => {
+        this.sdgEventData.set(data);
+      },
+      error: (error) => {
+        console.error('Failed to load SDG event data:', error);
+      },
+    });
+  }
+
+  selectTab(tab: 'dashboard' | 'members' | 'documents' | 'advisers' | 'events') {
     this.activeTab.set(tab);
     if (tab === 'advisers') {
       this.loadAdvisers();

@@ -32,6 +32,7 @@ export interface EventAttendee {
   event_id?: number;
   sr_code: string;
   student_name: string;
+  email?: string;
   year_level?: string;
   section?: string;
   program?: string;
