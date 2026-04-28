@@ -74,6 +74,8 @@ app.use("/api/dean/organization-management", deanOrganizationManagementRoutes);
 app.use("/api/dean/requirements", deanRequirementRoutes);
 app.use("/api/dean/faculty-credentials", deanFacultyCredentialsRoutes);
 app.use("/api/dean/analytics", deanAnalyticsRoutes);
+const deanEventAnalyticsRoutes = require("./routes/dean-event-analytics.routes");
+app.use("/api/dean/event-analytics", deanEventAnalyticsRoutes);
 app.use("/api/dean/faculty-analytics", deanFacultyAnalyticsRoutes);
 app.use("/api/dean/faculty-profiles", deanFacultyProfileRoutes);
 app.use("/api/dean/profile", deanProfileRoutes);
@@ -86,6 +88,8 @@ app.use("/api/faculty/profile", facultyProfileRoutes);
 app.use("/api/faculty/pds", pdsRoutes);
 
 // Organization module routes
+const organizationEventAnalyticsRoutes = require("./routes/organization-event-analytics.routes");
+app.use("/api/organization/events/analytics", organizationEventAnalyticsRoutes);
 app.use("/api/organization/events", organizationEventRoutes);
 
 // Shared routes (accessible to all authenticated users)

@@ -265,6 +265,14 @@
       </div>
 
       <!-- Charts Section -->
+      <div class="grid grid-cols-1 gap-6 mb-6">
+        <!-- SDG Events Chart -->
+        <app-sdg-events-chart 
+          [data]="sdgEventData()" 
+          [title]="'Events per SDG per Year - ' + organizationName()"
+        />
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Members by Position Chart -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

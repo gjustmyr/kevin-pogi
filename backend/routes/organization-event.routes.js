@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const eventController = require("../controllers/organization-event.controller");
-const { verifyToken } = require("../middleware/auth.middleware");
-const { isOrganization } = require("../middleware/role.middleware");
+const verifyToken = require("../middleware/auth.middleware");
+const checkRole = require("../middleware/role.middleware");
 
 // Configure multer for CSV upload
 const storage = multer.memoryStorage();
@@ -21,8 +21,11 @@ const upload = multer({
   },
 });
 
-// All routes require authentication and organization role
-router.use(verifyToken, isOrganization);
+// Public routes (no authentication required)
+router.get("/template/download", eventController.downloadTemplate);
+
+// All other routes require authentication and organization role
+router.use(verifyToken, checkRole("organization"));
 
 // Event CRUD
 router.get("/", eventController.getEvents);
@@ -38,7 +41,6 @@ router.post(
   upload.single("file"),
   eventController.uploadAttendees,
 );
-router.get("/template/download", eventController.downloadTemplate);
 router.delete("/:id/attendees/:attendeeId", eventController.deleteAttendee);
 
 module.exports = router;
