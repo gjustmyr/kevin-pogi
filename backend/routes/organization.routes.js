@@ -40,6 +40,26 @@ const upload = multer({
 	},
 });
 
+// Configure multer for Excel file uploads (memory storage for parsing)
+const excelUpload = multer({
+	storage: multer.memoryStorage(),
+	limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+	fileFilter: function (req, file, cb) {
+		const allowedTypes = /xls|xlsx/;
+		const extname = allowedTypes.test(
+			path.extname(file.originalname).toLowerCase(),
+		);
+		const mimetype = file.mimetype === 'application/vnd.ms-excel' || 
+			file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+		if (mimetype && extname) {
+			return cb(null, true);
+		} else {
+			cb(new Error("Only Excel files (.xls, .xlsx) are allowed"));
+		}
+	},
+});
+
 // Organization dashboard
 router.get("/", verifyToken, checkRole("organization"), (req, res) => {
 	res.json({

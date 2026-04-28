@@ -5,7 +5,6 @@ import {
   OrganizationEventService,
   OrganizationEvent,
   EventGuest,
-  EventAttendee,
 } from '../../../services/organization-event.service';
 
 @Component({
@@ -20,11 +19,9 @@ export class OrganizationEventsComponent implements OnInit {
   events = signal<OrganizationEvent[]>([]);
   loading = signal(false);
   showEventModal = signal(false);
-  showAttendeesModal = signal(false);
   isEditing = signal(false);
 
-  selectedEvent = signal<OrganizationEvent | null>(null);
-  attendees = signal<EventAttendee[]>([]);
+  selectedFile: File | null = null;
 
   eventForm = signal<OrganizationEvent>({
     title: '',
@@ -41,10 +38,6 @@ export class OrganizationEventsComponent implements OnInit {
   selectedSDGs = signal<number[]>([]);
   guestsList = signal<EventGuest[]>([]);
   newGuest = signal<EventGuest>({ guest_name: '', guest_title: '', guest_affiliation: '' });
-
-  uploadFile: File | null = null;
-  uploadMessage = signal('');
-  uploadError = signal('');
   
   showSDGModal = signal(false);
   selectedEventSDGs = signal<number[]>([]);
@@ -74,6 +67,7 @@ export class OrganizationEventsComponent implements OnInit {
       this.eventForm.set({ ...event });
       this.selectedSDGs.set(event.sdgs || []);
       this.guestsList.set(event.guests || []);
+      this.selectedFile = null;
     } else {
       this.isEditing.set(false);
       this.eventForm.set({
@@ -88,6 +82,7 @@ export class OrganizationEventsComponent implements OnInit {
       });
       this.selectedSDGs.set([]);
       this.guestsList.set([]);
+      this.selectedFile = null;
     }
     this.showEventModal.set(true);
   }
@@ -113,26 +108,54 @@ export class OrganizationEventsComponent implements OnInit {
     this.guestsList.set(this.guestsList().filter((_, i) => i !== index));
   }
 
+  onFileSelect(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      this.selectedFile = file;
+    } else {
+      alert('Please select a PDF file');
+      event.target.value = '';
+      this.selectedFile = null;
+    }
+  }
+
   saveEvent() {
     const form = this.eventForm();
-    const eventData = {
-      ...form,
-      sdgs: this.selectedSDGs(),
-      guests: this.guestsList(),
-    };
+    const formData = new FormData();
+
+    // Add basic event data
+    formData.append('title', form.title);
+    formData.append('date_implemented', form.date_implemented);
+    formData.append('status', form.status);
+    if (form.start_time) formData.append('start_time', form.start_time);
+    if (form.end_time) formData.append('end_time', form.end_time);
+    if (form.description) formData.append('description', form.description);
+
+    // Add SDGs
+    formData.append('sdgs', JSON.stringify(this.selectedSDGs()));
+
+    // Add guests
+    formData.append('guests', JSON.stringify(this.guestsList()));
+
+    // Add file if selected
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile);
+    }
 
     if (this.isEditing() && form.id) {
-      this.eventService.updateEvent(form.id, eventData).subscribe({
+      this.eventService.updateEvent(form.id, formData).subscribe({
         next: () => {
           this.showEventModal.set(false);
+          this.selectedFile = null;
           this.loadEvents();
         },
         error: (error) => console.error('Update event error:', error),
       });
     } else {
-      this.eventService.createEvent(eventData).subscribe({
+      this.eventService.createEvent(formData).subscribe({
         next: () => {
           this.showEventModal.set(false);
+          this.selectedFile = null;
           this.loadEvents();
         },
         error: (error) => console.error('Create event error:', error),
@@ -149,55 +172,8 @@ export class OrganizationEventsComponent implements OnInit {
     }
   }
 
-  openAttendeesModal(event: OrganizationEvent) {
-    this.selectedEvent.set(event);
-    this.loadAttendees(event.id!);
-    this.showAttendeesModal.set(true);
-  }
-
-  loadAttendees(eventId: number) {
-    this.eventService.getAttendees(eventId).subscribe({
-      next: (data) => this.attendees.set(data),
-      error: (error) => console.error('Load attendees error:', error),
-    });
-  }
-
-  onFileSelected(event: any) {
-    this.uploadFile = event.target.files[0];
-    this.uploadMessage.set('');
-    this.uploadError.set('');
-  }
-
-  uploadCSV() {
-    if (!this.uploadFile || !this.selectedEvent()) return;
-
-    this.eventService.uploadAttendees(this.selectedEvent()!.id!, this.uploadFile).subscribe({
-      next: (response) => {
-        this.uploadMessage.set(
-          `Successfully uploaded: ${response.inserted} inserted, ${response.skipped} skipped`,
-        );
-        this.uploadError.set('');
-        this.uploadFile = null;
-        this.loadAttendees(this.selectedEvent()!.id!);
-      },
-      error: (error) => {
-        this.uploadError.set(error.error?.message || 'Upload failed');
-        this.uploadMessage.set('');
-      },
-    });
-  }
-
-  downloadTemplate() {
-    this.eventService.downloadTemplate();
-  }
-
-  deleteAttendee(attendeeId: number) {
-    if (confirm('Remove this attendee?')) {
-      this.eventService.deleteAttendee(this.selectedEvent()!.id!, attendeeId).subscribe({
-        next: () => this.loadAttendees(this.selectedEvent()!.id!),
-        error: (error) => console.error('Delete attendee error:', error),
-      });
-    }
+  downloadFile(eventId: number) {
+    this.eventService.downloadEventFile(eventId);
   }
 
   getStatusColor(status: string): string {

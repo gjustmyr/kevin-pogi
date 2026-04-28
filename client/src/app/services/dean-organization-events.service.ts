@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
-export interface OrganizationEvent {
-  id?: number;
-  organization_id?: number;
+export interface DeanOrganizationEvent {
+  id: number;
+  organization_id: number;
+  organization_name: string;
   title: string;
   date_implemented: string;
   status: 'Planned' | 'Ongoing' | 'Completed' | 'Cancelled';
@@ -13,51 +14,24 @@ export interface OrganizationEvent {
   end_time?: string;
   description?: string;
   sdgs?: number[];
-  guests?: EventGuest[];
   file_path?: string;
   original_filename?: string;
   file_size?: number;
   uploaded_at?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
-
-export interface EventGuest {
-  id?: number;
-  event_id?: number;
-  guest_name: string;
-  guest_title?: string;
-  guest_affiliation?: string;
-}
-
-
 
 @Injectable({
   providedIn: 'root',
 })
-export class OrganizationEventService {
-  private apiUrl = `${environment.apiUrl}/organization/events`;
+export class DeanOrganizationEventsService {
+  private apiUrl = `${environment.apiUrl}/dean/organization-events`;
 
   constructor(private http: HttpClient) {}
 
-  getEvents(): Observable<OrganizationEvent[]> {
-    return this.http.get<OrganizationEvent[]>(this.apiUrl);
-  }
-
-  getEvent(id: number): Observable<OrganizationEvent> {
-    return this.http.get<OrganizationEvent>(`${this.apiUrl}/${id}`);
-  }
-
-  createEvent(eventData: FormData): Observable<any> {
-    return this.http.post(this.apiUrl, eventData);
-  }
-
-  updateEvent(id: number, eventData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, eventData);
-  }
-
-  deleteEvent(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  getEvents(): Observable<DeanOrganizationEvent[]> {
+    return this.http.get<DeanOrganizationEvent[]>(this.apiUrl);
   }
 
   downloadEventFile(eventId: number): void {

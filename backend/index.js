@@ -40,6 +40,7 @@ const deanFacultyAnalyticsRoutes = require("./routes/dean-faculty-analytics.rout
 const deanFacultyProfileRoutes = require("./routes/dean-faculty-profile.routes");
 const deanProfileRoutes = require("./routes/dean-profile.routes");
 const deanPDSRoutes = require("./routes/dean-pds.routes");
+const deanOrganizationEventsRoutes = require("./routes/dean-organization-events.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
@@ -80,6 +81,7 @@ app.use("/api/dean/faculty-analytics", deanFacultyAnalyticsRoutes);
 app.use("/api/dean/faculty-profiles", deanFacultyProfileRoutes);
 app.use("/api/dean/profile", deanProfileRoutes);
 app.use("/api/dean/pds", deanPDSRoutes);
+app.use("/api/dean/organization-events", deanOrganizationEventsRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
@@ -110,7 +112,8 @@ db.sequelize
   .then(() => {
     console.log("Database connection successful!");
     // Sync models with database (creates tables if they don't exist)
-    return db.sequelize.sync({ alter: true });
+    // Using force: false to avoid altering existing tables
+    return db.sequelize.sync({ force: false, alter: false });
   })
   .then(() => {
     console.log("Database tables synced!");

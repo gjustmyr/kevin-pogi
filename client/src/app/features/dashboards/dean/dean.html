@@ -170,6 +170,26 @@
         </button>
       </li>
 
+      <!-- Organization Events -->
+      <li>
+        <button
+          (click)="selectTab('org-events')"
+          [class.bg-green-50]="activeTab() === 'org-events'"
+          [class.text-green-600]="activeTab() === 'org-events'"
+          class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+        >
+          <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          <span class="flex-1 ms-3 whitespace-nowrap text-left">Organization Events</span>
+        </button>
+      </li>
+
       <li class="pt-2 mt-2 border-t border-gray-200"></li>
     </ul>
   </div>
@@ -1454,6 +1474,9 @@
   }
   @if (activeTab() === 'org-documents') {
     <app-dean-organization-documents />
+  }
+  @if (activeTab() === 'org-events') {
+    <app-dean-organization-events />
   }
   @if (activeTab() === 'my-profile') {
     <app-dean-my-profile />

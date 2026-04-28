@@ -1,15 +1,21 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DeanService } from '../../../services/dean.service';
+import { EventAnalyticsService, SDGEventData } from '../../../services/event-analytics.service';
+import { SDGEventsChartComponent } from '../../../shared/components/sdg-events-chart/sdg-events-chart';
 
 @Component({
   selector: 'app-dean-organization-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, SDGEventsChartComponent],
   templateUrl: './organization-dashboard.html',
   styleUrl: './organization-dashboard.css',
 })
 export class DeanOrganizationDashboard implements OnInit {
+  private deanService = inject(DeanService);
+  private eventAnalyticsService = inject(EventAnalyticsService);
+
   loading = signal(false);
+  sdgEventData = signal<SDGEventData[]>([]);
   statistics = signal<any>({
     totalOrganizations: 0,
     totalMembers: 0,
@@ -22,10 +28,20 @@ export class DeanOrganizationDashboard implements OnInit {
   recentDocuments = signal<any[]>([]);
   organizationStats = signal<any[]>([]);
 
-  constructor(private deanService: DeanService) {}
-
   ngOnInit() {
     this.loadDashboard();
+    this.loadSDGEventData();
+  }
+
+  loadSDGEventData() {
+    this.eventAnalyticsService.deanGetEventsBySDGPerYear().subscribe({
+      next: (data: SDGEventData[]) => {
+        this.sdgEventData.set(data);
+      },
+      error: (error: any) => {
+        console.error('Failed to load SDG event data:', error);
+      },
+    });
   }
 
   loadDashboard() {
