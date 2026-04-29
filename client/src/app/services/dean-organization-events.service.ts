@@ -10,6 +10,10 @@ export interface DeanOrganizationEvent {
   title: string;
   date_implemented: string;
   status: 'Planned' | 'Ongoing' | 'Completed' | 'Cancelled';
+  approval_status: 'pending' | 'approved' | 'rejected';
+  approved_by?: number;
+  approval_date?: string;
+  rejection_reason?: string;
   start_time?: string;
   end_time?: string;
   description?: string;
@@ -75,5 +79,15 @@ export class DeanOrganizationEventsService {
           alert('Failed to download file');
         },
       });
+  }
+
+  approveEvent(eventId: number): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/${eventId}/approve`, {});
+  }
+
+  rejectEvent(eventId: number, rejectionReason: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/${eventId}/reject`, {
+      rejection_reason: rejectionReason,
+    });
   }
 }

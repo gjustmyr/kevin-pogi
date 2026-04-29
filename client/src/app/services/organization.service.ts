@@ -226,6 +226,20 @@ export class OrganizationService {
     return this.http.get<PositionTemplatesResponse>(`${this.apiUrl}/positions`);
   }
 
+  // Bulk upload
+  downloadMembersTemplate(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/members/template/download`, {
+      responseType: 'blob',
+    });
+  }
+
+  bulkUploadMembers(formData: FormData): Observable<{ message: string; results: any }> {
+    return this.http.post<{ message: string; results: any }>(
+      `${this.apiUrl}/members/bulk-upload`,
+      formData,
+    );
+  }
+
   // Document Management
   getDocuments(
     page: number = 1,

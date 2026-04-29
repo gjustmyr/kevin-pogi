@@ -206,7 +206,7 @@
 
 <!-- Event Modal -->
 @if (showEventModal()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       <div
         class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center"
@@ -343,19 +343,22 @@
         <!-- SDG Alignment -->
         <div class="space-y-4">
           <h4 class="font-semibold text-gray-900 border-b pb-2">SDG Alignment</h4>
-          <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             @for (sdg of sdgList; track sdg) {
               <button
                 type="button"
                 (click)="toggleSDG(sdg)"
                 [class]="
                   selectedSDGs().includes(sdg)
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'text-white border-2'
+                    : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50'
                 "
-                class="px-3 py-2 border rounded-lg font-medium text-sm transition"
+                [style.background-color]="selectedSDGs().includes(sdg) ? getSDGColor(sdg) : ''"
+                [style.border-color]="selectedSDGs().includes(sdg) ? getSDGColor(sdg) : ''"
+                class="px-3 py-2 rounded-lg font-medium text-sm transition text-left flex items-center gap-2"
               >
-                SDG {{ sdg }}
+                <span class="font-bold">{{ sdg }}</span>
+                <span class="flex-1">{{ getSDGName(sdg) }}</span>
               </button>
             }
           </div>
@@ -454,7 +457,7 @@
 
 <!-- SDG Details Modal -->
 @if (showSDGModal()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="fixed inset-0 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div
         class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center"

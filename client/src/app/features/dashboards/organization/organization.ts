@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '../../../services/auth/auth';
 import { OrganizationService } from '../../../services/organization.service';
+import { OrganizationEventService } from '../../../services/organization-event.service';
 import { EventAnalyticsService, SDGEventData } from '../../../services/event-analytics.service';
 import { OrganizationMembersComponent } from '../../organization/members/organization-members';
 import { OrganizationDocumentsComponent } from '../../organization/documents/organization-documents';
@@ -11,8 +12,9 @@ import { ChangePasswordModal } from '../../../shared/components/change-password-
 import { SDGEventsChartComponent } from '../../../shared/components/sdg-events-chart/sdg-events-chart';
 
 interface OrganizationStats {
+  approvedEvents: number;
+  pendingEvents: number;
   totalMembers: number;
-  activeMembers: number;
   documentsSubmitted: number;
   documentsPending: number;
   documentsApproved: number;
@@ -38,6 +40,7 @@ export class OrganizationDashboard implements OnInit {
   authService = inject(Auth);
   private router = inject(Router);
   private organizationService = inject(OrganizationService);
+  private eventService = inject(OrganizationEventService);
   private eventAnalyticsService = inject(EventAnalyticsService);
 
   activeTab = signal<'dashboard' | 'members' | 'documents' | 'advisers' | 'events'>('dashboard');
@@ -49,8 +52,9 @@ export class OrganizationDashboard implements OnInit {
   advisers = signal<any[]>([]);
   sdgEventData = signal<SDGEventData[]>([]);
   stats = signal<OrganizationStats>({
+    approvedEvents: 0,
+    pendingEvents: 0,
     totalMembers: 0,
-    activeMembers: 0,
     documentsSubmitted: 0,
     documentsPending: 0,
     documentsApproved: 0,
@@ -128,11 +132,28 @@ export class OrganizationDashboard implements OnInit {
 
   loadStatistics() {
     this.loading.set(true);
+    
+    // Load events statistics
+    this.eventService.getEvents().subscribe({
+      next: (events) => {
+        const approvedEvents = events.filter((e: any) => e.approval_status === 'approved').length;
+        const pendingEvents = events.filter((e: any) => e.approval_status === 'pending').length;
+        
+        this.stats.update((s) => ({
+          ...s,
+          approvedEvents,
+          pendingEvents,
+        }));
+      },
+      error: (error) => {
+        console.error('Failed to load events:', error);
+      },
+    });
+    
     // Load members and documents to calculate statistics
     this.organizationService.getMembers(1, 999).subscribe({
       next: (response) => {
         const members = response.members;
-        const activeMembers = members.filter((m: any) => m.is_active);
 
         // Count by position
         const positionCounts: { [key: string]: number } = {};
@@ -149,7 +170,6 @@ export class OrganizationDashboard implements OnInit {
         this.stats.update((s) => ({
           ...s,
           totalMembers: members.length,
-          activeMembers: activeMembers.length,
           membersByPosition: Object.entries(positionCounts).map(([position, count]) => ({
             position,
             count,
