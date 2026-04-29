@@ -23,6 +23,22 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.ENUM("Planned", "Ongoing", "Completed", "Cancelled"),
         defaultValue: "Planned",
       },
+      approval_status: {
+        type: Sequelize.ENUM("pending", "approved", "rejected"),
+        defaultValue: "pending",
+      },
+      approved_by: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      approval_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      rejection_reason: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       start_time: {
         type: Sequelize.TIME,
         allowNull: true,

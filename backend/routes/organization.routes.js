@@ -41,21 +41,32 @@ const upload = multer({
 });
 
 // Configure multer for Excel file uploads (memory storage for parsing)
-const excelUpload = multer({
-	storage: multer.memoryStorage(),
+const csvUpload = multer({
+	storage: multer.diskStorage({
+		destination: function (req, file, cb) {
+			cb(null, "uploads/temp/");
+		},
+		filename: function (req, file, cb) {
+			const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+			cb(null, "members-" + uniqueSuffix + path.extname(file.originalname));
+		},
+	}),
 	limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 	fileFilter: function (req, file, cb) {
-		const allowedTypes = /xls|xlsx/;
+		const allowedTypes = /csv|xls|xlsx/;
 		const extname = allowedTypes.test(
 			path.extname(file.originalname).toLowerCase(),
 		);
-		const mimetype = file.mimetype === 'application/vnd.ms-excel' || 
-			file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+		const mimetype =
+			file.mimetype === "text/csv" ||
+			file.mimetype === "application/vnd.ms-excel" ||
+			file.mimetype ===
+				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 		if (mimetype && extname) {
 			return cb(null, true);
 		} else {
-			cb(new Error("Only Excel files (.xls, .xlsx) are allowed"));
+			cb(new Error("Only CSV or Excel files (.csv, .xls, .xlsx) are allowed"));
 		}
 	},
 });
@@ -112,6 +123,21 @@ router.get(
 	verifyToken,
 	checkRole("organization"),
 	memberController.getPositionTemplates,
+);
+
+// Bulk upload routes
+router.get(
+	"/members/template/download",
+	verifyToken,
+	checkRole("organization"),
+	memberController.downloadTemplate,
+);
+router.post(
+	"/members/bulk-upload",
+	verifyToken,
+	checkRole("organization"),
+	csvUpload.single("file"),
+	memberController.bulkUploadMembers,
 );
 
 // Document routes

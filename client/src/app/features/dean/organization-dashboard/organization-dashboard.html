@@ -17,108 +17,62 @@
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Organizations -->
-      <div
-        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-purple-500"
-      >
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-lg transition-all duration-300">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-500 text-sm font-medium mb-1">Total Organizations</p>
-            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalOrganizations }}</p>
+            <p class="text-gray-600 text-sm font-medium mb-1">Total Organizations</p>
+            <p class="text-3xl font-bold text-indigo-600">{{ statistics().totalOrganizations }}</p>
           </div>
-          <div class="bg-purple-100 p-4 rounded-full">
-            <svg
-              class="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-              />
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
         </div>
       </div>
 
-      <!-- Total Members -->
-      <div
-        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500"
-      >
+      <!-- Approved Events -->
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-lg transition-all duration-300">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-500 text-sm font-medium mb-1">Total Members</p>
-            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalMembers }}</p>
+            <p class="text-gray-600 text-sm font-medium mb-1">Approved Events</p>
+            <p class="text-3xl font-bold text-green-600">{{ statistics().approvedEvents }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ statistics().pendingEvents }} pending</p>
           </div>
-          <div class="bg-blue-100 p-4 rounded-full">
-            <svg
-              class="w-8 h-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
+          <div class="bg-green-50 p-4 rounded-lg">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
         </div>
       </div>
 
       <!-- Total Documents -->
-      <div
-        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-green-500"
-      >
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-lg transition-all duration-300">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-500 text-sm font-medium mb-1">Total Documents</p>
-            <p class="text-3xl font-bold text-gray-800">{{ statistics().totalDocuments }}</p>
+            <p class="text-gray-600 text-sm font-medium mb-1">Total Documents</p>
+            <p class="text-3xl font-bold text-purple-600">{{ statistics().totalDocuments }}</p>
           </div>
-          <div class="bg-green-100 p-4 rounded-full">
-            <svg
-              class="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
         </div>
       </div>
 
-      <!-- Pending Documents -->
-      <div
-        class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-yellow-500"
-      >
+      <!-- Pending Review -->
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-lg transition-all duration-300">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-500 text-sm font-medium mb-1">Pending Review</p>
-            <p class="text-3xl font-bold text-gray-800">{{ statistics().pendingDocuments }}</p>
+            <p class="text-gray-600 text-sm font-medium mb-1">Pending Review</p>
+            <p class="text-3xl font-bold text-blue-600">{{ statistics().pendingDocuments + statistics().pendingEvents }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ statistics().pendingDocuments }} docs, {{ statistics().pendingEvents }} events</p>
           </div>
-          <div class="bg-yellow-100 p-4 rounded-full">
-            <svg
-              class="w-8 h-8 text-yellow-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
         </div>
@@ -127,12 +81,15 @@
 
     <!-- Document Status Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Approved</h3>
-          <span class="text-2xl font-bold text-green-600">{{
-            statistics().approvedDocuments
-          }}</span>
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm">
+        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg mb-4">
+          <div>
+            <p class="text-sm text-gray-600">Approved Documents</p>
+            <p class="text-2xl font-bold text-green-600">{{ statistics().approvedDocuments }}</p>
+          </div>
+          <div class="text-sm font-semibold text-gray-600">
+            {{ getApprovalRate() }}%
+          </div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
           <div class="bg-green-500 h-2 rounded-full" [style.width.%]="getApprovalRate()"></div>
@@ -140,40 +97,40 @@
         <p class="text-sm text-gray-500 mt-2">{{ getApprovalRate() }}% approval rate</p>
       </div>
 
-      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Rejected</h3>
-          <span class="text-2xl font-bold text-red-600">{{ statistics().rejectedDocuments }}</span>
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm">
+        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg mb-4">
+          <div>
+            <p class="text-sm text-gray-600">Rejected Documents</p>
+            <p class="text-2xl font-bold text-red-600">{{ statistics().rejectedDocuments }}</p>
+          </div>
+          <div class="text-sm font-semibold text-gray-600">
+            {{ statistics().totalDocuments > 0 ? ((statistics().rejectedDocuments / statistics().totalDocuments) * 100).toFixed(1) : 0 }}%
+          </div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div
-            class="bg-red-500 h-2 rounded-full"
-            [style.width.%]="
-              statistics().totalDocuments > 0
-                ? (statistics().rejectedDocuments / statistics().totalDocuments) * 100
-                : 0
-            "
-          ></div>
+          <div class="bg-red-500 h-2 rounded-full" [style.width.%]="statistics().totalDocuments > 0 ? (statistics().rejectedDocuments / statistics().totalDocuments) * 100 : 0"></div>
         </div>
       </div>
 
-      <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Active Advisers</h3>
-          <span class="text-2xl font-bold text-indigo-600">{{ statistics().totalAdvisers }}</span>
+      <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm">
+        <div class="flex items-center justify-between p-3 bg-indigo-50 rounded-lg mb-4">
+          <div>
+            <p class="text-sm text-gray-600">Active Advisers</p>
+            <p class="text-2xl font-bold text-indigo-600">{{ statistics().totalAdvisers }}</p>
+          </div>
         </div>
         <p class="text-sm text-gray-500">Faculty members assigned as advisers</p>
       </div>
     </div>
 
     <!-- SDG Events Chart -->
-    <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-8">
+    <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm mb-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Events per SDG per Year</h2>
       <app-sdg-events-chart [data]="sdgEventData()" />
     </div>
 
     <!-- Recent Documents -->
-    <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-8">
+    <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm mb-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Document Submissions</h2>
       @if (recentDocuments().length === 0) {
         <div class="text-center py-12">
@@ -222,7 +179,7 @@
     </div>
 
     <!-- Organizations Overview -->
-    <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
+    <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Organizations Overview</h2>
       @if (organizationStats().length === 0) {
         <div class="text-center py-12">
@@ -245,7 +202,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           @for (org of organizationStats(); track org.organization_id) {
             <div
-              class="p-4 border border-gray-200 border-dashed rounded-lg hover:shadow-lg transition-all duration-300"
+              class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-lg transition-all duration-300"
             >
               <div class="flex items-start justify-between mb-4">
                 <div class="flex-1">

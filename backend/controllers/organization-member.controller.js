@@ -425,3 +425,166 @@ exports.getHierarchy = async (req, res) => {
 		res.status(500).json({ message: "Error fetching hierarchy" });
 	}
 };
+
+// Download template for bulk upload
+exports.downloadTemplate = async (req, res) => {
+	try {
+		const path = require("path");
+		const filePath = path.join(
+			__dirname,
+			"../public/templates/organization-members-template.csv"
+		);
+		res.download(filePath, "organization-members-template.csv");
+	} catch (error) {
+		console.error("Download template error:", error);
+		res.status(500).json({ message: "Error downloading template" });
+	}
+};
+
+// Bulk upload members from CSV/Excel
+exports.bulkUploadMembers = async (req, res) => {
+	try {
+		const userId = req.user.user_id;
+
+		const organization = await db.Organization.findOne({
+			where: { user_id: userId },
+		});
+
+		if (!organization) {
+			return res
+				.status(404)
+				.json({ message: "Organization profile not found" });
+		}
+
+		if (!req.file) {
+			return res.status(400).json({ message: "No file uploaded" });
+		}
+
+		const { academic_year_id, term_start_date } = req.body;
+
+		if (!academic_year_id || !term_start_date) {
+			return res.status(400).json({
+				message: "Academic year and term start date are required",
+			});
+		}
+
+		// Parse CSV file
+		const fs = require("fs");
+		const csv = require("csv-parser");
+		const results = [];
+
+		const stream = fs
+			.createReadStream(req.file.path)
+			.pipe(csv())
+			.on("data", (data) => results.push(data))
+			.on("end", async () => {
+				try {
+					const uploadResults = {
+						total: results.length,
+						inserted: 0,
+						updated: 0,
+						skipped: 0,
+						errors: [],
+					};
+
+					for (const row of results) {
+						try {
+							// Validate required fields
+							if (!row.sr_code || !row.student_name || !row.position) {
+								uploadResults.errors.push({
+									row: row,
+									error: "Missing SR Code, student name, or position",
+								});
+								uploadResults.skipped++;
+								continue;
+							}
+
+							// Parse student name (assuming format: "First Middle Last" or "First Last")
+							const nameParts = row.student_name.trim().split(" ");
+							let first_name, middle_name, last_name;
+
+							if (nameParts.length === 1) {
+								first_name = nameParts[0];
+								last_name = nameParts[0];
+							} else if (nameParts.length === 2) {
+								first_name = nameParts[0];
+								last_name = nameParts[1];
+							} else {
+								first_name = nameParts[0];
+								middle_name = nameParts.slice(1, -1).join(" ");
+								last_name = nameParts[nameParts.length - 1];
+							}
+
+							// Check if member exists
+							const existingMember = await db.OrganizationMember.findOne({
+								where: {
+									organization_id: organization.organization_id,
+									sr_code: row.sr_code.trim(),
+									academic_year_id: academic_year_id,
+								},
+							});
+
+							const memberData = {
+								organization_id: organization.organization_id,
+								sr_code: row.sr_code.trim(),
+								first_name: first_name,
+								middle_name: middle_name || null,
+								last_name: last_name,
+								email: row.email ? row.email.trim() : null,
+								contact_number: null, // Not in template
+								year_level: row.year_level ? row.year_level.trim() : "1st Year",
+								position: row.position ? row.position.trim() : "Member",
+								parent_member_id: null,
+								academic_year_id: academic_year_id,
+								term_start_date: term_start_date,
+								is_active: true,
+							};
+
+							if (existingMember) {
+								// Update existing member
+								await existingMember.update(memberData);
+								uploadResults.updated++;
+							} else {
+								// Insert new member
+								await db.OrganizationMember.create(memberData);
+								uploadResults.inserted++;
+							}
+						} catch (rowError) {
+							console.error("Row processing error:", rowError);
+							uploadResults.errors.push({
+								row: row,
+								error: rowError.message,
+							});
+							uploadResults.skipped++;
+						}
+					}
+
+					// Delete uploaded file
+					fs.unlinkSync(req.file.path);
+
+					res.json({
+						message: "Bulk upload completed",
+						results: uploadResults,
+					});
+				} catch (processingError) {
+					console.error("Processing error:", processingError);
+					// Clean up file
+					if (fs.existsSync(req.file.path)) {
+						fs.unlinkSync(req.file.path);
+					}
+					res.status(500).json({ message: "Error processing file" });
+				}
+			})
+			.on("error", (error) => {
+				console.error("CSV parsing error:", error);
+				// Clean up file
+				if (fs.existsSync(req.file.path)) {
+					fs.unlinkSync(req.file.path);
+				}
+				res.status(500).json({ message: "Error parsing CSV file" });
+			});
+	} catch (error) {
+		console.error("Bulk upload error:", error);
+		res.status(500).json({ message: "Error uploading members" });
+	}
+};
