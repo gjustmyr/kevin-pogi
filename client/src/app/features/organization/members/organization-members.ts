@@ -39,6 +39,7 @@ export class OrganizationMembersComponent implements OnInit {
   searchQuery = signal('');
   selectedAcademicYear = signal<number | undefined>(undefined);
   selectedPosition = signal<string | undefined>(undefined);
+  selectedSemester = signal<string | undefined>(undefined);
   showActiveOnly = signal(true);
 
   // View mode
@@ -90,20 +91,41 @@ export class OrganizationMembersComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
+    // Determine position filter based on view mode
+    let positionFilter = this.selectedPosition();
+
+    if (this.viewMode() === 'list') {
+      // Organization Population - show all members (no position filter)
+      positionFilter = undefined;
+    } else if (this.viewMode() === 'officers') {
+      // Officers Profile - don't filter by position here, we'll filter in the component
+      positionFilter = undefined;
+    }
+
     this.organizationService
       .getMembers(
         this.currentPage(),
         this.itemsPerPage,
         this.searchQuery(),
         this.selectedAcademicYear(),
-        this.selectedPosition(),
+        positionFilter,
         this.showActiveOnly() ? true : undefined,
       )
       .subscribe({
         next: (response) => {
-          this.members.set(response.members);
-          this.totalPages.set(response.totalPages);
-          this.totalItems.set(response.totalItems);
+          // If in officers view, filter out "Member" position
+          if (this.viewMode() === 'officers') {
+            const filteredMembers = response.members.filter(
+              (m) => m.position.toLowerCase() !== 'member',
+            );
+            this.members.set(filteredMembers);
+            this.totalItems.set(filteredMembers.length);
+            this.totalPages.set(Math.ceil(filteredMembers.length / this.itemsPerPage));
+          } else {
+            this.members.set(response.members);
+            this.totalPages.set(response.totalPages);
+            this.totalItems.set(response.totalItems);
+          }
           this.loading.set(false);
         },
         error: (error) => {
@@ -112,8 +134,6 @@ export class OrganizationMembersComponent implements OnInit {
         },
       });
   }
-
-
 
   loadPositionTemplates() {
     this.organizationService.getPositionTemplates().subscribe({
@@ -141,16 +161,18 @@ export class OrganizationMembersComponent implements OnInit {
 
   toggleViewMode(mode: 'list' | 'officers') {
     this.viewMode.set(mode);
+    this.currentPage.set(1);
+    this.loadMembers();
+
     if (mode === 'officers') {
-      this.loadMembers(); // Load all active members for officers view
-      this.loadAdvisers(); // Load advisers for officers view
+      this.loadAdvisers();
     }
   }
 
   loadAdvisers() {
     this.organizationService.getAdvisers().subscribe({
       next: (response) => {
-        this.advisers.set(response.advisers.filter(a => a.is_active));
+        this.advisers.set(response.advisers.filter((a) => a.is_active));
       },
       error: (error) => {
         console.error('Failed to load advisers:', error);
@@ -301,15 +323,17 @@ export class OrganizationMembersComponent implements OnInit {
   }
 
   getPresident(): OrganizationMember | undefined {
-    return this.members().find(m => m.position.toLowerCase().includes('president') && m.is_active);
+    return this.members().find(
+      (m) => m.position.toLowerCase().includes('president') && m.is_active,
+    );
   }
 
   getOfficers(): OrganizationMember[] {
-    return this.members().filter(m => 
-      m.is_active && 
-      !m.position.toLowerCase().includes('president') &&
-      !m.position.toLowerCase().includes('adviser') &&
-      !m.position.toLowerCase().includes('member')
+    return this.members().filter(
+      (m) =>
+        m.is_active &&
+        m.position.toLowerCase() !== 'member' &&
+        !m.position.toLowerCase().includes('president'),
     );
   }
 
@@ -383,7 +407,7 @@ export class OrganizationMembersComponent implements OnInit {
 
   uploadMembers() {
     const form = this.bulkUploadForm();
-    
+
     if (!form.file || !form.academic_year_id || !form.term_start_date) {
       this.errorMessage.set('Please fill all required fields and select a file');
       return;
@@ -403,6 +427,9 @@ export class OrganizationMembersComponent implements OnInit {
         this.successMessage.set(response.message);
         this.loading.set(false);
         this.loadMembers();
+
+        // Close modal after successful upload
+        this.showBulkUploadModal.set(false);
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to upload members');

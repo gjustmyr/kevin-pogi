@@ -49,6 +49,10 @@ exports.getOrganizations = async (req, res) => {
       order: [["organization_name", "ASC"]],
       include: [
         {
+          model: db.User,
+          attributes: ["email"],
+        },
+        {
           model: db.Faculty,
           attributes: [
             "faculty_id",
@@ -81,8 +85,17 @@ exports.getOrganizations = async (req, res) => {
       ],
     });
 
+    // Add email to each organization from the User model
+    const organizationsWithEmail = rows.map((org) => {
+      const orgData = org.toJSON();
+      return {
+        ...orgData,
+        email: orgData.user?.email || null,
+      };
+    });
+
     res.json({
-      organizations: rows,
+      organizations: organizationsWithEmail,
       currentPage: page,
       totalPages: Math.ceil(count / limit),
       totalItems: count,
@@ -508,5 +521,70 @@ exports.removeAdviser = async (req, res) => {
   } catch (error) {
     console.error("Remove adviser error:", error);
     res.status(500).json({ message: "Error removing adviser" });
+  }
+};
+
+// Reset organization password
+exports.resetOrganizationPassword = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    // Check if organization exists and belongs to dean's department
+    const organization = await db.Organization.findOne({
+      where: {
+        organization_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Get user account
+    const user = await db.User.findOne({
+      where: { user_id: organization.user_id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User account not found" });
+    }
+
+    // Generate new password
+    const newPassword = generatePassword();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await user.update({ password: hashedPassword });
+
+    // Send new credentials via email (non-blocking)
+    try {
+      await sendAccountCredentials(
+        user.email,
+        organization.organization_name,
+        newPassword,
+        "organization",
+      );
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+    }
+
+    res.json({
+      message: "Password reset successfully",
+      newPassword,
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Error resetting password" });
   }
 };

@@ -75,4 +75,11 @@ export class DeanFacultyService {
   deleteFaculty(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  resetPassword(facultyId: number): Observable<{ message: string; newPassword: string }> {
+    return this.http.post<{ message: string; newPassword: string }>(
+      `${this.apiUrl}/${facultyId}/reset-password`,
+      {},
+    );
+  }
 }

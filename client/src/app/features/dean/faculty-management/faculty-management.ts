@@ -582,4 +582,51 @@ export class DeanFacultyManagement implements OnInit {
       ? `${faculty.first_name} ${faculty.middle_name} ${faculty.last_name}`
       : `${faculty.first_name} ${faculty.last_name}`;
   }
+
+  resetPassword(faculty: Faculty) {
+    Swal.fire({
+      title: 'Reset Password',
+      text: `Generate a new password for "${this.getFullName(faculty)}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Reset Password',
+      confirmButtonColor: '#16a34a',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.facultyService.resetPassword(faculty.faculty_id).subscribe({
+          next: (response) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'success',
+              title: 'Password Reset!',
+              html: `
+                <div class="text-left">
+                  <p class="mb-4">New password generated successfully:</p>
+                  <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <p class="mb-2"><strong>Email:</strong> ${faculty.email}</p>
+                    <p><strong>New Password:</strong> <span class="font-mono text-blue-600">${response.newPassword}</span></p>
+                  </div>
+                  <p class="text-sm text-red-600">⚠️ Save this password now. It won't be shown again.</p>
+                </div>
+              `,
+              confirmButtonText: 'I have saved the password',
+              confirmButtonColor: '#16a34a',
+              allowOutsideClick: false,
+            });
+          },
+          error: (error) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to reset password',
+              confirmButtonColor: '#2563eb',
+            });
+          },
+        });
+      }
+    });
+  }
 }

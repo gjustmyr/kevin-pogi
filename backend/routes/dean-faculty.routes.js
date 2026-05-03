@@ -11,5 +11,6 @@ router.get("/", deanFacultyController.getFaculty);
 router.post("/", deanFacultyController.createFaculty);
 router.put("/:id", deanFacultyController.updateFaculty);
 router.delete("/:id", deanFacultyController.deleteFaculty);
+router.post("/:id/reset-password", deanFacultyController.resetFacultyPassword);
 
 module.exports = router;

@@ -7,6 +7,7 @@ export interface Organization {
   organization_id: number;
   organization_name: string;
   description?: string;
+  email?: string;
   department: string;
   faculty_id: number;
   user_id: number;
@@ -107,5 +108,12 @@ export class DeanOrganizationService {
 
   removeAdviser(organizationId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${organizationId}/remove-adviser`);
+  }
+
+  resetPassword(organizationId: number): Observable<{ message: string; newPassword: string }> {
+    return this.http.post<{ message: string; newPassword: string }>(
+      `${this.apiUrl}/${organizationId}/reset-password`,
+      {},
+    );
   }
 }

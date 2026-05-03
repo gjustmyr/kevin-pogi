@@ -1,14 +1,14 @@
 <div class="flex h-full bg-gray-50">
   <!-- Sidebar Navigation -->
-  <div class="w-64 bg-white border-r border-gray-200">
+  <div class="w-96 bg-white border-r border-gray-200 p-4 flex-shrink-0">
     <h2 class="text-lg font-bold text-gray-800 mb-4">My Profile</h2>
-    <nav class="space-y-1 text-sm">
+    <nav class="space-y-1 text-xs">
       <button
         (click)="selectSection('personal')"
         [class.bg-green-50]="activeSection() === 'personal'"
         [class.text-green-600]="activeSection() === 'personal'"
         [class.border-green-500]="activeSection() === 'personal'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Personal Profile
       </button>
@@ -17,7 +17,7 @@
         [class.bg-green-50]="activeSection() === 'academic'"
         [class.text-green-600]="activeSection() === 'academic'"
         [class.border-green-500]="activeSection() === 'academic'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Academic Profile
       </button>
@@ -26,7 +26,7 @@
         [class.bg-green-50]="activeSection() === 'employment'"
         [class.text-green-600]="activeSection() === 'employment'"
         [class.border-green-500]="activeSection() === 'employment'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Employment
       </button>
@@ -35,7 +35,7 @@
         [class.bg-green-50]="activeSection() === 'membership'"
         [class.text-green-600]="activeSection() === 'membership'"
         [class.border-green-500]="activeSection() === 'membership'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Membership in Professional Organization
       </button>
@@ -44,7 +44,7 @@
         [class.bg-green-50]="activeSection() === 'awards'"
         [class.text-green-600]="activeSection() === 'awards'"
         [class.border-green-500]="activeSection() === 'awards'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Awards Received
       </button>
@@ -53,7 +53,7 @@
         [class.bg-green-50]="activeSection() === 'seminars'"
         [class.text-green-600]="activeSection() === 'seminars'"
         [class.border-green-500]="activeSection() === 'seminars'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Seminars/Trainings/Conferences Attended
       </button>
@@ -62,7 +62,7 @@
         [class.bg-green-50]="activeSection() === 'research'"
         [class.text-green-600]="activeSection() === 'research'"
         [class.border-green-500]="activeSection() === 'research'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Research-related Seminars/Workshops/Trainings/Conferences
       </button>
@@ -71,7 +71,7 @@
         [class.bg-green-50]="activeSection() === 'extension'"
         [class.text-green-600]="activeSection() === 'extension'"
         [class.border-green-500]="activeSection() === 'extension'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
       >
         Faculty Involvement in Extension Activities
       </button>
@@ -104,18 +104,8 @@
         @if (!isEditingPersonal()) {
           <!-- View Mode -->
           <div class="space-y-6">
-            <!-- Profile Picture & Passport Photo -->
+            <!-- Passport Photo -->
             <div class="flex justify-center gap-8 mb-6">
-              @if (personalProfile().profile_picture) {
-                <div class="text-center">
-                  <p class="text-sm font-medium text-gray-700 mb-2">Profile Picture</p>
-                  <img
-                    [src]="baseUrl + personalProfile().profile_picture"
-                    alt="Profile Picture"
-                    class="w-32 h-32 object-cover border-4 border-gray-200"
-                  />
-                </div>
-              }
               @if (personalProfile().passport_photo) {
                 <div class="text-center">
                   <p class="text-sm font-medium text-gray-700 mb-2">Passport Photo</p>
@@ -222,19 +212,9 @@
         } @else {
           <!-- Edit Mode -->
           <form (ngSubmit)="savePersonalProfile()" class="space-y-6">
-            <!-- Profile Picture & Passport Photo Upload -->
+            <!-- Passport Photo Upload -->
             <div class="flex flex-col items-center mb-6 space-y-6">
               <div class="flex gap-8">
-                @if (personalProfile().profile_picture && !selectedProfilePhoto) {
-                  <div class="text-center">
-                    <p class="text-sm font-medium text-gray-700 mb-2">Current Profile Picture</p>
-                    <img
-                      [src]="baseUrl + personalProfile().profile_picture"
-                      alt="Profile Picture"
-                      class="w-32 h-32 object-cover border-4 border-gray-200"
-                    />
-                  </div>
-                }
                 @if (personalProfile().passport_photo && !selectedPassportPhoto) {
                   <div class="text-center">
                     <p class="text-sm font-medium text-gray-700 mb-2">Current Passport Photo</p>
@@ -250,18 +230,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Profile Picture (2x2, White Background)
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    (change)="onProfilePhotoSelected($event)"
-                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Passport Photo (2x2, White Background)
+                    Passport Photo (White Background)
                   </label>
                   <input
                     type="file"

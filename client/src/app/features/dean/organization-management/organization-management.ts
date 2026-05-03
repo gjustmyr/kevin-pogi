@@ -198,6 +198,9 @@ export class DeanOrganizationManagement implements OnInit {
         this.loading.set(false);
         this.closeCreateModal();
 
+        // Reload organizations first
+        this.loadOrganizations();
+
         // Show credentials in a modal
         Swal.fire({
           icon: 'success',
@@ -216,7 +219,6 @@ export class DeanOrganizationManagement implements OnInit {
           confirmButtonColor: '#2563eb',
           allowOutsideClick: false,
         });
-        this.loadOrganizations();
       },
       error: (error) => {
         this.loading.set(false);
@@ -340,5 +342,52 @@ export class DeanOrganizationManagement implements OnInit {
     return adviser.middle_name
       ? `${adviser.first_name} ${adviser.middle_name} ${adviser.last_name}`
       : `${adviser.first_name} ${adviser.last_name}`;
+  }
+
+  resetPassword(organization: Organization) {
+    Swal.fire({
+      title: 'Reset Password',
+      text: `Generate a new password for "${organization.organization_name}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Reset Password',
+      confirmButtonColor: '#16a34a',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.organizationService.resetPassword(organization.organization_id).subscribe({
+          next: (response) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'success',
+              title: 'Password Reset!',
+              html: `
+                <div class="text-left">
+                  <p class="mb-4">New password generated successfully:</p>
+                  <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <p class="mb-2"><strong>Email:</strong> ${organization.email}</p>
+                    <p><strong>New Password:</strong> <span class="font-mono text-blue-600">${response.newPassword}</span></p>
+                  </div>
+                  <p class="text-sm text-red-600">⚠️ Save this password now. It won't be shown again.</p>
+                </div>
+              `,
+              confirmButtonText: 'I have saved the password',
+              confirmButtonColor: '#16a34a',
+              allowOutsideClick: false,
+            });
+          },
+          error: (error) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to reset password',
+              confirmButtonColor: '#2563eb',
+            });
+          },
+        });
+      }
+    });
   }
 }

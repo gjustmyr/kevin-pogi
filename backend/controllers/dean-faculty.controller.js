@@ -337,3 +337,72 @@ exports.deleteFaculty = async (req, res) => {
     res.status(500).json({ message: "Error deleting faculty" });
   }
 };
+
+// Reset faculty password
+exports.resetFacultyPassword = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    // Check if faculty exists and belongs to dean's department
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    // Get user account
+    const user = await db.User.findOne({
+      where: { user_id: faculty.user_id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User account not found" });
+    }
+
+    // Generate new password
+    const newPassword = generatePassword();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await user.update({ password: hashedPassword });
+
+    // Send new credentials via email (non-blocking)
+    const facultyName = faculty.middle_name
+      ? `${faculty.first_name} ${faculty.middle_name} ${faculty.last_name}`
+      : `${faculty.first_name} ${faculty.last_name}`;
+
+    try {
+      await sendAccountCredentials(
+        user.email,
+        facultyName,
+        newPassword,
+        "faculty",
+      );
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+    }
+
+    res.json({
+      message: "Password reset successfully",
+      newPassword,
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Error resetting password" });
+  }
+};

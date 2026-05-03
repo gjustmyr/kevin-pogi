@@ -60,19 +60,34 @@
               <td class="px-6 py-4 text-sm">{{ faculty.contact_number || 'N/A' }}</td>
               <td class="px-6 py-4 text-sm">
                 <div class="flex items-center gap-2">
-                  <button (click)="openEditModal(faculty)" class="text-blue-600 hover:underline">
-                    Edit
+                  <button
+                    (click)="openEditModal(faculty)"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                    title="Edit"
+                  >
+                    <i class="fas fa-edit"></i>
                   </button>
-                  <button (click)="openDeleteModal(faculty)" class="text-red-600 hover:underline">
-                    Delete
+                  <button
+                    (click)="resetPassword(faculty)"
+                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                    title="Reset Password"
+                  >
+                    <i class="fas fa-key"></i>
+                  </button>
+                  <button
+                    (click)="openDeleteModal(faculty)"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Delete"
+                  >
+                    <i class="fas fa-trash"></i>
                   </button>
                   <div class="relative">
                     <button
                       (click)="togglePDFMenu(faculty.faculty_id)"
-                      class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center gap-1"
+                      class="p-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition flex items-center gap-1"
+                      title="Generate PDF"
                     >
                       <i class="fas fa-file-pdf"></i>
-                      <span>PDF</span>
                       <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     @if (showPDFMenu() === faculty.faculty_id) {

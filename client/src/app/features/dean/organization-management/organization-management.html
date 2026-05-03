@@ -36,38 +36,52 @@
         <tr>
           <th scope="col" class="px-6 py-3">ID</th>
           <th scope="col" class="px-6 py-3">Organization Name</th>
+          <th scope="col" class="px-6 py-3">Email</th>
           <th scope="col" class="px-6 py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
         @if (loading()) {
           <tr>
-            <td colspan="3" class="px-6 py-4 text-center">Loading...</td>
+            <td colspan="4" class="px-6 py-4 text-center">Loading...</td>
           </tr>
         } @else if (organizationsList().length === 0) {
           <tr>
-            <td colspan="3" class="px-6 py-4 text-center">No organizations found</td>
+            <td colspan="4" class="px-6 py-4 text-center">No organizations found</td>
           </tr>
         } @else {
           @for (org of organizationsList(); track org.organization_id) {
             <tr class="bg-white border-b hover:bg-gray-50">
               <td class="px-6 py-4 font-semibold text-gray-900">{{ org.organization_id }}</td>
               <td class="px-6 py-4 font-medium text-gray-900">{{ org.organization_name }}</td>
+              <td class="px-6 py-4 text-gray-700">{{ org.email || 'N/A' }}</td>
               <td class="px-6 py-4">
-                <button
-                  (click)="openEditModal(org)"
-                  [disabled]="loading()"
-                  class="text-blue-600 hover:underline mr-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Edit
-                </button>
-                <button
-                  (click)="openDeleteModal(org)"
-                  [disabled]="loading()"
-                  class="text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Delete
-                </button>
+                <div class="flex items-center gap-2">
+                  <button
+                    (click)="openEditModal(org)"
+                    [disabled]="loading()"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Edit"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    (click)="resetPassword(org)"
+                    [disabled]="loading()"
+                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Reset Password"
+                  >
+                    <i class="fas fa-key"></i>
+                  </button>
+                  <button
+                    (click)="openDeleteModal(org)"
+                    [disabled]="loading()"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -117,7 +131,7 @@
 
 <!-- Create Modal -->
 @if (showCreateModal()) {
-  <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+  <div class="fixed inset-0 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
       <h2 class="text-xl font-bold mb-4">Add New Organization</h2>
       <form (submit)="submitCreateForm(); $event.preventDefault()">
@@ -225,7 +239,7 @@
 
 <!-- Edit Modal -->
 @if (showEditModal()) {
-  <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+  <div class="fixed inset-0 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md border-2 border-gray-200">
       <h2 class="text-xl font-bold mb-4">Edit Organization</h2>
       <form (submit)="submitEditForm(); $event.preventDefault()">

@@ -326,15 +326,15 @@ exports.importFromProfile = async (req, res) => {
       pdsData.middle_name = personalProfile.middle_name || "";
       pdsData.date_of_birth = personalProfile.date_of_birth || "";
       pdsData.place_of_birth = personalProfile.place_of_birth || "";
-      pdsData.sex = personalProfile.gender || "Male";
+      pdsData.sex = personalProfile.sex || "Male";
       pdsData.civil_status = personalProfile.civil_status || "Single";
-      pdsData.mobile_no = personalProfile.contact_number || "";
-      pdsData.email_address = personalProfile.email || "";
+      pdsData.mobile_no = personalProfile.mobile_number_primary || "";
+      pdsData.email_address = personalProfile.email_primary || "";
       pdsData.citizenship_type = personalProfile.citizenship || "Filipino";
-      pdsData.residential_city = personalProfile.city || "";
-      pdsData.residential_province = personalProfile.province || "";
-      pdsData.permanent_city = personalProfile.city || "";
-      pdsData.permanent_province = personalProfile.province || "";
+      pdsData.residential_city = personalProfile.home_barangay || "";
+      pdsData.residential_province = personalProfile.home_province || "";
+      pdsData.permanent_city = personalProfile.home_barangay || "";
+      pdsData.permanent_province = personalProfile.home_province || "";
     }
 
     if (pds) {
@@ -349,8 +349,8 @@ exports.importFromProfile = async (req, res) => {
       const existingEducation = await db.PDSEducation.findOne({
         where: {
           pds_id: pds.pds_id,
-          school_name: academic.institution,
-          degree_course: academic.degree_program,
+          school_name: academic.school_name,
+          degree_course: academic.degree_course,
         },
       });
 
@@ -358,10 +358,10 @@ exports.importFromProfile = async (req, res) => {
         await db.PDSEducation.create({
           pds_id: pds.pds_id,
           level: "COLLEGE",
-          school_name: academic.institution || "",
-          degree_course: academic.degree_program || "",
+          school_name: academic.school_name || "",
+          degree_course: academic.degree_course || "",
           year_graduated: academic.year_graduated || null,
-          scholarship_honors: academic.honors_awards || "",
+          scholarship_honors: academic.honors_received || "",
         });
       }
     }

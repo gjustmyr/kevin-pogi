@@ -13,6 +13,10 @@ export interface OrganizationMember {
   last_name: string;
   email?: string;
   contact_number?: string;
+  gender?: 'Male' | 'Female';
+  program?: string;
+  section?: string;
+  department?: string;
   year_level: '1st Year' | '2nd Year' | '3rd Year' | '4th Year' | '5th Year';
   position: string;
   parent_member_id?: number;
@@ -305,6 +309,11 @@ export class OrganizationService {
   // Adviser Management
   getAdvisers(): Observable<AdvisersResponse> {
     return this.http.get<AdvisersResponse>(`${this.apiUrl}/advisers`);
+  }
+
+  // Demographics
+  getDemographics(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/demographics`);
   }
 }
 
