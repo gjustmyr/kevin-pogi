@@ -58,6 +58,22 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2">
                   <button
+                    (click)="viewAnalytics(org)"
+                    [disabled]="loading()"
+                    class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="View Analytics"
+                  >
+                    <i class="fas fa-chart-bar"></i>
+                  </button>
+                  <button
+                    (click)="viewDemographics(org)"
+                    [disabled]="loading()"
+                    class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="View Demographics"
+                  >
+                    <i class="fas fa-users"></i>
+                  </button>
+                  <button
                     (click)="openEditModal(org)"
                     [disabled]="loading()"
                     class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"

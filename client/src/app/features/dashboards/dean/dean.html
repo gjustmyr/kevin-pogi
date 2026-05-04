@@ -305,6 +305,16 @@
           >
             Organization Analytics
           </button>
+          <button
+            (click)="selectDashboardSubTab('member-demographics')"
+            [class.border-green-500]="dashboardSubTab() === 'member-demographics'"
+            [class.text-green-600]="dashboardSubTab() === 'member-demographics'"
+            [class.border-transparent]="dashboardSubTab() !== 'member-demographics'"
+            [class.text-gray-500]="dashboardSubTab() !== 'member-demographics'"
+            class="py-4 px-1 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition"
+          >
+            Member Demographics
+          </button>
         </nav>
       </div>
 
@@ -1460,6 +1470,10 @@
 
       @if (dashboardSubTab() === 'organization-analytics') {
         <app-dean-organization-dashboard />
+      }
+
+      @if (dashboardSubTab() === 'member-demographics') {
+        <app-dean-member-demographics />
       }
     </div>
   }

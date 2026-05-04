@@ -25,6 +25,7 @@ import {
 import { DeanOrganizationEventsComponent } from '../../dean/organization-events/dean-organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 import { DeanService, Dean } from '../../../services/dean.service';
+import { DeanMemberDemographicsComponent } from '../../dean/member-demographics/dean-member-demographics';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -44,6 +45,7 @@ Chart.register(...registerables);
     DeanPersonalDataSheetComponent,
     DeanOrganizationEventsComponent,
     ChangePasswordModal,
+    DeanMemberDemographicsComponent,
   ],
   templateUrl: './dean.html',
   styles: [],

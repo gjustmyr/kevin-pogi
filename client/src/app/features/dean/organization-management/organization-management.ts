@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   Organization,
   CreateOrganizationData,
@@ -46,6 +47,8 @@ export class DeanOrganizationManagement implements OnInit {
     private organizationService: DeanOrganizationService,
     private facultyService: DeanFacultyService,
   ) {}
+
+  private router = inject(Router);
 
   ngOnInit() {
     this.loadFaculty();
@@ -389,5 +392,15 @@ export class DeanOrganizationManagement implements OnInit {
         });
       }
     });
+  }
+
+  viewAnalytics(organization: Organization) {
+    // Navigate to organization analytics view
+    this.router.navigate(['/dean/organization-analytics', organization.organization_id]);
+  }
+
+  viewDemographics(organization: Organization) {
+    // Navigate to organization demographics view
+    this.router.navigate(['/dean/organization-demographics', organization.organization_id]);
   }
 }
