@@ -31,13 +31,6 @@ export class DeanOrganizationEventsComponent implements OnInit {
   selectedEventSDGs = signal<number[]>([]);
   selectedEventTitle = signal('');
 
-  // Rejection Modal
-  showRejectModal = signal(false);
-  selectedEventForAction = signal<DeanOrganizationEvent | null>(null);
-  rejectionReason = signal('');
-  successMessage = signal('');
-  errorMessage = signal('');
-
   ngOnInit() {
     this.loadEvents();
   }
@@ -48,11 +41,11 @@ export class DeanOrganizationEventsComponent implements OnInit {
       next: (data) => {
         this.events.set(data);
         this.filteredEvents.set(data);
-        
+
         // Extract unique organizations
-        const uniqueOrgs = [...new Set(data.map(e => e.organization_name))];
+        const uniqueOrgs = [...new Set(data.map((e) => e.organization_name))];
         this.organizations.set(uniqueOrgs);
-        
+
         this.loading.set(false);
       },
       error: (error) => {
@@ -72,7 +65,7 @@ export class DeanOrganizationEventsComponent implements OnInit {
         (e) =>
           e.title.toLowerCase().includes(search) ||
           e.organization_name.toLowerCase().includes(search) ||
-          e.description?.toLowerCase().includes(search)
+          e.description?.toLowerCase().includes(search),
       );
     }
 
@@ -179,66 +172,5 @@ export class DeanOrganizationEventsComponent implements OnInit {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  }
-
-  getApprovalStatusColor(status: string): string {
-    const colors: any = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-green-100 text-green-800',
-      rejected: 'bg-red-100 text-red-800',
-    };
-    return colors[status] || 'bg-gray-100 text-gray-800';
-  }
-
-  approveEvent(event: DeanOrganizationEvent) {
-    if (!confirm(`Are you sure you want to approve "${event.title}"?`)) {
-      return;
-    }
-
-    this.loading.set(true);
-    this.eventService.approveEvent(event.id).subscribe({
-      next: (response) => {
-        this.successMessage.set(response.message);
-        setTimeout(() => this.successMessage.set(''), 3000);
-        this.loadEvents();
-      },
-      error: (error) => {
-        this.errorMessage.set(error.error?.message || 'Failed to approve event');
-        setTimeout(() => this.errorMessage.set(''), 3000);
-        this.loading.set(false);
-      },
-    });
-  }
-
-  openRejectModal(event: DeanOrganizationEvent) {
-    this.selectedEventForAction.set(event);
-    this.rejectionReason.set('');
-    this.showRejectModal.set(true);
-  }
-
-  closeRejectModal() {
-    this.showRejectModal.set(false);
-    this.selectedEventForAction.set(null);
-    this.rejectionReason.set('');
-  }
-
-  rejectEvent() {
-    const event = this.selectedEventForAction();
-    if (!event) return;
-
-    this.loading.set(true);
-    this.eventService.rejectEvent(event.id, this.rejectionReason()).subscribe({
-      next: (response) => {
-        this.successMessage.set(response.message);
-        setTimeout(() => this.successMessage.set(''), 3000);
-        this.closeRejectModal();
-        this.loadEvents();
-      },
-      error: (error) => {
-        this.errorMessage.set(error.error?.message || 'Failed to reject event');
-        setTimeout(() => this.errorMessage.set(''), 3000);
-        this.loading.set(false);
-      },
-    });
   }
 }

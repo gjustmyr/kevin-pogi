@@ -10,10 +10,6 @@ export interface DeanOrganizationEvent {
   title: string;
   date_implemented: string;
   status: 'Planned' | 'Ongoing' | 'Completed' | 'Cancelled';
-  approval_status: 'pending' | 'approved' | 'rejected';
-  approved_by?: number;
-  approval_date?: string;
-  rejection_reason?: string;
   start_time?: string;
   end_time?: string;
   description?: string;
@@ -52,11 +48,13 @@ export class DeanOrganizationEventsService {
           // Get filename from Content-Disposition header
           const contentDisposition = response.headers.get('Content-Disposition');
           let filename = 'event-file.pdf';
-          
+
           if (contentDisposition) {
             // Try to extract filename from Content-Disposition header
             // Format: attachment; filename="filename.pdf" or attachment; filename=filename.pdf
-            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            const filenameMatch = contentDisposition.match(
+              /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
+            );
             if (filenameMatch && filenameMatch[1]) {
               filename = filenameMatch[1].replace(/['"]/g, '');
               // Decode if it's URL encoded
@@ -79,15 +77,5 @@ export class DeanOrganizationEventsService {
           alert('Failed to download file');
         },
       });
-  }
-
-  approveEvent(eventId: number): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/${eventId}/approve`, {});
-  }
-
-  rejectEvent(eventId: number, rejectionReason: string): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/${eventId}/reject`, {
-      rejection_reason: rejectionReason,
-    });
   }
 }

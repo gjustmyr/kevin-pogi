@@ -24,8 +24,7 @@ export class DeanOrganizationDashboard implements OnInit {
     approvedDocuments: 0,
     rejectedDocuments: 0,
     totalAdvisers: 0,
-    approvedEvents: 0,
-    pendingEvents: 0,
+    totalEvents: 0,
   });
   recentDocuments = signal<any[]>([]);
   organizationStats = signal<any[]>([]);

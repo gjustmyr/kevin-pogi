@@ -94,7 +94,9 @@ exports.downloadEventFile = async (req, res) => {
     }
 
     if (!event.file_path) {
-      return res.status(404).json({ message: "No file uploaded for this event" });
+      return res
+        .status(404)
+        .json({ message: "No file uploaded for this event" });
     }
 
     const fs = require("fs");
@@ -110,107 +112,3 @@ exports.downloadEventFile = async (req, res) => {
 };
 
 module.exports = exports;
-
-
-// Approve event
-exports.approveEvent = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const userId = req.user.user_id;
-
-		// Get dean profile
-		const dean = await db.Dean.findOne({
-			where: { user_id: userId },
-		});
-
-		if (!dean) {
-			return res.status(404).json({ message: "Dean not found" });
-		}
-
-		// Get event with organization check
-		const [event] = await db.sequelize.query(
-			`SELECT e.*, o.department
-      FROM organization_events e
-      INNER JOIN organizations o ON e.organization_id = o.organization_id
-      WHERE e.id = ? AND o.department = ?`,
-			{
-				replacements: [id, dean.department],
-				type: db.sequelize.QueryTypes.SELECT,
-			}
-		);
-
-		if (!event) {
-			return res.status(404).json({ message: "Event not found" });
-		}
-
-		// Update approval status
-		await db.sequelize.query(
-			`UPDATE organization_events 
-      SET approval_status = 'approved', 
-          approved_by = ?, 
-          approval_date = NOW(),
-          rejection_reason = NULL
-      WHERE id = ?`,
-			{
-				replacements: [dean.dean_id, id],
-			}
-		);
-
-		res.json({ message: "Event approved successfully" });
-	} catch (error) {
-		console.error("Approve event error:", error);
-		res.status(500).json({ message: "Error approving event" });
-	}
-};
-
-// Reject event
-exports.rejectEvent = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const { rejection_reason } = req.body;
-		const userId = req.user.user_id;
-
-		// Get dean profile
-		const dean = await db.Dean.findOne({
-			where: { user_id: userId },
-		});
-
-		if (!dean) {
-			return res.status(404).json({ message: "Dean not found" });
-		}
-
-		// Get event with organization check
-		const [event] = await db.sequelize.query(
-			`SELECT e.*, o.department
-      FROM organization_events e
-      INNER JOIN organizations o ON e.organization_id = o.organization_id
-      WHERE e.id = ? AND o.department = ?`,
-			{
-				replacements: [id, dean.department],
-				type: db.sequelize.QueryTypes.SELECT,
-			}
-		);
-
-		if (!event) {
-			return res.status(404).json({ message: "Event not found" });
-		}
-
-		// Update approval status
-		await db.sequelize.query(
-			`UPDATE organization_events 
-      SET approval_status = 'rejected', 
-          approved_by = ?, 
-          approval_date = NOW(),
-          rejection_reason = ?
-      WHERE id = ?`,
-			{
-				replacements: [dean.dean_id, rejection_reason || null, id],
-			}
-		);
-
-		res.json({ message: "Event rejected successfully" });
-	} catch (error) {
-		console.error("Reject event error:", error);
-		res.status(500).json({ message: "Error rejecting event" });
-	}
-};

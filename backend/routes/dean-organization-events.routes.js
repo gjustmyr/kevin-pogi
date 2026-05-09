@@ -10,12 +10,6 @@ router.use(verifyToken, checkRole("dean"));
 // Get all organization events
 router.get("/", eventController.getOrganizationEvents);
 
-// Approve event
-router.put("/:id/approve", eventController.approveEvent);
-
-// Reject event
-router.put("/:id/reject", eventController.rejectEvent);
-
 // Download event file
 router.get("/:id/download", eventController.downloadEventFile);
 

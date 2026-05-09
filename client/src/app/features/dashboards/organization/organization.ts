@@ -160,13 +160,10 @@ export class OrganizationDashboard implements OnInit {
     // Load events statistics
     this.eventService.getEvents().subscribe({
       next: (events) => {
-        const approvedEvents = events.filter((e: any) => e.approval_status === 'approved').length;
-        const pendingEvents = events.filter((e: any) => e.approval_status === 'pending').length;
-
         this.stats.update((s) => ({
           ...s,
-          approvedEvents,
-          pendingEvents,
+          approvedEvents: events.length,
+          pendingEvents: 0,
         }));
       },
       error: (error) => {

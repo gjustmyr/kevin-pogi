@@ -101,19 +101,7 @@ exports.getOrganizationDashboard = async (req, res) => {
     });
 
     // Get event statistics
-    const approvedEvents = await db.OrganizationEvent.count({
-      where: { approval_status: "approved" },
-      include: [
-        {
-          model: db.Organization,
-          where: { department: dean.department },
-          attributes: [],
-        },
-      ],
-    });
-
-    const pendingEvents = await db.OrganizationEvent.count({
-      where: { approval_status: "pending" },
+    const totalEvents = await db.OrganizationEvent.count({
       include: [
         {
           model: db.Organization,
@@ -169,8 +157,7 @@ exports.getOrganizationDashboard = async (req, res) => {
         approvedDocuments,
         rejectedDocuments,
         totalAdvisers,
-        approvedEvents,
-        pendingEvents,
+        totalEvents,
       },
       recentDocuments,
       organizationStats,
