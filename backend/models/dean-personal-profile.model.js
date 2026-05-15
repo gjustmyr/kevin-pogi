@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DeanPersonalProfile = sequelize.define(
-    "dean_personal_profile",
+    "dean_personal_profiles",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -36,7 +36,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      extension_name: {
+      extension: {
         type: Sequelize.STRING(20),
         allowNull: true,
       },
@@ -66,11 +66,11 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      mobile_number_primary: {
+      mobile_primary: {
         type: Sequelize.STRING(20),
         allowNull: false,
       },
-      mobile_number_secondary: {
+      mobile_secondary: {
         type: Sequelize.STRING(20),
         allowNull: true,
       },
@@ -82,27 +82,27 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      home_country: {
+      country: {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      home_region: {
+      region: {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      home_province: {
+      province: {
         type: Sequelize.STRING(100),
         allowNull: true,
       },
-      home_barangay: {
+      barangay: {
         type: Sequelize.STRING(200),
         allowNull: true,
       },
-      home_street_subdivision: {
+      street_subdivision: {
         type: Sequelize.STRING(300),
         allowNull: true,
       },
-      home_zip_code: {
+      zip_code: {
         type: Sequelize.STRING(20),
         allowNull: true,
       },
@@ -112,6 +112,7 @@ module.exports = (sequelize, Sequelize) => {
       underscored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      tableName: "dean_personal_profiles",
     },
   );
 

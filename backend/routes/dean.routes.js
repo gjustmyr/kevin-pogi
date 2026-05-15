@@ -21,4 +21,12 @@ router.get(
   deanOrgDashboardController.getOrganizationDashboard,
 );
 
+// Get member demographics for an organization
+router.get(
+  "/organizations/member-demographics",
+  verifyToken,
+  checkRole("dean"),
+  deanOrgDashboardController.getMemberDemographics,
+);
+
 module.exports = router;

@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DeanResearchActivities = sequelize.define(
-    "dean_research_activity",
+    "dean_research_activities",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -37,6 +37,7 @@ module.exports = (sequelize, Sequelize) => {
       underscored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      tableName: "dean_research_activities",
     },
   );
 

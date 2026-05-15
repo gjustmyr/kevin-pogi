@@ -63,10 +63,12 @@ exports.getMembers = async (req, res) => {
         {
           model: db.OrganizationMember,
           as: "supervisor",
+          required: false,
           attributes: ["member_id", "first_name", "last_name", "position"],
         },
         {
           model: db.AcademicYear,
+          required: false,
           attributes: ["academic_year_id", "year_start", "year_end"],
         },
       ],
@@ -208,6 +210,12 @@ exports.createMember = async (req, res) => {
       });
     }
 
+    // Handle photo upload
+    let photo_url = null;
+    if (req.file) {
+      photo_url = `/uploads/member-photos/${req.file.filename}`;
+    }
+
     // Create member
     const member = await db.OrganizationMember.create({
       organization_id: organization.organization_id,
@@ -223,6 +231,7 @@ exports.createMember = async (req, res) => {
       academic_year_id,
       term_start_date,
       term_end_date,
+      photo_url,
       is_active: true,
     });
 
@@ -276,6 +285,22 @@ exports.updateMember = async (req, res) => {
       is_active,
     } = req.body;
 
+    // Handle photo upload
+    let photo_url = member.photo_url; // Keep existing photo by default
+    if (req.file) {
+      photo_url = `/uploads/member-photos/${req.file.filename}`;
+      
+      // Delete old photo if it exists
+      if (member.photo_url) {
+        const fs = require("fs");
+        const path = require("path");
+        const oldPhotoPath = path.join(__dirname, "..", member.photo_url);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
+      }
+    }
+
     await member.update({
       first_name,
       middle_name,
@@ -287,6 +312,7 @@ exports.updateMember = async (req, res) => {
       parent_member_id,
       term_end_date,
       is_active,
+      photo_url,
     });
 
     res.json({
@@ -464,11 +490,11 @@ exports.bulkUploadMembers = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const { academic_year_id, term_start_date } = req.body;
+    const { academic_year_id, term_start_date, department } = req.body;
 
-    if (!academic_year_id || !term_start_date) {
+    if (!academic_year_id || !term_start_date || !department) {
       return res.status(400).json({
-        message: "Academic year and term start date are required",
+        message: "Academic year, term start date, and department are required",
       });
     }
 
@@ -543,7 +569,7 @@ exports.bulkUploadMembers = async (req, res) => {
                 gender: row.gender ? row.gender.trim() : null,
                 program: row.program ? row.program.trim() : null,
                 section: row.section ? row.section.trim() : null,
-                department: row.department ? row.department.trim() : null,
+                department: department, // Use department from form
                 year_level: row.year_level ? row.year_level.trim() : "1st Year",
                 position: position,
                 parent_member_id: null,
@@ -570,6 +596,31 @@ exports.bulkUploadMembers = async (req, res) => {
               uploadResults.skipped++;
             }
           }
+
+          // Determine upload status
+          let uploadStatus = "completed";
+          if (uploadResults.errors.length > 0) {
+            if (uploadResults.inserted === 0 && uploadResults.updated === 0) {
+              uploadStatus = "failed";
+            } else {
+              uploadStatus = "partial";
+            }
+          }
+
+          // Save bulk upload record (only file name, not individual names)
+          await db.OrganizationBulkUpload.create({
+            organization_id: organization.organization_id,
+            file_name: req.file.originalname,
+            department: department,
+            academic_year_id: academic_year_id,
+            term_start_date: term_start_date,
+            total_records: uploadResults.total,
+            inserted_count: uploadResults.inserted,
+            updated_count: uploadResults.updated,
+            skipped_count: uploadResults.skipped,
+            uploaded_by: userId,
+            upload_status: uploadStatus,
+          });
 
           // Delete uploaded file
           fs.unlinkSync(req.file.path);
@@ -660,5 +711,56 @@ exports.getDemographics = async (req, res) => {
   } catch (error) {
     console.error("Get demographics error:", error);
     res.status(500).json({ message: "Error fetching demographics" });
+  }
+};
+
+// Get bulk upload history
+exports.getBulkUploadHistory = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res
+        .status(404)
+        .json({ message: "Organization profile not found" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await db.OrganizationBulkUpload.findAndCountAll({
+      where: {
+        organization_id: organization.organization_id,
+      },
+      limit,
+      offset,
+      order: [["created_at", "DESC"]],
+      include: [
+        {
+          model: db.AcademicYear,
+          attributes: ["academic_year_id", "year_start", "year_end"],
+        },
+        {
+          model: db.User,
+          as: "uploader",
+          attributes: ["user_id", "username"],
+        },
+      ],
+    });
+
+    res.json({
+      uploads: rows,
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    });
+  } catch (error) {
+    console.error("Get bulk upload history error:", error);
+    res.status(500).json({ message: "Error fetching bulk upload history" });
   }
 };

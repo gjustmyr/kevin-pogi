@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DeanEmploymentProfile = sequelize.define(
-    "dean_employment_profile",
+    "dean_employment_profiles",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -35,24 +35,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      monthly_salary: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: true,
-      },
-      salary_grade: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-      },
-      is_government_service: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-      },
     },
     {
       timestamps: true,
       underscored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      tableName: "dean_employment_profiles",
     },
   );
 

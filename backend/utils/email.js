@@ -258,7 +258,7 @@ const sendAccountCredentials = async (
           
           <p class="message">
             We're excited to have you on board! Your ${role} account has been successfully created. 
-            You now have access to the Batstate U Centralized Management Portal where you can manage your activities.
+            You now have access to the Batstate U College Management Portal where you can manage your activities.
           </p>
 
           <div class="credentials-box">

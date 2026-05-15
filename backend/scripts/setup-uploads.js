@@ -9,6 +9,12 @@ const uploadDirs = [
   "uploads/events",
   "uploads/documents",
   "uploads/profiles",
+  "uploads/awards",
+  "uploads/seminars",
+  "uploads/research",
+  "uploads/extension",
+  "uploads/requirements",
+  "uploads/event-files",
 ];
 
 console.log("=".repeat(60));

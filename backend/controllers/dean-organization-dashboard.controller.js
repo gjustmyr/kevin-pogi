@@ -167,3 +167,114 @@ exports.getOrganizationDashboard = async (req, res) => {
     res.status(500).json({ message: "Error fetching dashboard data" });
   }
 };
+
+// Get member demographics for a specific organization
+exports.getMemberDemographics = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const { organizationId, academicYearId, semester, activeOnly } = req.query;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    if (!organizationId) {
+      return res.status(400).json({ message: "Organization ID is required" });
+    }
+
+    // Verify organization belongs to dean's department
+    const organization = await db.Organization.findOne({
+      where: {
+        organization_id: organizationId,
+        department: dean.department,
+      },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization not found" });
+    }
+
+    // Build where clause for members
+    const whereClause = {
+      organization_id: organizationId,
+    };
+
+    if (academicYearId) {
+      whereClause.academic_year_id = academicYearId;
+    }
+
+    if (semester) {
+      whereClause.semester = semester;
+    }
+
+    if (activeOnly === "true") {
+      whereClause.is_active = true;
+    }
+
+    // Get all members matching criteria
+    const members = await db.OrganizationMember.findAll({
+      where: whereClause,
+      attributes: ["member_id", "gender", "program", "year_level", "is_active"],
+    });
+
+    // Calculate statistics
+    const totalMembers = members.length;
+    const activeMembers = members.filter((m) => m.is_active).length;
+
+    // Gender distribution
+    const maleCount = members.filter((m) => m.gender === "Male").length;
+    const femaleCount = members.filter((m) => m.gender === "Female").length;
+    const malePercentage = totalMembers > 0 ? ((maleCount / totalMembers) * 100).toFixed(1) : 0;
+    const femalePercentage = totalMembers > 0 ? ((femaleCount / totalMembers) * 100).toFixed(1) : 0;
+
+    // Program distribution
+    const programMap = {};
+    members.forEach((m) => {
+      if (m.program) {
+        programMap[m.program] = (programMap[m.program] || 0) + 1;
+      }
+    });
+
+    const byProgram = Object.entries(programMap)
+      .map(([program, count]) => ({ program, count }))
+      .sort((a, b) => b.count - a.count);
+
+    // Year level distribution
+    const yearLevelMap = {};
+    members.forEach((m) => {
+      if (m.year_level) {
+        yearLevelMap[m.year_level] = (yearLevelMap[m.year_level] || 0) + 1;
+      }
+    });
+
+    const membersByYearLevel = Object.entries(yearLevelMap)
+      .map(([year, count]) => ({ year, count }))
+      .sort((a, b) => {
+        const order = ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"];
+        return order.indexOf(a.year) - order.indexOf(b.year);
+      });
+
+    res.json({
+      demographics: {
+        maleCount,
+        femaleCount,
+        malePercentage: parseFloat(malePercentage),
+        femalePercentage: parseFloat(femalePercentage),
+        byProgram,
+      },
+      stats: {
+        totalMembers,
+        activeMembers,
+        membersByYearLevel,
+      },
+    });
+  } catch (error) {
+    console.error("Get member demographics error:", error);
+    res.status(500).json({ message: "Error fetching member demographics" });
+  }
+};

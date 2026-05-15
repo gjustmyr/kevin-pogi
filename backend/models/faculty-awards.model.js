@@ -43,6 +43,7 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
+      tableName: "faculty_awards",
       timestamps: true,
       underscored: true,
       createdAt: "created_at",

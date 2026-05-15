@@ -27,16 +27,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING(300),
         allowNull: false,
       },
-      training_provider: {
-        type: Sequelize.STRING(300),
-        allowNull: true,
-      },
       certificate_file: {
         type: Sequelize.STRING(500),
         allowNull: true,
       },
     },
     {
+      tableName: "faculty_seminars_trainings",
       timestamps: true,
       underscored: true,
       createdAt: "created_at",

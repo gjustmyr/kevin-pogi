@@ -24,6 +24,7 @@ export interface OrganizationMember {
   is_active: boolean;
   term_start_date: string;
   term_end_date?: string;
+  photo_url?: string;
   created_at?: string;
   updated_at?: string;
   supervisor?: OrganizationMember;
@@ -212,6 +213,15 @@ export class OrganizationService {
     );
   }
 
+  createMemberWithPhoto(
+    formData: FormData,
+  ): Observable<{ message: string; member: OrganizationMember }> {
+    return this.http.post<{ message: string; member: OrganizationMember }>(
+      `${this.apiUrl}/members`,
+      formData,
+    );
+  }
+
   updateMember(
     memberId: number,
     memberData: Partial<OrganizationMember>,
@@ -219,6 +229,16 @@ export class OrganizationService {
     return this.http.put<{ message: string; member: OrganizationMember }>(
       `${this.apiUrl}/members/${memberId}`,
       memberData,
+    );
+  }
+
+  updateMemberWithPhoto(
+    memberId: number,
+    formData: FormData,
+  ): Observable<{ message: string; member: OrganizationMember }> {
+    return this.http.put<{ message: string; member: OrganizationMember }>(
+      `${this.apiUrl}/members/${memberId}`,
+      formData,
     );
   }
 

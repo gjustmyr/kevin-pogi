@@ -74,13 +74,17 @@ const OrganizationMember = require("./organization-member.model")(
   sequelize,
   Sequelize,
 );
-const DocumentType = require("./document-type.model")(sequelize, Sequelize);
+const DocumentType = require("./document-type.model")(sequelize, Sequelize);  
 const OrganizationDocument = require("./organization-document.model")(
   sequelize,
   Sequelize,
 );
 const OrganizationPositionTemplate =
   require("./organization-position-template.model")(sequelize, Sequelize);
+const OrganizationBulkUpload = require("./organization-bulk-upload.model")(
+  sequelize,
+  Sequelize,
+);
 
 // Organization Event Models
 const OrganizationEvent = require("./organization-event.model")(
@@ -405,6 +409,31 @@ OrganizationMember.belongsTo(OrganizationMember, {
   as: "supervisor",
 });
 
+/* Organization Bulk Upload Relationships */
+Organization.hasMany(OrganizationBulkUpload, {
+  foreignKey: "organization_id",
+  as: "bulk_uploads",
+});
+OrganizationBulkUpload.belongsTo(Organization, {
+  foreignKey: "organization_id",
+});
+
+AcademicYear.hasMany(OrganizationBulkUpload, {
+  foreignKey: "academic_year_id",
+});
+OrganizationBulkUpload.belongsTo(AcademicYear, {
+  foreignKey: "academic_year_id",
+});
+
+User.hasMany(OrganizationBulkUpload, {
+  foreignKey: "uploaded_by",
+  as: "bulk_uploads",
+});
+OrganizationBulkUpload.belongsTo(User, {
+  foreignKey: "uploaded_by",
+  as: "uploader",
+});
+
 /* Organization Document Relationships */
 Organization.hasMany(OrganizationDocument, {
   foreignKey: "organization_id",
@@ -594,6 +623,7 @@ db.OrganizationMember = OrganizationMember;
 db.DocumentType = DocumentType;
 db.OrganizationDocument = OrganizationDocument;
 db.OrganizationPositionTemplate = OrganizationPositionTemplate;
+db.OrganizationBulkUpload = OrganizationBulkUpload;
 db.OrganizationEvent = OrganizationEvent;
 db.OrganizationEventSDG = OrganizationEventSDG;
 db.OrganizationEventGuest = OrganizationEventGuest;

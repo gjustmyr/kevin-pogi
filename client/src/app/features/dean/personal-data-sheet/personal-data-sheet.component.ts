@@ -165,6 +165,33 @@ export class DeanPersonalDataSheetComponent implements OnInit {
       },
       error: (error) => {
         console.error('Import error:', error);
+        
+        // Show detailed error about missing profile fields
+        if (error.error?.missingInProfile) {
+          const missingFields = Object.keys(error.error.missingInProfile)
+            .filter(key => error.error.missingInProfile[key] === true);
+          
+          if (missingFields.length > 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Profile Incomplete',
+              html: `
+                <p>Your profile is missing required information:</p>
+                <ul style="text-align: left; margin: 1rem 0;">
+                  ${missingFields.map(field => `<li><strong>${field.replace(/_/g, ' ')}</strong></li>`).join('')}
+                </ul>
+                <p>Please go to <strong>My Profile</strong> and fill in these fields first.</p>
+              `,
+              confirmButtonColor: '#2563eb',
+              confirmButtonText: 'Go to My Profile',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/dean/my-profile']);
+              }
+            });
+          }
+        }
+        
         // If import fails, just start with empty PDS
         this.loading.set(false);
       },
@@ -197,12 +224,51 @@ export class DeanPersonalDataSheetComponent implements OnInit {
           },
           error: (error) => {
             console.error('Import error:', error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Import Failed',
-              text: error.error?.message || 'Failed to import profile data',
-              confirmButtonColor: '#dc2626',
-            });
+            
+            // Show detailed error about missing profile fields
+            if (error.error?.missingInProfile) {
+              const missingFields = Object.keys(error.error.missingInProfile)
+                .filter(key => error.error.missingInProfile[key] === true);
+              
+              if (missingFields.length > 0) {
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'Profile Incomplete',
+                  html: `
+                    <div style="text-align: left;">
+                      <p>Your profile is missing required information:</p>
+                      <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        ${missingFields.map(field => `<li><strong>${field.replace(/_/g, ' ').toUpperCase()}</strong></li>`).join('')}
+                      </ul>
+                      <p><strong>What to do:</strong></p>
+                      <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Go to <strong>My Profile</strong></li>
+                        <li>Click <strong>Edit</strong> on Personal Information</li>
+                        <li>Fill in the missing fields above</li>
+                        <li>Click <strong>Save</strong></li>
+                        <li>Come back here and import again</li>
+                      </ol>
+                    </div>
+                  `,
+                  confirmButtonColor: '#2563eb',
+                  confirmButtonText: 'Go to My Profile',
+                  showCancelButton: true,
+                  cancelButtonText: 'Stay Here',
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    this.router.navigate(['/dean/my-profile']);
+                  }
+                });
+              }
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Import Failed',
+                text: error.error?.message || 'Failed to import profile data',
+                confirmButtonColor: '#dc2626',
+              });
+            }
+            
             this.loading.set(false);
           },
         });
@@ -224,10 +290,24 @@ export class DeanPersonalDataSheetComponent implements OnInit {
       },
       error: (error) => {
         console.error('Save error:', error);
+        
+        // Show detailed error message
+        let errorMessage = 'Failed to save Personal Data Sheet';
+        
+        if (error.error?.missingFields && error.error.missingFields.length > 0) {
+          const fields = error.error.missingFields.join(', ');
+          errorMessage = `Missing required fields: ${fields}. Please fill in all required fields or import from your profile.`;
+        } else if (error.error?.invalidFields && error.error.invalidFields.length > 0) {
+          const fields = error.error.invalidFields.map((f: any) => f.field).join(', ');
+          errorMessage = `Invalid fields: ${fields}. Please check the values.`;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'Failed to save Personal Data Sheet',
+          title: 'Validation Error',
+          html: errorMessage,
           confirmButtonColor: '#dc2626',
         });
         this.loading.set(false);

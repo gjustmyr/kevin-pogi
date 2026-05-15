@@ -82,18 +82,19 @@ export class DeanDashboard implements OnInit, AfterViewInit {
     seminars: false,
   };
 
-  // Color palette for faculty
   private readonly COLORS: string[] = [
-    '#E67E22', // Orange
-    '#3498DB', // Blue
-    '#27AE60', // Green
-    '#8B4513', // Brown
-    '#16697A', // Teal
-    '#2C5F2D', // Dark Green
-    '#9B59B6', // Purple
-    '#E74C3C', // Red
-    '#F39C12', // Yellow
-    '#1ABC9C', // Turquoise
+    '#FF6384',
+    '#36A2EB',
+    '#FFCE56',
+    '#4BC0C0',
+    '#9966FF',
+    '#FF9F40',
+    '#FF6384',
+    '#C9CBCF',
+    '#4BC0C0',
+    '#FF6384',
+    '#36A2EB',
+    '#FFCE56',
   ];
 
   constructor(

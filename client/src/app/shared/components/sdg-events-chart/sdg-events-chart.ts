@@ -236,6 +236,7 @@ export class SDGEventsChartComponent implements AfterViewInit, OnDestroy {
   }
 
   getSDGColor(index: number): string {
+    // Official SDG colors
     const colors = [
       '#E5243B', // SDG 1 - Red
       '#DDA63A', // SDG 2 - Yellow
@@ -260,14 +261,14 @@ export class SDGEventsChartComponent implements AfterViewInit, OnDestroy {
 
   getColorForYear(index: number, opacity: number = 0.8): string {
     const colors = [
-      `rgba(54, 162, 235, ${opacity})`,   // Blue
-      `rgba(75, 192, 192, ${opacity})`,   // Teal
-      `rgba(255, 206, 86, ${opacity})`,   // Yellow
-      `rgba(153, 102, 255, ${opacity})`,  // Purple
-      `rgba(255, 159, 64, ${opacity})`,   // Orange
-      `rgba(255, 99, 132, ${opacity})`,   // Red
-      `rgba(201, 203, 207, ${opacity})`,  // Grey
-      `rgba(46, 204, 113, ${opacity})`,   // Green
+      `rgba(255, 99, 132, ${opacity})`,
+      `rgba(54, 162, 235, ${opacity})`,
+      `rgba(255, 206, 86, ${opacity})`,
+      `rgba(75, 192, 192, ${opacity})`,
+      `rgba(153, 102, 255, ${opacity})`,
+      `rgba(255, 159, 64, ${opacity})`,
+      `rgba(199, 199, 199, ${opacity})`,
+      `rgba(83, 102, 255, ${opacity})`,
     ];
     return colors[index % colors.length];
   }
