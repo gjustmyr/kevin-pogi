@@ -1,6 +1,33 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
+interface MemberDemographics {
+  maleCount: number;
+  femaleCount: number;
+  malePercentage: number;
+  femalePercentage: number;
+  byProgram: Array<{ program: string; count: number }>;
+}
+
+interface MemberStats {
+  totalMembers: number;
+  activeMembers: number;
+  membersByYearLevel: Array<{ year: string; count: number }>;
+}
+
+interface Organization {
+  organization_id: number;
+  organization_name: string;
+}
+
+interface AcademicYear {
+  academic_year_id: number;
+  year_start: number;
+  year_end: number;
+}
 
 @Component({
   selector: 'app-dean-member-demographics',
@@ -9,33 +36,56 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './dean-member-demographics.html',
 })
 export class DeanMemberDemographicsComponent implements OnInit {
+  private http = inject(HttpClient);
+
   loading = signal(false);
   selectedOrganization = signal<number | undefined>(undefined);
   selectedAcademicYear = signal<number | undefined>(undefined);
   selectedSemester = signal<string | undefined>(undefined);
   activeOnly = signal(true);
 
-  organizations = signal<any[]>([]);
-  academicYears = signal<any[]>([]);
+  organizations = signal<Organization[]>([]);
+  academicYears = signal<AcademicYear[]>([]);
 
-  demographics = signal<any>({
+  demographics = signal<MemberDemographics>({
     maleCount: 0,
     femaleCount: 0,
     malePercentage: 0,
     femalePercentage: 0,
     byProgram: [],
-    totalMembers: 0,
   });
 
-  stats = signal<any>({
+  stats = signal<MemberStats>({
     totalMembers: 0,
     activeMembers: 0,
     membersByYearLevel: [],
   });
 
   ngOnInit() {
-    // Load organizations and academic years
-    // TODO: Implement API calls
+    this.loadOrganizations();
+    this.loadAcademicYears();
+  }
+
+  loadOrganizations() {
+    this.http.get<any>(`${environment.apiUrl}/dean/organizations`).subscribe({
+      next: (response) => {
+        this.organizations.set(response.organizations || []);
+      },
+      error: (error) => {
+        console.error('Error loading organizations:', error);
+      },
+    });
+  }
+
+  loadAcademicYears() {
+    this.http.get<any>(`${environment.apiUrl}/dropdown/academic-years`).subscribe({
+      next: (response) => {
+        this.academicYears.set(response.academicYears || []);
+      },
+      error: (error) => {
+        console.error('Error loading academic years:', error);
+      },
+    });
   }
 
   loadDemographics() {
@@ -44,22 +94,46 @@ export class DeanMemberDemographicsComponent implements OnInit {
     }
 
     this.loading.set(true);
-    // TODO: Implement API call to fetch demographics
-    this.loading.set(false);
+
+    let params = new HttpParams().set('organizationId', this.selectedOrganization()!.toString());
+
+    if (this.selectedAcademicYear()) {
+      params = params.set('academicYearId', this.selectedAcademicYear()!.toString());
+    }
+
+    if (this.selectedSemester()) {
+      params = params.set('semester', this.selectedSemester()!);
+    }
+
+    params = params.set('activeOnly', this.activeOnly().toString());
+
+    this.http
+      .get<any>(`${environment.apiUrl}/dean/organizations/member-demographics`, { params })
+      .subscribe({
+        next: (response) => {
+          this.demographics.set(response.demographics);
+          this.stats.set(response.stats);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading demographics:', error);
+          this.loading.set(false);
+        },
+      });
   }
 
   getProgramColor(index: number): string {
     const colors = [
-      '#8b5cf6',
-      '#3b82f6',
-      '#10b981',
-      '#f59e0b',
-      '#ef4444',
-      '#ec4899',
-      '#06b6d4',
-      '#84cc16',
-      '#f97316',
-      '#6366f1',
+      '#FF6384',
+      '#36A2EB',
+      '#FFCE56',
+      '#4BC0C0',
+      '#9966FF',
+      '#FF9F40',
+      '#FF6384',
+      '#C9CBCF',
+      '#4BC0C0',
+      '#FF6384',
     ];
     return colors[index % colors.length];
   }

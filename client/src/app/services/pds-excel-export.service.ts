@@ -31,17 +31,17 @@ export class PDSExcelExportService {
       // Basic Personal Information - Column D is the WHITE input cell (next to gray labels in C)
       this.setCellValue(sheet1, 'D10', pds.surname?.toUpperCase()); // Row 10: SURNAME
       this.setCellValue(sheet1, 'D11', pds.first_name?.toUpperCase()); // Row 11: FIRST NAME
-      this.setCellValue(sheet1, 'O11', pds.name_extension?.toUpperCase()); // Row 11: NAME EXTENSION (far right)
+      this.setCellValue(sheet1, 'N11', pds.name_extension?.toUpperCase()); // Row 11: NAME EXTENSION (far right)
       this.setCellValue(sheet1, 'D12', pds.middle_name?.toUpperCase()); // Row 12: MIDDLE NAME
 
       // Date of Birth (Row 13) - Column D
       this.setCellValue(sheet1, 'D13', this.formatDate(pds.date_of_birth));
 
       // Place of Birth (Row 15) - Column C (merged cell area)
-      this.setCellValue(sheet1, 'C15', pds.place_of_birth);
+      this.setCellValue(sheet1, 'D15', pds.place_of_birth);
 
       // Sex at Birth (Row 16) - Column C
-      this.setCellValue(sheet1, 'C16', pds.sex);
+      this.setCellValue(sheet1, 'D16', pds.sex);
 
       // Civil Status (Row 17-18) - Column D
       this.setCellValue(sheet1, 'D17', pds.civil_status);
@@ -58,35 +58,35 @@ export class PDSExcelExportService {
       // Citizenship (Row 13) - Column H
       this.setCellValue(sheet1, 'H13', pds.citizenship_type);
       if (pds.citizenship_type === 'Dual Citizenship' && pds.dual_citizenship_country) {
-        this.setCellValue(sheet1, 'O15', pds.dual_citizenship_country); // Row 15: Country field
+        this.setCellValue(sheet1, 'J15', pds.dual_citizenship_country); // Row 15: Country field
       }
 
       // Government IDs - Column D for input (next to gray labels)
       this.setCellValue(sheet1, 'D27', pds.gsis_id_no); // Row 27: UMID ID NO
       this.setCellValue(sheet1, 'D29', pds.pag_ibig_id_no); // Row 29: PAG-IBIG ID NO
-      this.setCellValue(sheet1, 'C31', pds.philhealth_no); // Row 31: PHILHEALTH NO (starts at C)
-      this.setCellValue(sheet1, 'C32', pds.sss_no); // Row 32: PhilSys Number (starts at C)
+      this.setCellValue(sheet1, 'D31', pds.philhealth_no); // Row 31: PHILHEALTH NO (starts at C)
+      this.setCellValue(sheet1, 'D32', pds.sss_no); // Row 32: PhilSys Number (starts at C)
       this.setCellValue(sheet1, 'D33', pds.tin_no); // Row 33: TIN NO
-      this.setCellValue(sheet1, 'B34', pds.agency_employee_no); // Row 34: AGENCY EMPLOYEE NO (starts at B)
+      this.setCellValue(sheet1, 'D34', pds.agency_employee_no); // Row 34: AGENCY EMPLOYEE NO (starts at B)
 
       // Residential Address - Right side of sheet (columns H-O)
       // Row 18: House/Block/Lot No. and Street
       const resHouseStreet = [pds.residential_house_no, pds.residential_street]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O18', resHouseStreet);
+      this.setCellValue(sheet1, 'I17', resHouseStreet);
 
       // Row 21: Subdivision/Village and Barangay
       const resSubdivBarangay = [pds.residential_subdivision, pds.residential_barangay]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O21', resSubdivBarangay);
+      this.setCellValue(sheet1, 'I19, I20', resSubdivBarangay);
 
       // Row 23: City/Municipality and Province
       const resCityProvince = [pds.residential_city, pds.residential_province]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O23', resCityProvince);
+      this.setCellValue(sheet1, 'I22', resCityProvince);
 
       // Row 24: ZIP CODE
       this.setCellValue(sheet1, 'I24', pds.residential_zip_code);
@@ -96,39 +96,39 @@ export class PDSExcelExportService {
       const permHouseStreet = [pds.permanent_house_no, pds.permanent_street]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O26', permHouseStreet);
+      this.setCellValue(sheet1, 'I25', permHouseStreet);
 
       // Row 28: Subdivision/Village and Barangay
       const permSubdivBarangay = [pds.permanent_subdivision, pds.permanent_barangay]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O28', permSubdivBarangay);
+      this.setCellValue(sheet1, 'I27', permSubdivBarangay);
 
       // Row 30: City/Municipality and Province
       const permCityProvince = [pds.permanent_city, pds.permanent_province]
         .filter((x) => x)
         .join(', ');
-      this.setCellValue(sheet1, 'O30', permCityProvince);
+      this.setCellValue(sheet1, 'I29', permCityProvince);
 
       // Row 31: ZIP CODE
-      this.setCellValue(sheet1, 'I31', pds.permanent_zip_code);
+      this.setCellValue(sheet1, 'J31', pds.permanent_zip_code);
 
       // Contact Information - Column H (right side)
-      this.setCellValue(sheet1, 'H32', pds.telephone_no); // Row 32: TELEPHONE NO
-      this.setCellValue(sheet1, 'H33', pds.mobile_no); // Row 33: MOBILE NO
-      this.setCellValue(sheet1, 'H34', pds.email_address); // Row 34: E-MAIL ADDRESS
+      this.setCellValue(sheet1, 'I32', pds.telephone_no); // Row 32: TELEPHONE NO
+      this.setCellValue(sheet1, 'I33', pds.mobile_no); // Row 33: MOBILE NO
+      this.setCellValue(sheet1, 'I34', pds.email_address); // Row 34: E-MAIL ADDRESS
 
       // ===== FAMILY BACKGROUND =====
 
       // Spouse (Row 36-42) - Column C for input
-      this.setCellValue(sheet1, 'C36', pds.spouse_surname?.toUpperCase());
-      this.setCellValue(sheet1, 'C37', pds.spouse_first_name?.toUpperCase());
-      this.setCellValue(sheet1, 'H37', pds.spouse_name_ext?.toUpperCase());
-      this.setCellValue(sheet1, 'C38', pds.spouse_middle_name?.toUpperCase());
-      this.setCellValue(sheet1, 'C39', pds.spouse_occupation);
-      this.setCellValue(sheet1, 'C40', pds.spouse_employer);
-      this.setCellValue(sheet1, 'C41', pds.spouse_business_address);
-      this.setCellValue(sheet1, 'C42', pds.spouse_telephone);
+      this.setCellValue(sheet1, 'D36', pds.spouse_surname?.toUpperCase());
+      this.setCellValue(sheet1, 'D37', pds.spouse_first_name?.toUpperCase());
+      this.setCellValue(sheet1, 'G37', pds.spouse_name_ext?.toUpperCase());
+      this.setCellValue(sheet1, 'D38', pds.spouse_middle_name?.toUpperCase());
+      this.setCellValue(sheet1, 'D39', pds.spouse_occupation);
+      this.setCellValue(sheet1, 'D40', pds.spouse_employer);
+      this.setCellValue(sheet1, 'D41', pds.spouse_business_address);
+      this.setCellValue(sheet1, 'D42', pds.spouse_telephone);
 
       // Children (starting at row 36, columns I-N for name and date)
       if (pds.children && pds.children.length > 0) {
@@ -144,37 +144,37 @@ export class PDSExcelExportService {
       }
 
       // Father (Row 43-45) - Column C for input
-      this.setCellValue(sheet1, 'C43', pds.father_surname?.toUpperCase());
-      this.setCellValue(sheet1, 'C44', pds.father_first_name?.toUpperCase());
+      this.setCellValue(sheet1, 'D43', pds.father_surname?.toUpperCase());
+      this.setCellValue(sheet1, 'D44', pds.father_first_name?.toUpperCase());
       this.setCellValue(sheet1, 'H44', pds.father_name_ext?.toUpperCase());
-      this.setCellValue(sheet1, 'C45', pds.father_middle_name?.toUpperCase());
+      this.setCellValue(sheet1, 'D45', pds.father_middle_name?.toUpperCase());
 
       // Mother's Maiden Name (Row 47-49) - Column C for input
-      this.setCellValue(sheet1, 'C47', pds.mother_surname?.toUpperCase());
-      this.setCellValue(sheet1, 'C48', pds.mother_first_name?.toUpperCase());
-      this.setCellValue(sheet1, 'C49', pds.mother_middle_name?.toUpperCase());
+      this.setCellValue(sheet1, 'D47', pds.mother_surname?.toUpperCase());
+      this.setCellValue(sheet1, 'D48', pds.mother_first_name?.toUpperCase());
+      this.setCellValue(sheet1, 'D49', pds.mother_middle_name?.toUpperCase());
 
       // ===== EDUCATIONAL BACKGROUND =====
       // Education section starts after row 50 (need to verify exact rows)
       if (pds.education && pds.education.length > 0) {
         const eduRows: { [key: string]: number } = {
-          ELEMENTARY: 52,
-          SECONDARY: 53,
-          VOCATIONAL: 54,
-          COLLEGE: 55,
-          'GRADUATE STUDIES': 56,
+          ELEMENTARY: 54,
+          SECONDARY: 55,
+          VOCATIONAL: 56,
+          COLLEGE: 57,
+          'GRADUATE STUDIES': 58,
         };
 
         pds.education.forEach((edu) => {
           const row = eduRows[edu.level];
           if (row) {
-            this.setCellValue(sheet1, `C${row}`, edu.school_name);
-            this.setCellValue(sheet1, `G${row}`, edu.degree_course);
-            this.setCellValue(sheet1, `K${row}`, edu.period_from);
-            this.setCellValue(sheet1, `L${row}`, edu.period_to);
-            this.setCellValue(sheet1, `M${row}`, edu.highest_level_earned);
-            this.setCellValue(sheet1, `N${row}`, edu.year_graduated);
-            this.setCellValue(sheet1, `O${row}`, edu.scholarship_honors);
+            this.setCellValue(sheet1, `D${row}`, edu.school_name);
+            this.setCellValue(sheet1, `H${row}`, edu.degree_course);
+            this.setCellValue(sheet1, `J${row}`, edu.period_from);
+            this.setCellValue(sheet1, `K${row}`, edu.period_to);
+            this.setCellValue(sheet1, `L${row}`, edu.highest_level_earned);
+            this.setCellValue(sheet1, `M${row}`, edu.year_graduated);
+            this.setCellValue(sheet1, `N${row}`, edu.scholarship_honors);
           }
         });
       }
@@ -190,9 +190,9 @@ export class PDSExcelExportService {
             this.setCellValue(sheet2, `B${eligRow}`, elig.career_service);
             this.setCellValue(sheet2, `F${eligRow}`, elig.rating);
             this.setCellValue(sheet2, `G${eligRow}`, this.formatDate(elig.date_of_examination));
-            this.setCellValue(sheet2, `H${eligRow}`, elig.place_of_examination);
-            this.setCellValue(sheet2, `I${eligRow}`, elig.license_number);
-            this.setCellValue(sheet2, `J${eligRow}`, this.formatDate(elig.license_validity));
+            this.setCellValue(sheet2, `I${eligRow}`, elig.place_of_examination);
+            this.setCellValue(sheet2, `J${eligRow}`, elig.license_number);
+            this.setCellValue(sheet2, `K${eligRow}`, this.formatDate(elig.license_validity));
             eligRow++;
           }
         });
@@ -354,9 +354,9 @@ export class PDSExcelExportService {
       }
 
       // Government ID (approximate rows)
-      this.setCellValue(sheet4, 'C55', pds.government_issued_id);
-      this.setCellValue(sheet4, 'C56', pds.government_id_number);
-      this.setCellValue(sheet4, 'C57', this.formatDate(pds.government_id_date_issued));
+      this.setCellValue(sheet4, 'D55', pds.government_issued_id);
+      this.setCellValue(sheet4, 'D56', pds.government_id_number);
+      this.setCellValue(sheet4, 'D57', this.formatDate(pds.government_id_date_issued));
 
       // Generate the file
       const buffer = await workbook.xlsx.writeBuffer();

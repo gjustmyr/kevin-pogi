@@ -112,6 +112,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATEONLY,
       allowNull: true,
     },
+    photo_url: {
+      type: Sequelize.STRING(500),
+      allowNull: true,
+      comment: "Path to member photo",
+    },
   });
 
   return OrganizationMember;

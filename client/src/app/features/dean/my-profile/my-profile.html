@@ -671,7 +671,7 @@
                     }
                     @if (award.certificate_file) {
                       <a
-                        [href]="apiUrl + award.certificate_file"
+                        [href]="baseUrl + award.certificate_file"
                         target="_blank"
                         class="text-sm text-blue-600 hover:underline mt-1 inline-block"
                       >
@@ -730,7 +730,7 @@
                     </p>
                     @if (seminar.certificate_file) {
                       <a
-                        [href]="apiUrl + seminar.certificate_file"
+                        [href]="baseUrl + seminar.certificate_file"
                         target="_blank"
                         class="text-sm text-blue-600 hover:underline mt-1 inline-block"
                       >
@@ -791,7 +791,7 @@
                     </p>
                     @if (activity.certificate_file) {
                       <a
-                        [href]="apiUrl + activity.certificate_file"
+                        [href]="baseUrl + activity.certificate_file"
                         target="_blank"
                         class="text-sm text-blue-600 hover:underline mt-1 inline-block"
                       >
@@ -850,7 +850,7 @@
                     <p class="text-sm text-gray-600">Location: {{ activity.location }}</p>
                     @if (activity.documentation_file) {
                       <a
-                        [href]="apiUrl + activity.documentation_file"
+                        [href]="baseUrl + activity.documentation_file"
                         target="_blank"
                         class="text-sm text-blue-600 hover:underline mt-1 inline-block"
                       >
@@ -1258,6 +1258,7 @@
               type="date"
               [(ngModel)]="awardForm().date_received"
               name="date_received"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             />
           </div>
@@ -1266,6 +1267,7 @@
             <select
               [(ngModel)]="awardForm().level"
               name="level"
+              required
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             >
               <option value="">Select Level</option>

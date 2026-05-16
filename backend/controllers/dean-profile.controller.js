@@ -24,6 +24,13 @@ exports.getPersonalProfile = async (req, res) => {
 exports.upsertPersonalProfile = async (req, res) => {
   try {
     const facultyId = req.user.dean_id;
+    
+    // Add validation
+    if (!facultyId) {
+      console.error("Dean ID not found in token:", req.user);
+      return res.status(400).json({ message: "Dean ID not found in authentication token" });
+    }
+    
     const profileData = req.body;
 
     // Handle file uploads
@@ -49,6 +56,8 @@ exports.upsertPersonalProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Upsert personal profile error:", error);
+    console.error("Error details:", error.message);
+    console.error("Error stack:", error.stack);
     res.status(500).json({ message: "Error saving personal profile" });
   }
 };
@@ -361,11 +370,18 @@ exports.deleteProfessionalMembership = async (req, res) => {
 exports.getAwards = async (req, res) => {
   try {
     const facultyId = req.user.dean_id || req.params.facultyId;
+    
+    console.log("=== GET AWARDS ===");
+    console.log("Dean ID:", facultyId);
 
     const awards = await db.DeanAwards.findAll({
       where: { dean_id: facultyId },
       order: [["date_received", "DESC"]],
     });
+
+    console.log("Found awards:", awards.length);
+    console.log("Awards:", awards.map(a => ({ id: a.id, title: a.award_title })));
+    console.log("==================\n");
 
     res.json({ awards });
   } catch (error) {
@@ -378,25 +394,64 @@ exports.getAwards = async (req, res) => {
 exports.createAward = async (req, res) => {
   try {
     const facultyId = req.user.dean_id;
-    const awardData = req.body;
+    
+    console.log("=== CREATE AWARD DEBUG ===");
+    console.log("1. User object:", JSON.stringify(req.user, null, 2));
+    console.log("2. Dean ID from token:", facultyId);
+    console.log("3. Request body:", JSON.stringify(req.body, null, 2));
+    console.log("4. Request file:", req.file);
+    
+    // Add validation
+    if (!facultyId) {
+      console.error("❌ Dean ID not found in token");
+      return res.status(400).json({ message: "Dean ID not found in authentication token" });
+    }
+    
+    const awardData = { ...req.body };
+    
+    console.log("5. Award data before file:", JSON.stringify(awardData, null, 2));
 
     // Handle certificate file upload
     if (req.file) {
       awardData.certificate_file = `/uploads/awards/${req.file.filename}`;
+      console.log("6. File path set:", awardData.certificate_file);
     }
+    
+    // Add dean_id
+    awardData.dean_id = facultyId;
+    
+    console.log("7. Final award data:", JSON.stringify(awardData, null, 2));
+    console.log("8. Attempting to create award in database...");
 
-    const award = await db.DeanAwards.create({
-      ...awardData,
-      dean_id: facultyId,
-    });
+    const award = await db.DeanAwards.create(awardData);
+
+    console.log("9. ✓ Award created successfully:", award.id);
+    console.log("========================\n");
 
     res.status(201).json({
       message: "Award created successfully",
       award,
     });
   } catch (error) {
-    console.error("Create award error:", error);
-    res.status(500).json({ message: "Error creating award" });
+    console.error("❌ CREATE AWARD ERROR:");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    if (error.errors) {
+      console.error("Validation errors:");
+      error.errors.forEach(e => {
+        console.error(`  - Field: ${e.path}, Message: ${e.message}, Value: ${e.value}, Type: ${e.type}`);
+      });
+    }
+    if (error.original) {
+      console.error("Original error:", error.original.message);
+      console.error("SQL:", error.original.sql);
+    }
+    console.error("========================\n");
+    res.status(500).json({ 
+      message: "Error creating award", 
+      error: error.message,
+      details: error.errors ? error.errors.map(e => `${e.path}: ${e.message}`) : []
+    });
   }
 };
 
@@ -578,25 +633,64 @@ exports.getResearchActivities = async (req, res) => {
 exports.createResearchActivity = async (req, res) => {
   try {
     const facultyId = req.user.dean_id;
-    const activityData = req.body;
+    
+    console.log("=== CREATE RESEARCH ACTIVITY DEBUG ===");
+    console.log("1. User object:", JSON.stringify(req.user, null, 2));
+    console.log("2. Dean ID from token:", facultyId);
+    console.log("3. Request body:", JSON.stringify(req.body, null, 2));
+    console.log("4. Request file:", req.file);
+    
+    // Add validation
+    if (!facultyId) {
+      console.error("❌ Dean ID not found in token");
+      return res.status(400).json({ message: "Dean ID not found in authentication token" });
+    }
+    
+    const activityData = { ...req.body };
+    
+    console.log("5. Activity data before file:", JSON.stringify(activityData, null, 2));
 
     // Handle certificate file upload
     if (req.file) {
       activityData.certificate_file = `/uploads/research/${req.file.filename}`;
+      console.log("6. File path set:", activityData.certificate_file);
     }
+    
+    // Add dean_id
+    activityData.dean_id = facultyId;
+    
+    console.log("7. Final activity data:", JSON.stringify(activityData, null, 2));
+    console.log("8. Attempting to create research activity in database...");
 
-    const activity = await db.DeanResearchActivities.create({
-      ...activityData,
-      dean_id: facultyId,
-    });
+    const activity = await db.DeanResearchActivities.create(activityData);
+
+    console.log("9. ✓ Research activity created successfully:", activity.id);
+    console.log("========================\n");
 
     res.status(201).json({
       message: "Research activity created successfully",
       activity,
     });
   } catch (error) {
-    console.error("Create research activity error:", error);
-    res.status(500).json({ message: "Error creating research activity" });
+    console.error("❌ CREATE RESEARCH ACTIVITY ERROR:");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    if (error.errors) {
+      console.error("Validation errors:");
+      error.errors.forEach(e => {
+        console.error(`  - Field: ${e.path}, Message: ${e.message}, Value: ${e.value}, Type: ${e.type}`);
+      });
+    }
+    if (error.original) {
+      console.error("Original error:", error.original.message);
+      console.error("SQL:", error.original.sql);
+    }
+    console.error("========================\n");
+    res.status(500).json({ 
+      message: "Error creating research activity", 
+      error: error.message,
+      details: error.errors ? error.errors.map(e => `${e.path}: ${e.message}`) : []
+    });
   }
 };
 

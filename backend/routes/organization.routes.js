@@ -77,6 +77,40 @@ const csvUpload = multer({
   },
 });
 
+// Configure multer for member photo uploads
+const photoStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = "uploads/member-photos/";
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "member-" + uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const photoUpload = multer({
+  storage: photoStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: function (req, file, cb) {
+    const allowedTypes = /jpeg|jpg|png/;
+    const extname = allowedTypes.test(
+      path.extname(file.originalname).toLowerCase(),
+    );
+    const mimetype = file.mimetype.startsWith("image/");
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error("Only image files (JPEG, JPG, PNG) are allowed"));
+    }
+  },
+});
+
 // Organization dashboard
 router.get("/", verifyToken, checkRole("organization"), (req, res) => {
   res.json({
@@ -108,12 +142,14 @@ router.post(
   "/members",
   verifyToken,
   checkRole("organization"),
+  photoUpload.single("photo"),
   memberController.createMember,
 );
 router.put(
   "/members/:id",
   verifyToken,
   checkRole("organization"),
+  photoUpload.single("photo"),
   memberController.updateMember,
 );
 router.delete(
@@ -144,6 +180,12 @@ router.post(
   checkRole("organization"),
   csvUpload.single("file"),
   memberController.bulkUploadMembers,
+);
+router.get(
+  "/members/bulk-upload/history",
+  verifyToken,
+  checkRole("organization"),
+  memberController.getBulkUploadHistory,
 );
 
 // Document routes

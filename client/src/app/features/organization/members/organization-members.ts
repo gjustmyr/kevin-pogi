@@ -69,11 +69,16 @@ export class OrganizationMembersComponent implements OnInit {
     is_active: true,
   });
 
+  // Photo upload
+  selectedPhoto = signal<File | null>(null);
+  photoPreview = signal<string | null>(null);
+
   // Bulk upload
   bulkUploadForm = signal({
     file: null as File | null,
     academic_year_id: undefined as number | undefined,
     term_start_date: '',
+    department: '',
   });
   uploadResults = signal<any>(null);
 
@@ -91,21 +96,37 @@ export class OrganizationMembersComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
+    console.log('Loading members, viewMode:', this.viewMode());
+
     // Determine position filter based on view mode
     let positionFilter = this.selectedPosition();
 
     if (this.viewMode() === 'list') {
-      // Organization Population - show all members (no position filter)
-      positionFilter = undefined;
+      // Organization Population - show only regular members (position = "Member")
+      positionFilter = 'Member';
+      console.log('List view - filtering for position: Member');
     } else if (this.viewMode() === 'officers') {
-      // Officers Profile - don't filter by position here, we'll filter in the component
+      // Officers Profile - exclude "Member" position
+      // We need to fetch all and filter client-side since backend doesn't support "NOT EQUAL"
       positionFilter = undefined;
+      console.log('Officers view - fetching all positions');
     }
+
+    const limit = this.viewMode() === 'officers' ? 999 : this.itemsPerPage;
+
+    console.log('API call params:', {
+      page: this.currentPage(),
+      limit,
+      search: this.searchQuery(),
+      academicYearId: this.selectedAcademicYear(),
+      position: positionFilter,
+      isActive: this.showActiveOnly() ? true : undefined,
+    });
 
     this.organizationService
       .getMembers(
         this.currentPage(),
-        this.itemsPerPage,
+        limit,
         this.searchQuery(),
         this.selectedAcademicYear(),
         positionFilter,
@@ -113,15 +134,20 @@ export class OrganizationMembersComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          console.log('API response:', response);
+          
           // If in officers view, filter out "Member" position
           if (this.viewMode() === 'officers') {
             const filteredMembers = response.members.filter(
               (m) => m.position.toLowerCase() !== 'member',
             );
+            console.log('Filtered officers:', filteredMembers.length);
             this.members.set(filteredMembers);
             this.totalItems.set(filteredMembers.length);
-            this.totalPages.set(Math.ceil(filteredMembers.length / this.itemsPerPage));
+            this.totalPages.set(1); // Single page for officers view
           } else {
+            // Organization Population view - already filtered to "Member" position
+            console.log('Members loaded:', response.members.length);
             this.members.set(response.members);
             this.totalPages.set(response.totalPages);
             this.totalItems.set(response.totalItems);
@@ -129,6 +155,7 @@ export class OrganizationMembersComponent implements OnInit {
           this.loading.set(false);
         },
         error: (error) => {
+          console.error('API error:', error);
           this.errorMessage.set(error.error?.message || 'Failed to load members');
           this.loading.set(false);
         },
@@ -182,6 +209,13 @@ export class OrganizationMembersComponent implements OnInit {
 
   openAddModal() {
     this.resetForm();
+    // If in Organization Population view, automatically set position to "Member"
+    if (this.viewMode() === 'list') {
+      this.memberForm.set({
+        ...this.memberForm(),
+        position: 'Member',
+      });
+    }
     this.showAddModal.set(true);
   }
 
@@ -236,15 +270,84 @@ export class OrganizationMembersComponent implements OnInit {
       term_end_date: '',
       is_active: true,
     });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
     this.errorMessage.set('');
     this.successMessage.set('');
+  }
+
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        this.errorMessage.set('Please select a valid image file (JPG, JPEG, or PNG)');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        this.errorMessage.set('Image size must be less than 5MB');
+        return;
+      }
+
+      this.selectedPhoto.set(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.photoPreview.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      this.errorMessage.set('');
+    }
+  }
+
+  removePhoto() {
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
+  }
+
+  triggerPhotoUpload() {
+    const fileInput = document.getElementById('photoUpload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
   }
 
   saveMember() {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.organizationService.createMember(this.memberForm()).subscribe({
+    const formData = new FormData();
+    const form = this.memberForm();
+
+    // Append all form fields
+    formData.append('sr_code', form.sr_code);
+    formData.append('first_name', form.first_name);
+    formData.append('middle_name', form.middle_name || '');
+    formData.append('last_name', form.last_name);
+    formData.append('email', form.email || '');
+    formData.append('contact_number', form.contact_number || '');
+    formData.append('year_level', form.year_level);
+    formData.append('position', form.position);
+    formData.append('academic_year_id', form.academic_year_id?.toString() || '');
+    formData.append('term_start_date', form.term_start_date);
+    formData.append('term_end_date', form.term_end_date || '');
+    formData.append('is_active', form.is_active.toString());
+
+    if (form.parent_member_id) {
+      formData.append('parent_member_id', form.parent_member_id.toString());
+    }
+
+    // Append photo if selected
+    if (this.selectedPhoto()) {
+      formData.append('photo', this.selectedPhoto()!);
+    }
+
+    this.organizationService.createMemberWithPhoto(formData).subscribe({
       next: (response) => {
         this.successMessage.set(response.message);
         this.closeModals();
@@ -265,7 +368,30 @@ export class OrganizationMembersComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.organizationService.updateMember(memberId, this.memberForm()).subscribe({
+    const formData = new FormData();
+    const form = this.memberForm();
+
+    // Append all form fields
+    formData.append('first_name', form.first_name);
+    formData.append('middle_name', form.middle_name || '');
+    formData.append('last_name', form.last_name);
+    formData.append('email', form.email || '');
+    formData.append('contact_number', form.contact_number || '');
+    formData.append('year_level', form.year_level);
+    formData.append('position', form.position);
+    formData.append('term_end_date', form.term_end_date || '');
+    formData.append('is_active', form.is_active.toString());
+
+    if (form.parent_member_id) {
+      formData.append('parent_member_id', form.parent_member_id.toString());
+    }
+
+    // Append photo if selected
+    if (this.selectedPhoto()) {
+      formData.append('photo', this.selectedPhoto()!);
+    }
+
+    this.organizationService.updateMemberWithPhoto(memberId, formData).subscribe({
       next: (response) => {
         this.successMessage.set(response.message);
         this.closeModals();
@@ -318,13 +444,15 @@ export class OrganizationMembersComponent implements OnInit {
   getPotentialSupervisors(): OrganizationMember[] {
     return this.members().filter(
       (m) =>
-        m.is_active && (!this.selectedMember() || m.member_id !== this.selectedMember()?.member_id),
+        m.is_active &&
+        m.position.toLowerCase() !== 'member' && // Exclude regular members
+        (!this.selectedMember() || m.member_id !== this.selectedMember()?.member_id),
     );
   }
 
   getPresident(): OrganizationMember | undefined {
     return this.members().find(
-      (m) => m.position.toLowerCase().includes('president') && m.is_active,
+      (m) => m.position.toLowerCase() === 'president' && m.is_active,
     );
   }
 
@@ -333,7 +461,7 @@ export class OrganizationMembersComponent implements OnInit {
       (m) =>
         m.is_active &&
         m.position.toLowerCase() !== 'member' &&
-        !m.position.toLowerCase().includes('president'),
+        m.position.toLowerCase() !== 'president',
     );
   }
 
@@ -367,12 +495,33 @@ export class OrganizationMembersComponent implements OnInit {
     return colors[index];
   }
 
+  getPhotoUrl(photoUrl: string | undefined): string | null {
+    if (!photoUrl) return null;
+    // If it's already a full URL, return as-is
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+      return photoUrl;
+    }
+    // Otherwise, prepend the backend base URL
+    return `http://localhost:3000${photoUrl}`;
+  }
+
+  onImageError(event: Event): void {
+    // Hide the broken image and show the fallback
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const fallback = img.nextElementSibling as HTMLElement;
+    if (fallback) {
+      fallback.style.display = 'flex';
+    }
+  }
+
   // Bulk upload methods
   openBulkUploadModal() {
     this.bulkUploadForm.set({
       file: null,
       academic_year_id: undefined,
       term_start_date: '',
+      department: '',
     });
     this.uploadResults.set(null);
     this.showBulkUploadModal.set(true);
@@ -408,7 +557,7 @@ export class OrganizationMembersComponent implements OnInit {
   uploadMembers() {
     const form = this.bulkUploadForm();
 
-    if (!form.file || !form.academic_year_id || !form.term_start_date) {
+    if (!form.file || !form.academic_year_id || !form.term_start_date || !form.department) {
       this.errorMessage.set('Please fill all required fields and select a file');
       return;
     }
@@ -420,6 +569,7 @@ export class OrganizationMembersComponent implements OnInit {
     formData.append('file', form.file);
     formData.append('academic_year_id', form.academic_year_id.toString());
     formData.append('term_start_date', form.term_start_date);
+    formData.append('department', form.department);
 
     this.organizationService.bulkUploadMembers(formData).subscribe({
       next: (response) => {

@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DeanProfessionalMembership = sequelize.define(
-    "dean_professional_membership",
+    "dean_professional_memberships",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -31,10 +31,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATEONLY,
         allowNull: true,
       },
-      is_lifetime: {
+      is_active: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
-        defaultValue: false,
+        defaultValue: true,
       },
     },
     {
@@ -42,6 +42,7 @@ module.exports = (sequelize, Sequelize) => {
       underscored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      tableName: "dean_professional_memberships",
     },
   );
 

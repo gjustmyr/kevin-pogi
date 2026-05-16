@@ -19,7 +19,7 @@ import {
 })
 export class DeanPDSService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/dean/pds`;
+  private apiUrl = `${environment.apiUrl}/dean-pds`;  // Fixed: Changed from /dean/pds to /dean-pds
 
   // Get dean's PDS
   getPDS(): Observable<PersonalDataSheet> {

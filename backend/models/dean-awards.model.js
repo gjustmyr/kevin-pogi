@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DeanAwards = sequelize.define(
-    "dean_award",
+    "dean_awards",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -12,22 +12,32 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       award_title: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.STRING(300),
         allowNull: false,
       },
       awarding_body: {
-        type: Sequelize.STRING(200),
+        type: Sequelize.STRING(300),
         allowNull: false,
       },
       date_received: {
         type: Sequelize.DATEONLY,
-        allowNull: true,
+        allowNull: false,
+      },
+      level: {
+        type: Sequelize.ENUM(
+          "International",
+          "National",
+          "Regional",
+          "Local",
+          "Institutional",
+        ),
+        allowNull: false,
       },
       description: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      file_path: {
+      certificate_file: {
         type: Sequelize.STRING(500),
         allowNull: true,
       },
@@ -37,6 +47,7 @@ module.exports = (sequelize, Sequelize) => {
       underscored: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
+      tableName: "dean_awards",
     },
   );
 

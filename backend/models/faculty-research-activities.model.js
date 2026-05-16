@@ -33,6 +33,7 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
+      tableName: "faculty_research_activities",
       timestamps: true,
       underscored: true,
       createdAt: "created_at",

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -11,6 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 const authRoutes = require("./routes/auth.routes");
@@ -88,6 +92,7 @@ app.use("/api/faculty/requirements", facultyRequirementRoutes);
 app.use("/api/faculty/credentials", facultyCredentialsRoutes);
 app.use("/api/faculty/profile", facultyProfileRoutes);
 app.use("/api/faculty/pds", pdsRoutes);
+app.use("/api/pds", pdsRoutes); // Added: Direct PDS route for faculty
 
 // Organization module routes
 const organizationEventAnalyticsRoutes = require("./routes/organization-event-analytics.routes");
@@ -96,6 +101,7 @@ app.use("/api/organization/events", organizationEventRoutes);
 
 // Shared routes (accessible to all authenticated users)
 app.use("/api/academic-years", require("./routes/academic-year-shared.routes"));
+app.use("/api/dean-pds", deanPDSRoutes); // Added: Direct Dean PDS route
 
 // Announcement routes (shared between dean and faculty)
 app.use("/api/announcements", announcementRoutes);

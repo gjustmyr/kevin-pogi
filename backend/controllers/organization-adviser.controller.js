@@ -24,6 +24,7 @@ exports.getAdvisers = async (req, res) => {
 			include: [
 				{
 					model: db.Faculty,
+					required: false,
 					attributes: [
 						"faculty_id",
 						"employee_id",
@@ -80,6 +81,7 @@ exports.deanGetOrganizationAdvisers = async (req, res) => {
 			include: [
 				{
 					model: db.Faculty,
+					required: false,
 					attributes: [
 						"faculty_id",
 						"employee_id",

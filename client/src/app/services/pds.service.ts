@@ -209,7 +209,7 @@ export interface PDSReference {
 })
 export class PDSService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/faculty/pds`;
+  private apiUrl = `${environment.apiUrl}/pds`;  // Fixed: Changed from /faculty/pds to /pds
 
   // Get faculty's PDS
   getPDS(): Observable<PersonalDataSheet> {
