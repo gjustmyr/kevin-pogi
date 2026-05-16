@@ -81,7 +81,7 @@ exports.exportFacultyPDSToExcel = async (req, res) => {
     // Set response headers
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
@@ -143,7 +143,7 @@ exports.exportDeanPDSToExcel = async (req, res) => {
     // Set response headers
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
@@ -162,7 +162,7 @@ async function generatePDSExcel(pds) {
   // Check if template exists
   const templatePath = path.join(
     __dirname,
-    "../public/templates/pds-template.xlsx"
+    "../public/templates/pds-template.xlsx",
   );
 
   let workbook;
@@ -186,8 +186,8 @@ async function generatePDSExcel(pds) {
   // First name: D11 to K11
   writeMergedCell(worksheet, "D11", "K11", pds.first_name);
 
-  // Name Extension: L11 to M11
-  writeMergedCell(worksheet, "L11", "M11", pds.name_extension);
+  // Name Extension: L11 to N11
+  writeMergedCell(worksheet, "L11", "N11", pds.name_extension);
 
   // Middle name: D12 to N12
   writeMergedCell(worksheet, "D12", "N12", pds.middle_name);
@@ -195,21 +195,38 @@ async function generatePDSExcel(pds) {
   // Date of Birth: D13 to F13
   writeMergedCell(worksheet, "D13", "F13", formatDate(pds.date_of_birth));
 
-  // Place of birth: H13 to N13
-  writeMergedCell(worksheet, "H13", "N13", pds.place_of_birth);
+  // Place of birth: D15 to F15
+  writeMergedCell(worksheet, "D15", "F15", pds.place_of_birth);
 
-  // Sex: D14 to F14
-  writeMergedCell(worksheet, "D14", "F14", pds.sex);
+  // Sex: Mark checkbox with "X" (D16 for Male, F16 for Female based on merged cell D16:F16)
+  if (pds.sex === "Male") {
+    worksheet["E16"] = { v: "X", t: "s" };
+  } else if (pds.sex === "Female") {
+    worksheet["F16"] = { v: "X", t: "s" };
+  }
 
-  // Civil Status: D15 to F15
-  writeMergedCell(worksheet, "D15", "F15", pds.civil_status);
+  // Civil Status: Mark checkbox with "X" (D17:F18 merged for Single, P11-P16 for others)
+  if (pds.civil_status === "Single") {
+    worksheet["E17"] = { v: "X", t: "s" };
+  } else if (pds.civil_status === "Married") {
+    worksheet["P11"] = { v: "X", t: "s" };
+  } else if (pds.civil_status === "Widowed") {
+    worksheet["P12"] = { v: "X", t: "s" };
+  } else if (pds.civil_status === "Separated") {
+    worksheet["P13"] = { v: "X", t: "s" };
+  }
 
   // Height: D22 to F22 (merged cells D22:F23 based on your spec)
   writeMergedCell(worksheet, "D22", "F22", pds.height ? `${pds.height} m` : "");
   writeMergedCell(worksheet, "D23", "F23", ""); // Part of merged cell
 
   // Weight: D24 to F24
-  writeMergedCell(worksheet, "D24", "F24", pds.weight ? `${pds.weight} kg` : "");
+  writeMergedCell(
+    worksheet,
+    "D24",
+    "F24",
+    pds.weight ? `${pds.weight} kg` : "",
+  );
 
   // Blood type: D25 to F25 (merged cells D25:F26 based on your spec)
   writeMergedCell(worksheet, "D25", "F25", pds.blood_type);
@@ -235,28 +252,42 @@ async function generatePDSExcel(pds) {
   // Agency Employee No: D34 to F34
   writeMergedCell(worksheet, "D34", "F34", pds.agency_employee_no);
 
-  // Citizenship: D16 to F16
-  writeMergedCell(worksheet, "D16", "F16", pds.citizenship_type);
-
-  // Dual Citizenship Country: D17 to F17
-  if (pds.citizenship_type === "Dual Citizenship") {
-    writeMergedCell(worksheet, "D17", "F17", pds.dual_citizenship_country);
+  // CITIZENSHIP SECTION (Row 13-17)
+  // Mark checkboxes with "X" or leave blank
+  // Filipino checkbox: D16 (in merged cell D16:F16)
+  if (pds.citizenship_type === "Filipino") {
+    worksheet["D16"] = { v: "X", t: "s" };
   }
 
-  // RESIDENTIAL ADDRESS
-  // House/Block/Lot No: I17 to K17
-  writeMergedCell(worksheet, "I17", "K17", pds.residential_house_no);
+  // Dual Citizenship checkbox: G16 (in merged cell G16:I16)
+  if (pds.citizenship_type === "Dual Citizenship") {
+    worksheet["G16"] = { v: "X", t: "s" };
 
-  // Street: L17 to N17
-  writeMergedCell(worksheet, "L17", "N17", pds.residential_street);
+    // Mark by birth or by naturalization
+    if (pds.dual_citizenship_type === "by birth") {
+      worksheet["D17"] = { v: "X", t: "s" };
+    } else if (pds.dual_citizenship_type === "by naturalization") {
+      worksheet["G17"] = { v: "X", t: "s" };
+    }
 
-  // Subdivision/Village: I19 to K19 (merged with I20:K20)
-  writeMergedCell(worksheet, "I19", "K19", pds.residential_subdivision);
-  writeMergedCell(worksheet, "I20", "K20", ""); // Part of merged cell
+    // Write country name: L16:N16
+    if (pds.dual_citizenship_country) {
+      writeMergedCell(worksheet, "L16", "N16", pds.dual_citizenship_country);
+    }
+  }
 
-  // Barangay: L19 to N19 (merged with L20:N20)
-  writeMergedCell(worksheet, "L19", "N19", pds.residential_barangay);
-  writeMergedCell(worksheet, "L20", "N20", ""); // Part of merged cell
+  // RESIDENTIAL ADDRESS (Row 17-24)
+  // House/Block/Lot No: I18 to K18
+  writeMergedCell(worksheet, "I18", "K18", pds.residential_house_no);
+
+  // Street: L18 to N18
+  writeMergedCell(worksheet, "L18", "N18", pds.residential_street);
+
+  // Subdivision/Village: I19 to K20 (merged)
+  writeMergedCell(worksheet, "I19", "K20", pds.residential_subdivision);
+
+  // Barangay: L19 to N20 (merged)
+  writeMergedCell(worksheet, "L19", "N20", pds.residential_barangay);
 
   // City/Municipality: I22 to K22
   writeMergedCell(worksheet, "I22", "K22", pds.residential_city);
@@ -267,12 +298,12 @@ async function generatePDSExcel(pds) {
   // ZIP Code: I24 to N24
   writeMergedCell(worksheet, "I24", "N24", pds.residential_zip_code);
 
-  // PERMANENT ADDRESS
-  // House/Block/Lot No: I25 to K25
-  writeMergedCell(worksheet, "I25", "K25", pds.permanent_house_no);
+  // PERMANENT ADDRESS (Row 25-31)
+  // House/Block/Lot No: I26 to K26
+  writeMergedCell(worksheet, "I26", "K26", pds.permanent_house_no);
 
-  // Street: L25 to N25
-  writeMergedCell(worksheet, "L25", "N25", pds.permanent_street);
+  // Street: L26 to N26
+  writeMergedCell(worksheet, "L26", "N26", pds.permanent_street);
 
   // Subdivision/Village: I27 to K27
   writeMergedCell(worksheet, "I27", "K27", pds.permanent_subdivision);
@@ -280,14 +311,14 @@ async function generatePDSExcel(pds) {
   // Barangay: L27 to N27
   writeMergedCell(worksheet, "L27", "N27", pds.permanent_barangay);
 
-  // City/Municipality: J29
-  writeMergedCell(worksheet, "J29", "J29", pds.permanent_city);
+  // City/Municipality: I28 to K28
+  writeMergedCell(worksheet, "I28", "K28", pds.permanent_city);
 
-  // Province: M27
-  writeMergedCell(worksheet, "M27", "M27", pds.permanent_province);
+  // Province: L28 to N28
+  writeMergedCell(worksheet, "L28", "N28", pds.permanent_province);
 
-  // ZIP Code: I31 to K31
-  writeMergedCell(worksheet, "I31", "K31", pds.permanent_zip_code);
+  // ZIP Code: G31 to H31
+  writeMergedCell(worksheet, "G31", "H31", pds.permanent_zip_code);
 
   // CONTACT INFORMATION
   // Telephone No: I32 to N32
@@ -345,20 +376,25 @@ async function generatePDSExcel(pds) {
   // Mother Middle Name: D49 to H49
   writeMergedCell(worksheet, "D49", "H49", pds.mother_middle_name);
 
-  // CHILDREN (starting at row 36, columns J and L)
+  // CHILDREN (starting at row 37, columns I:L for name, M:N for date)
   if (pds.children && pds.children.length > 0) {
     const maxChildren = Math.min(pds.children.length, 12);
     for (let i = 0; i < maxChildren; i++) {
       const child = pds.children[i];
-      const row = 36 + i;
-      // Child name in column J
-      worksheet[`J${row}`] = { v: child.name || "", t: "s" };
-      // Child date of birth in column L
-      worksheet[`L${row}`] = { v: formatDate(child.date_of_birth), t: "s" };
+      const row = 37 + i;
+      // Child name: I to L
+      writeMergedCell(worksheet, `I${row}`, `L${row}`, child.name || "");
+      // Child date of birth: M to N
+      writeMergedCell(
+        worksheet,
+        `M${row}`,
+        `N${row}`,
+        formatDate(child.date_of_birth),
+      );
     }
   }
 
-  // EDUCATIONAL BACKGROUND
+  // EDUCATIONAL BACKGROUND (Row 54-58)
   if (pds.education && pds.education.length > 0) {
     const educationByLevel = {
       ELEMENTARY: 54,
@@ -371,22 +407,24 @@ async function generatePDSExcel(pds) {
     pds.education.forEach((edu) => {
       const row = educationByLevel[edu.level];
       if (row) {
-        // Level/School Name (Column D-F for level, G-I for school name)
-        worksheet[`D${row}`] = { v: edu.level || "", t: "s" };
-        worksheet[`G${row}`] = { v: edu.school_name || "", t: "s" };
-        // Degree/Course (Column G-I, but school name takes priority)
-        worksheet[`G${row}`] = { v: edu.school_name || "", t: "s" };
-        worksheet[`H${row}`] = { v: "", t: "s" }; // Part of merged cell
-        worksheet[`I${row}`] = { v: "", t: "s" }; // Part of merged cell
-        // Period From (Column J)
+        // School Name: D to F (merged)
+        writeMergedCell(worksheet, `D${row}`, `F${row}`, edu.school_name || "");
+        // Degree/Course: G to I (merged)
+        writeMergedCell(
+          worksheet,
+          `G${row}`,
+          `I${row}`,
+          edu.degree_course || "",
+        );
+        // Period From: J
         worksheet[`J${row}`] = { v: edu.period_from || "", t: "s" };
-        // Period To (Column K)
+        // Period To: K
         worksheet[`K${row}`] = { v: edu.period_to || "", t: "s" };
-        // Highest Level/Units Earned (Column L)
+        // Highest Level/Units Earned: L
         worksheet[`L${row}`] = { v: edu.highest_level_earned || "", t: "s" };
-        // Year Graduated (Column M)
+        // Year Graduated: M
         worksheet[`M${row}`] = { v: edu.year_graduated || "", t: "s" };
-        // Scholarship/Honors (Column N)
+        // Scholarship/Honors: N
         worksheet[`N${row}`] = { v: edu.scholarship_honors || "", t: "s" };
       }
     });
@@ -395,8 +433,8 @@ async function generatePDSExcel(pds) {
   // Signature: D60 to I60
   writeMergedCell(worksheet, "D60", "I60", "");
 
-  // Date: L60 to M60
-  writeMergedCell(worksheet, "L60", "M60", formatDate(new Date()));
+  // Date: J60 to K60
+  writeMergedCell(worksheet, "J60", "K60", formatDate(new Date()));
 
   // CIVIL SERVICE ELIGIBILITY (starting at row 61)
   if (pds.eligibilities && pds.eligibilities.length > 0) {
@@ -509,10 +547,10 @@ async function generatePDSExcel(pds) {
   if (pds.other_info && pds.other_info.length > 0) {
     const skills = pds.other_info.filter((info) => info.info_type === "SKILL");
     const recognitions = pds.other_info.filter(
-      (info) => info.info_type === "RECOGNITION"
+      (info) => info.info_type === "RECOGNITION",
     );
     const memberships = pds.other_info.filter(
-      (info) => info.info_type === "MEMBERSHIP"
+      (info) => info.info_type === "MEMBERSHIP",
     );
 
     // Skills (Column D)

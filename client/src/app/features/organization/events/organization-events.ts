@@ -6,6 +6,7 @@ import {
   OrganizationEvent,
   EventGuest,
 } from '../../../services/organization-event.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-organization-events',
@@ -113,7 +114,12 @@ export class OrganizationEventsComponent implements OnInit {
     if (file && file.type === 'application/pdf') {
       this.selectedFile = file;
     } else {
-      alert('Please select a PDF file');
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File',
+        text: 'Please select a PDF file',
+        confirmButtonColor: '#dc2626',
+      });
       event.target.value = '';
       this.selectedFile = null;
     }
@@ -164,12 +170,41 @@ export class OrganizationEventsComponent implements OnInit {
   }
 
   deleteEvent(id: number) {
-    if (confirm('Are you sure you want to delete this event?')) {
-      this.eventService.deleteEvent(id).subscribe({
-        next: () => this.loadEvents(),
-        error: (error) => console.error('Delete event error:', error),
-      });
-    }
+    Swal.fire({
+      title: 'Delete Event?',
+      text: 'Are you sure you want to delete this event? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.eventService.deleteEvent(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'Event has been deleted successfully',
+              confirmButtonColor: '#16a34a',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadEvents();
+          },
+          error: (error) => {
+            console.error('Delete event error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to delete event',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
+    });
   }
 
   downloadFile(eventId: number) {

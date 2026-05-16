@@ -15,12 +15,14 @@ async function seedDocumentTypes() {
     const documentTypes = [
       {
         type_name: "Financial Report",
-        description: "Financial statements and budget reports for the organization",
+        description:
+          "Financial statements and budget reports for the organization",
         required_per_semester: true,
       },
       {
         type_name: "Activity Report",
-        description: "Summary of activities and events conducted by the organization",
+        description:
+          "Summary of activities and events conducted by the organization",
         required_per_semester: true,
       },
       {
@@ -49,7 +51,7 @@ async function seedDocumentTypes() {
       // Check if document type already exists
       const [existing] = await connection.query(
         "SELECT * FROM document_types WHERE type_name = ?",
-        [docType.type_name]
+        [docType.type_name],
       );
 
       if (existing.length > 0) {
@@ -57,7 +59,12 @@ async function seedDocumentTypes() {
       } else {
         await connection.query(
           "INSERT INTO document_types (type_name, description, required_per_semester, is_active) VALUES (?, ?, ?, ?)",
-          [docType.type_name, docType.description, docType.required_per_semester, true]
+          [
+            docType.type_name,
+            docType.description,
+            docType.required_per_semester,
+            true,
+          ],
         );
         console.log(`✓ Added "${docType.type_name}"`);
       }
@@ -67,7 +74,7 @@ async function seedDocumentTypes() {
 
     // Show all document types
     const [allTypes] = await connection.query(
-      "SELECT document_type_id, type_name, required_per_semester, is_active FROM document_types ORDER BY type_name"
+      "SELECT document_type_id, type_name, required_per_semester, is_active FROM document_types ORDER BY type_name",
     );
     console.log("\nAll document types:");
     console.table(allTypes);

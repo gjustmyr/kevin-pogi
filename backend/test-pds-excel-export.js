@@ -1,9 +1,9 @@
 /**
  * Test script for PDS Excel Export functionality
- * 
+ *
  * This script helps verify that the PDS Excel export controller
  * is properly configured and can generate Excel files.
- * 
+ *
  * Usage: node test-pds-excel-export.js
  */
 
@@ -29,7 +29,11 @@ console.log();
 
 // Test 2: Check if controller file exists
 console.log("✓ Test 2: Controller File");
-const controllerPath = path.join(__dirname, "controllers", "pds-excel-export.controller.js");
+const controllerPath = path.join(
+  __dirname,
+  "controllers",
+  "pds-excel-export.controller.js",
+);
 if (fs.existsSync(controllerPath)) {
   console.log(`  - Path: ${controllerPath}`);
   console.log(`  - Status: ✅ EXISTS`);
@@ -98,13 +102,13 @@ try {
     ["Date of Birth", "D13:F13", "01/15/1990"],
     ["Place of Birth", "H13:N13", "MANILA, PHILIPPINES"],
   ];
-  
+
   const testWorksheet = XLSX.utils.aoa_to_sheet(testData);
   XLSX.utils.book_append_sheet(testWorkbook, testWorksheet, "Test");
-  
+
   const testOutputPath = path.join(__dirname, "test-pds-output.xlsx");
   XLSX.writeFile(testWorkbook, testOutputPath);
-  
+
   if (fs.existsSync(testOutputPath)) {
     console.log(`  - Test File Created: ✅ SUCCESS`);
     console.log(`  - Location: ${testOutputPath}`);
@@ -121,24 +125,24 @@ console.log();
 // Test 6: Verify cell mapping constants
 console.log("✓ Test 6: Cell Mapping Verification");
 const cellMappings = {
-  "Surname": "D10:N10",
+  Surname: "D10:N10",
   "First Name": "D11:K11",
   "Name Extension": "L11:M11",
   "Middle Name": "D12:N12",
   "Date of Birth": "D13:F13",
   "Place of Birth": "H13:N13",
-  "Height": "D22:F23",
-  "Weight": "D24:F24",
+  Height: "D22:F23",
+  Weight: "D24:F24",
   "Blood Type": "D25:F26",
   "GSIS/UMID ID": "D27:F28",
   "Pag-IBIG ID": "D29:F30",
-  "PhilHealth": "D31:F31",
+  PhilHealth: "D31:F31",
   "SSS/PhilSys": "D32:F32",
-  "TIN": "D33:F33",
+  TIN: "D33:F33",
   "Agency Employee": "D34:F34",
-  "Telephone": "I32:N32",
-  "Mobile": "I33:N33",
-  "Email": "I34:N34",
+  Telephone: "I32:N32",
+  Mobile: "I33:N33",
+  Email: "I34:N34",
 };
 
 console.log(`  - Total Mappings Defined: ${Object.keys(cellMappings).length}`);
@@ -148,10 +152,10 @@ console.log();
 // Test 7: Check educational background row mappings
 console.log("✓ Test 7: Educational Background Rows");
 const educationRows = {
-  "ELEMENTARY": 54,
-  "SECONDARY": 55,
-  "VOCATIONAL": 56,
-  "COLLEGE": 57,
+  ELEMENTARY: 54,
+  SECONDARY: 55,
+  VOCATIONAL: 56,
+  COLLEGE: 57,
   "GRADUATE STUDIES": 58,
 };
 

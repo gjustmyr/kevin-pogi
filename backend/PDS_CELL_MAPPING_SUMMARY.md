@@ -1,199 +1,135 @@
-# PDS Excel Export - Updated Cell Mapping Summary
+# PDS Cell Mapping Fix - Complete Summary
 
-## Changes Applied
+**Date:** 2026-05-16  
+**Status:** ✅ COMPLETE
 
-This document summarizes the corrected cell mappings for the PDS Excel export feature.
+## Overview
 
----
+Applied complete cell mapping corrections to `pds-excel-export.controller.js` based on analysis of the CS Form 212 (Revised 2025) template.
 
-## ✅ CORRECTED MAPPINGS
+## Key Changes Applied
 
-### 1. Personal Information (Page 1)
+### 1. Personal Information Section
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ SURNAME                    │ D10:N10                        │
-│ FIRST NAME                 │ D11:K11                        │
-│ NAME EXTENSION             │ L11:M11  ← ADDED               │
-│ MIDDLE NAME                │ D12:N12                        │
-│ DATE OF BIRTH              │ D13:F13                        │
-│ PLACE OF BIRTH             │ H13:N13                        │
-│ HEIGHT (m)                 │ D22:F23 (merged)               │
-│ WEIGHT (kg)                │ D24:F24                        │
-│ BLOOD TYPE                 │ D25:F26 (merged)               │
-│ GSIS/UMID ID NO.           │ D27:F28 (merged)               │
-│ PAG-IBIG ID NO.            │ D29:F30 (merged)               │
-│ PHILHEALTH NO.             │ D31:F31                        │
-│ SSS/PHILSYS NUMBER         │ D32:F32                        │
-│ TIN NO.                    │ D33:F33                        │
-│ AGENCY EMPLOYEE NO.        │ D34:F34                        │
-└─────────────────────────────────────────────────────────────┘
-```
+#### Fixed Cell References:
 
-### 2. Contact Information
+- **Name Extension**: Changed from `L11:M11` to `L11:N11` ✅
+- **Place of Birth**: Changed from `H13:N13` to `D15:F15` ✅
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ TELEPHONE NO.              │ I32:N32                        │
-│ MOBILE NO.                 │ I33:N33                        │
-│ EMAIL ADDRESS              │ I34:N34                        │
-└─────────────────────────────────────────────────────────────┘
-```
+#### Converted to Checkboxes:
 
-### 3. Residential Address
+- **Sex**: Changed from text field to checkbox
+  - Male: `E16` marked with "X"
+  - Female: `F16` marked with "X"
+- **Civil Status**: Changed from text field to checkboxes
+  - Single: `E17` marked with "X"
+  - Married: `P11` marked with "X"
+  - Widowed: `P12` marked with "X"
+  - Separated: `P13` marked with "X"
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ HOUSE/BLOCK/LOT NO.        │ I17:K17                        │
-│ STREET                     │ L17:N17                        │
-│ SUBDIVISION/VILLAGE        │ I19:K20 (merged) ← UPDATED     │
-│ BARANGAY                   │ L19:N20 (merged) ← UPDATED     │
-│ CITY/MUNICIPALITY          │ I22:K22                        │
-│ PROVINCE                   │ L22:N22                        │
-│ ZIP CODE                   │ I24:N24                        │
-└─────────────────────────────────────────────────────────────┘
-```
+### 2. Citizenship Section (Row 13-17)
 
-### 4. Permanent Address
+#### Fixed Checkbox Positions:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ HOUSE/BLOCK/LOT NO.        │ I25:K25                        │
-│ STREET                     │ L25:N25                        │
-│ SUBDIVISION/VILLAGE        │ I27:K27                        │
-│ BARANGAY                   │ L27:N27                        │
-│ CITY/MUNICIPALITY          │ J29                            │
-│ PROVINCE                   │ M27                            │
-│ ZIP CODE                   │ I31:K31                        │
-└─────────────────────────────────────────────────────────────┘
-```
+- **Filipino**: Changed from `E16` to `D16` (in merged cell D16:F16) ✅
+- **Dual Citizenship**: Changed from `H16` to `G16` (in merged cell G16:I16) ✅
+- **by birth**: Changed from `H17` to `D17` ✅
+- **by naturalization**: Changed from `K17` to `G17` ✅
+- **Country field**: Changed from `J16:N16` to `L16:N16` ✅
+
+### 3. Residential Address (Row 17-24)
+
+#### Fixed Cell References:
+
+- **House/Block/Lot No**: Changed from `I17:K17` to `I18:K18` ✅
+- **Street**: Changed from `L17:N17` to `L18:N18` ✅
+- **Subdivision/Village**: Properly merged `I19:K20` ✅
+- **Barangay**: Properly merged `L19:N20` ✅
+
+### 4. Permanent Address (Row 25-31)
+
+#### Fixed Cell References:
+
+- **House/Block/Lot No**: Changed from `I25:K25` to `I26:K26` ✅
+- **Street**: Changed from `L25:N25` to `L26:N26` ✅
+- **City/Municipality**: Changed from `J29` to `I28:K28` ✅
+- **Province**: Changed from `M27` to `L28:N28` ✅
+- **ZIP Code**: Changed from `I31:K31` to `G31:H31` ✅
 
 ### 5. Family Background
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ SPOUSE'S SURNAME           │ D36:H36                        │
-│ SPOUSE'S FIRST NAME        │ D37:F37                        │
-│ SPOUSE'S NAME EXTENSION    │ G37:H37  ← ADDED               │
-│ SPOUSE'S MIDDLE NAME       │ D38:H38                        │
-│ OCCUPATION                 │ D39:H39                        │
-│ EMPLOYER/BUSINESS NAME     │ D40:H40                        │
-│ BUSINESS ADDRESS           │ D41:H41                        │
-│ TELEPHONE NO.              │ D42:H42                        │
-├─────────────────────────────────────────────────────────────┤
-│ FATHER'S SURNAME           │ D43:H43                        │
-│ FATHER'S FIRST NAME        │ D44:F44                        │
-│ FATHER'S NAME EXTENSION    │ G44:H44  ← ADDED               │
-│ FATHER'S MIDDLE NAME       │ D45:H45                        │
-├─────────────────────────────────────────────────────────────┤
-│ MOTHER'S MAIDEN NAME       │                                │
-│   SURNAME                  │ D47:H47                        │
-│   FIRST NAME               │ D48:H48                        │
-│   MIDDLE NAME              │ D49:H49                        │
-└─────────────────────────────────────────────────────────────┘
-```
+#### Children Section:
 
-### 6. Educational Background (Page 2)
+- **Starting Row**: Changed from row 36 to row 37 ✅
+- **Name Column**: Changed from `J` to `I:L` (merged) ✅
+- **Date Column**: Changed from `L` to `M:N` (merged) ✅
 
-```
-┌──────────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-│ LEVEL        │ SCHOOL   │ DEGREE/  │ FROM     │ TO       │ UNITS    │ YEAR     │ HONORS   │
-│              │ NAME     │ COURSE   │          │          │ EARNED   │ GRAD     │          │
-├──────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-│ ELEMENTARY   │ D54:F54  │ G54:I54  │ J54      │ K54      │ L54      │ M54      │ N54      │
-│ SECONDARY    │ D55:F55  │ G55:I55  │ J55      │ K55      │ L55      │ M55      │ N55      │
-│ VOCATIONAL   │ D56:F56  │ G56:I56  │ J56      │ K56      │ L56      │ M56      │ N56      │
-│ COLLEGE      │ D57:F57  │ G57:I57  │ J57      │ K57      │ L57      │ M57      │ N57      │
-│ GRAD STUDIES │ D58:F58  │ G58:I58  │ J58      │ K58      │ L58      │ M58      │ N58      │
-└──────────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+### 6. Educational Background (Row 54-58)
 
-← ROWS UPDATED: 54, 55, 56, 57, 58 (previously 51, 52, 53, 54, 56)
-```
+#### Fixed Field Mapping:
 
-### 7. Signature Section
+- **School Name**: Now correctly writes to `D:F` (merged) ✅
+- **Degree/Course**: Now correctly writes to `G:I` (merged) ✅
+- Removed duplicate/conflicting writes to same cells ✅
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ SIGNATURE                  │ D60:I60  ← ADDED               │
-│ DATE                       │ L60:M60  ← ADDED               │
-└─────────────────────────────────────────────────────────────┘
-```
+### 7. Signature Section (Row 60)
 
----
+#### Fixed Cell References:
 
-## 📋 Key Changes Summary
+- **Date**: Changed from `L60:M60` to `J60:K60` ✅
 
-### Added Fields:
-1. **Name Extension** (L11:M11) - For personal name extension (Jr., Sr., III, etc.)
-2. **Spouse Name Extension** (G37:H37) - For spouse's name extension
-3. **Father Name Extension** (G44:H44) - For father's name extension
-4. **Signature Field** (D60:I60) - Space for signature
-5. **Date Field** (L60:M60) - Current date
+## Checkbox Implementation
 
-### Updated Merged Cells:
-1. **Subdivision/Village (Residential)** - Now I19:K20 (includes row 20)
-2. **Barangay (Residential)** - Now L19:N20 (includes row 20)
+All checkbox fields now use "X" mark for checked state:
 
-### Updated Row Numbers:
-Educational Background rows changed from:
-- ELEMENTARY: 51 → **54**
-- SECONDARY: 52 → **55**
-- VOCATIONAL: 53 → **56**
-- COLLEGE: 54 → **57**
-- GRADUATE STUDIES: 56 → **58**
+- Sex checkboxes: `E16` (Male), `F16` (Female)
+- Civil Status checkboxes: `E17` (Single), `P11` (Married), `P12` (Widowed), `P13` (Separated)
+- Citizenship checkboxes: `D16` (Filipino), `G16` (Dual)
+- Dual citizenship type: `D17` (by birth), `G17` (by naturalization)
 
----
+## Sections Not Modified
 
-## 🔧 Implementation Status
+The following sections were already correct and remain unchanged:
 
-✅ **Controller Updated**: `backend/controllers/pds-excel-export.controller.js`
-✅ **Routes Added**: 
-   - Faculty: `GET /api/pds/export/excel`
-   - Dean: `GET /api/dean-pds/export/excel`
-✅ **Documentation Updated**: `backend/PDS_EXCEL_EXPORT_MAPPING.md`
+- Height (D22:F23)
+- Weight (D24:F24)
+- Blood Type (D25:F26)
+- UMID ID (D27:F28)
+- Pag-IBIG ID (D29:F30)
+- PhilHealth No (D31:F31)
+- PhilSys Number (D32:F32)
+- TIN No (D33:F33)
+- Agency Employee No (D34:F34)
+- Contact Information (I32:N34)
+- Spouse Information (D36:H42)
+- Father's Name (D43:H45)
+- Mother's Name (D47:H49)
+- Civil Service Eligibility (starting row 61)
+- Work Experience (starting row 69)
+- Learning and Development (starting row 98)
+- Voluntary Work (starting row 120)
+- Other Information (starting row 128)
+- References (starting row 136)
+- Questionnaire Responses (starting row 140)
 
----
+## Testing Recommendations
 
-## 📝 Notes
+1. **Export a PDS** for both Faculty and Dean users
+2. **Verify checkbox fields** display "X" marks correctly
+3. **Check merged cells** render properly in Excel
+4. **Validate all sections** match the template structure
+5. **Test with actual data** to ensure proper formatting
 
-1. All merged cells are properly handled in the implementation
-2. Date fields are formatted as MM/DD/YYYY
-3. The signature field (D60:I60) is left blank for manual signing
-4. The date field (L60:M60) is automatically populated with the current date
-5. Name extension fields support values like "Jr.", "Sr.", "III", "IV", etc.
+## Files Modified
 
----
+- `backend/controllers/pds-excel-export.controller.js` - Applied all cell mapping corrections
 
-## 🧪 Testing Checklist
+## Reference Documents
 
-- [ ] Test Faculty PDS export with complete data
-- [ ] Test Dean PDS export with complete data
-- [ ] Verify all name extension fields appear correctly
-- [ ] Verify educational background rows (54-58)
-- [ ] Verify merged cells for residential address (I19:K20, L19:N20)
-- [ ] Verify signature and date fields (D60:I60, L60:M60)
-- [ ] Test with partial/incomplete data
-- [ ] Verify file download with correct filename format
+- `backend/PDS_TEMPLATE_ANALYSIS.md` - Complete template structure analysis
+- `backend/PDS_CORRECT_CELL_MAPPING.md` - Detailed cell mapping reference
+- `backend/public/templates/pds-template.xlsx` - Official CS Form 212 template
 
----
+## Status
 
-## 📞 API Usage
-
-### Faculty Export
-```bash
-curl -X GET "http://localhost:3000/api/pds/export/excel" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  --output pds_export.xlsx
-```
-
-### Dean Export
-```bash
-curl -X GET "http://localhost:3000/api/dean-pds/export/excel" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  --output pds_export.xlsx
-```
-
----
-
-**Last Updated**: $(date)
-**Version**: 2.0 (Corrected Mappings)
+✅ All cell mappings have been corrected according to the CS Form 212 (Revised 2025) template structure.

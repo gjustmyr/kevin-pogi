@@ -11,6 +11,7 @@ import {
   AcademicYearService,
   AcademicYearsResponse,
 } from '../../../services/academic-year.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-organization-documents',
@@ -237,10 +238,16 @@ export class OrganizationDocumentsComponent implements OnInit {
 
     this.organizationService.submitDocument(formData).subscribe({
       next: (response) => {
-        this.successMessage.set(response.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: response.message || 'Document submitted successfully',
+          confirmButtonColor: '#16a34a',
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.closeModals();
         this.loadDocuments();
-        setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to submit document');
@@ -272,10 +279,16 @@ export class OrganizationDocumentsComponent implements OnInit {
 
     this.organizationService.updateDocument(documentId, formData).subscribe({
       next: (response) => {
-        this.successMessage.set(response.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: response.message || 'Document updated successfully',
+          confirmButtonColor: '#16a34a',
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.closeModals();
         this.loadDocuments();
-        setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to update document');
@@ -288,20 +301,45 @@ export class OrganizationDocumentsComponent implements OnInit {
     const documentId = this.selectedDocument()?.document_id;
     if (!documentId) return;
 
-    this.loading.set(true);
-    this.errorMessage.set('');
+    Swal.fire({
+      title: 'Delete Document?',
+      text: 'Are you sure you want to delete this document? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.errorMessage.set('');
 
-    this.organizationService.deleteDocument(documentId).subscribe({
-      next: (response) => {
-        this.successMessage.set(response.message);
-        this.closeModals();
-        this.loadDocuments();
-        setTimeout(() => this.successMessage.set(''), 3000);
-      },
-      error: (error) => {
-        this.errorMessage.set(error.error?.message || 'Failed to delete document');
-        this.loading.set(false);
-      },
+        this.organizationService.deleteDocument(documentId).subscribe({
+          next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: response.message || 'Document deleted successfully',
+              confirmButtonColor: '#16a34a',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.closeModals();
+            this.loadDocuments();
+          },
+          error: (error) => {
+            this.errorMessage.set(error.error?.message || 'Failed to delete document');
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to delete document',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
     });
   }
 

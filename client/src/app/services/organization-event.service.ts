@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
+import Swal from 'sweetalert2';
 
 export interface OrganizationEvent {
   id?: number;
@@ -98,7 +99,12 @@ export class OrganizationEventService {
         },
         error: (error) => {
           console.error('Download error:', error);
-          alert('Failed to download file');
+          Swal.fire({
+            icon: 'error',
+            title: 'Download Failed',
+            text: 'Failed to download file',
+            confirmButtonColor: '#dc2626',
+          });
         },
       });
   }

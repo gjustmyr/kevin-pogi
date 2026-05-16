@@ -27,7 +27,41 @@ exports.getFaculty = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const search = req.query.search || "";
-    const department = req.query.department;
+    const department_id = req.query.department_id;
+
+    // Static departments list (matches dropdown.controller.js)
+    const departments = [
+      {
+        department_id: 1,
+        department_name: "College of Engineering",
+        department_acronym: "COE",
+      },
+      {
+        department_id: 2,
+        department_name: "College of Education",
+        department_acronym: "COED",
+      },
+      {
+        department_id: 3,
+        department_name: "College of Arts and Sciences",
+        department_acronym: "CAS",
+      },
+      {
+        department_id: 4,
+        department_name: "College of Business Administration",
+        department_acronym: "CBA",
+      },
+      {
+        department_id: 5,
+        department_name: "College of Information Technology",
+        department_acronym: "CIT",
+      },
+      {
+        department_id: 6,
+        department_name: "College of Nursing",
+        department_acronym: "CON",
+      },
+    ];
 
     const whereClause = {};
 
@@ -39,8 +73,14 @@ exports.getFaculty = async (req, res) => {
       ];
     }
 
-    if (department) {
-      whereClause.department = department;
+    // Filter by department name if department_id is provided
+    if (department_id) {
+      const dept = departments.find(
+        (d) => d.department_id === parseInt(department_id),
+      );
+      if (dept) {
+        whereClause.department = dept.department_name;
+      }
     }
 
     const { count, rows } = await db.Faculty.findAndCountAll({
@@ -50,8 +90,30 @@ exports.getFaculty = async (req, res) => {
       order: [["last_name", "ASC"]],
     });
 
+    // Map department names to department objects with acronyms
+    const facultyWithDepartments = rows.map((faculty) => {
+      const facultyData = faculty.toJSON();
+
+      // Find matching department by name
+      if (facultyData.department) {
+        const dept = departments.find(
+          (d) => d.department_name === facultyData.department,
+        );
+
+        if (dept) {
+          facultyData.department = {
+            department_id: dept.department_id,
+            department_name: dept.department_name,
+            department_acronym: dept.department_acronym,
+          };
+        }
+      }
+
+      return facultyData;
+    });
+
     res.json({
-      faculty: rows,
+      faculty: facultyWithDepartments,
       currentPage: page,
       totalPages: Math.ceil(count / limit),
       totalItems: count,

@@ -10,6 +10,7 @@ import {
   AcademicYearService,
   AcademicYearsResponse,
 } from '../../../services/academic-year.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-organization-members',
   standalone: true,
@@ -135,7 +136,7 @@ export class OrganizationMembersComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('API response:', response);
-          
+
           // If in officers view, filter out "Member" position
           if (this.viewMode() === 'officers') {
             const filteredMembers = response.members.filter(
@@ -349,10 +350,16 @@ export class OrganizationMembersComponent implements OnInit {
 
     this.organizationService.createMemberWithPhoto(formData).subscribe({
       next: (response) => {
-        this.successMessage.set(response.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: response.message || 'Member added successfully',
+          confirmButtonColor: '#16a34a',
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.closeModals();
         this.loadMembers();
-        setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to add member');
@@ -393,10 +400,16 @@ export class OrganizationMembersComponent implements OnInit {
 
     this.organizationService.updateMemberWithPhoto(memberId, formData).subscribe({
       next: (response) => {
-        this.successMessage.set(response.message);
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: response.message || 'Member updated successfully',
+          confirmButtonColor: '#16a34a',
+          timer: 2000,
+          showConfirmButton: false,
+        });
         this.closeModals();
         this.loadMembers();
-        setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to update member');
@@ -409,20 +422,45 @@ export class OrganizationMembersComponent implements OnInit {
     const memberId = this.selectedMember()?.member_id;
     if (!memberId) return;
 
-    this.loading.set(true);
-    this.errorMessage.set('');
+    Swal.fire({
+      title: 'Delete Member?',
+      text: 'Are you sure you want to delete this member? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.errorMessage.set('');
 
-    this.organizationService.deleteMember(memberId).subscribe({
-      next: (response) => {
-        this.successMessage.set(response.message);
-        this.closeModals();
-        this.loadMembers();
-        setTimeout(() => this.successMessage.set(''), 3000);
-      },
-      error: (error) => {
-        this.errorMessage.set(error.error?.message || 'Failed to delete member');
-        this.loading.set(false);
-      },
+        this.organizationService.deleteMember(memberId).subscribe({
+          next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: response.message || 'Member deleted successfully',
+              confirmButtonColor: '#16a34a',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.closeModals();
+            this.loadMembers();
+          },
+          error: (error) => {
+            this.errorMessage.set(error.error?.message || 'Failed to delete member');
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to delete member',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
     });
   }
 
@@ -451,9 +489,7 @@ export class OrganizationMembersComponent implements OnInit {
   }
 
   getPresident(): OrganizationMember | undefined {
-    return this.members().find(
-      (m) => m.position.toLowerCase() === 'president' && m.is_active,
-    );
+    return this.members().find((m) => m.position.toLowerCase() === 'president' && m.is_active);
   }
 
   getOfficers(): OrganizationMember[] {

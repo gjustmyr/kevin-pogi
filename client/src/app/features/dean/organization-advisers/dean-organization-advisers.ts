@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeanOrganizationManagementService } from '../../../services/organization.service';
 import { DeanService } from '../../../services/dean.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dean-organization-advisers',
@@ -106,19 +107,40 @@ export class DeanOrganizationAdvisersComponent implements OnInit {
     const org = this.selectedOrganization();
     if (!org) return;
 
-    if (!confirm('Are you sure you want to remove this adviser?')) {
-      return;
-    }
-
-    this.deanOrgService.removeAdviser(adviserId).subscribe({
-      next: () => {
-        this.showSuccess('Adviser removed successfully');
-        this.loadAdvisers(org.organization_id);
-      },
-      error: (error) => {
-        console.error('Failed to remove adviser:', error);
-        this.showError('Failed to remove adviser');
-      },
+    Swal.fire({
+      title: 'Remove Adviser?',
+      text: 'Are you sure you want to remove this adviser?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, remove',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deanOrgService.removeAdviser(adviserId).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Removed!',
+              text: 'Adviser removed successfully',
+              confirmButtonColor: '#16a34a',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadAdvisers(org.organization_id);
+          },
+          error: (error) => {
+            console.error('Failed to remove adviser:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to remove adviser',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
     });
   }
 
