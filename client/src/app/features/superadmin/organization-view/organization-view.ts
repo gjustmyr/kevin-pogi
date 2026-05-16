@@ -96,10 +96,19 @@ export class SuperadminOrganizationView implements OnInit {
   }
 
   getAdviserName(org: SuperadminOrganization): string {
-    if (!org.Faculty) return 'N/A';
-    const f = org.Faculty;
-    return f.middle_name
-      ? `${f.first_name} ${f.middle_name} ${f.last_name}`
-      : `${f.first_name} ${f.last_name}`;
+    if (!org.organization_advisers || org.organization_advisers.length === 0) {
+      return 'N/A';
+    }
+
+    const adviserNames = org.organization_advisers
+      .filter((assignment) => assignment.adviser)
+      .map((assignment) => {
+        const f = assignment.adviser!;
+        return f.middle_name
+          ? `${f.first_name} ${f.middle_name} ${f.last_name}`
+          : `${f.first_name} ${f.last_name}`;
+      });
+
+    return adviserNames.length > 0 ? adviserNames.join(', ') : 'N/A';
   }
 }

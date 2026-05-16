@@ -10,14 +10,24 @@ export interface SuperadminOrganization {
   department: string;
   faculty_id: number;
   user_id: number;
-  Faculty?: {
-    faculty_id: number;
-    employee_id: string;
-    first_name: string;
-    middle_name?: string;
-    last_name: string;
+  user?: {
     email: string;
   };
+  organization_advisers?: Array<{
+    adviser_id: number;
+    organization_id: number;
+    faculty_id: number;
+    assigned_date: string;
+    is_active: boolean;
+    adviser?: {
+      faculty_id: number;
+      employee_id: string;
+      first_name: string;
+      middle_name?: string;
+      last_name: string;
+      email: string;
+    };
+  }>;
   createdAt?: string;
   updatedAt?: string;
 }

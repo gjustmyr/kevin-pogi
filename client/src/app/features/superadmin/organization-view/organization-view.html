@@ -39,7 +39,7 @@
           <th scope="col" class="px-6 py-3">Organization Name</th>
           <th scope="col" class="px-6 py-3">Department</th>
           <th scope="col" class="px-6 py-3">Adviser / Faculty</th>
-          <th scope="col" class="px-6 py-3">Adviser Email</th>
+          <th scope="col" class="px-6 py-3">Organization Email</th>
           <th scope="col" class="px-6 py-3">Description</th>
         </tr>
       </thead>
@@ -65,7 +65,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 font-medium text-gray-900">{{ getAdviserName(org) }}</td>
-              <td class="px-6 py-4">{{ org.Faculty?.email || 'N/A' }}</td>
+              <td class="px-6 py-4">{{ org.user?.email || 'N/A' }}</td>
               <td class="px-6 py-4 text-gray-500 max-w-xs truncate">
                 {{ org.description || '—' }}
               </td>
