@@ -92,14 +92,18 @@ exports.savePDS = async (req, res) => {
       where: { user_id: deanUserId },
     });
 
-    console.log("Dean lookup result:", dean ? `Found - Dean ID: ${dean.dean_id}` : "NOT FOUND");
+    console.log(
+      "Dean lookup result:",
+      dean ? `Found - Dean ID: ${dean.dean_id}` : "NOT FOUND",
+    );
 
     if (!dean) {
       console.log("ERROR: No dean record found for user_id:", deanUserId);
-      return res.status(404).json({ 
-        message: "Dean profile not found. Please ensure you have a dean account linked to your user account.",
+      return res.status(404).json({
+        message:
+          "Dean profile not found. Please ensure you have a dean account linked to your user account.",
         user_id: deanUserId,
-        hint: "Contact your administrator to create a dean profile for your account."
+        hint: "Contact your administrator to create a dean profile for your account.",
       });
     }
 
@@ -227,14 +231,14 @@ exports.savePDS = async (req, res) => {
       if (!value || value === "" || value === null) {
         missingFields.push(field);
       }
-      
+
       // Special validation for date_of_birth
       if (field === "date_of_birth" && value) {
         if (value === "Invalid date" || isNaN(new Date(value).getTime())) {
           invalidFields.push({
             field: "date_of_birth",
             value: value,
-            message: "Date of birth must be a valid date in YYYY-MM-DD format"
+            message: "Date of birth must be a valid date in YYYY-MM-DD format",
           });
         }
       }
@@ -244,7 +248,7 @@ exports.savePDS = async (req, res) => {
       console.log("Validation failed:");
       console.log("Missing fields:", missingFields);
       console.log("Invalid fields:", invalidFields);
-      
+
       return res.status(400).json({
         message: "Validation failed",
         missingFields: missingFields.length > 0 ? missingFields : undefined,
@@ -443,7 +447,7 @@ exports.savePDS = async (req, res) => {
     console.error("Save PDS error:", error);
     console.error("Error details:", error.message);
     console.error("Error stack:", error.stack);
-    
+
     // Send more detailed error message
     res.status(500).json({
       message: "Error saving Personal Data Sheet",
@@ -658,7 +662,7 @@ exports.importFromProfile = async (req, res) => {
       // Set default values for all required NOT NULL fields
       surname: "",
       first_name: "",
-      date_of_birth: new Date('1900-01-01'), // Default date if not provided
+      date_of_birth: new Date("1900-01-01"), // Default date if not provided
       place_of_birth: "",
       sex: "Male",
       civil_status: "Single",
@@ -677,7 +681,8 @@ exports.importFromProfile = async (req, res) => {
       pdsData.first_name = personalProfile.first_name || "N/A";
       pdsData.middle_name = personalProfile.middle_name || "";
       pdsData.name_extension = personalProfile.extension || null;
-      pdsData.date_of_birth = personalProfile.date_of_birth || new Date('1900-01-01');
+      pdsData.date_of_birth =
+        personalProfile.date_of_birth || new Date("1900-01-01");
       pdsData.place_of_birth = personalProfile.place_of_birth || "N/A";
       pdsData.sex = personalProfile.sex || "Male";
       pdsData.civil_status = personalProfile.civil_status || "Single";
@@ -686,13 +691,15 @@ exports.importFromProfile = async (req, res) => {
       pdsData.citizenship_type = personalProfile.citizenship || "Filipino";
       pdsData.residential_barangay = personalProfile.barangay || "";
       // Dean profile doesn't have a separate city field, use barangay or province
-      pdsData.residential_city = personalProfile.barangay || personalProfile.province || "N/A";
+      pdsData.residential_city =
+        personalProfile.barangay || personalProfile.province || "N/A";
       pdsData.residential_province = personalProfile.province || "N/A";
       pdsData.residential_zip_code = personalProfile.zip_code || null;
       pdsData.residential_street = personalProfile.street_subdivision || null;
       pdsData.permanent_barangay = personalProfile.barangay || "";
       // Dean profile doesn't have a separate city field, use barangay or province
-      pdsData.permanent_city = personalProfile.barangay || personalProfile.province || "N/A";
+      pdsData.permanent_city =
+        personalProfile.barangay || personalProfile.province || "N/A";
       pdsData.permanent_province = personalProfile.province || "N/A";
       pdsData.permanent_zip_code = personalProfile.zip_code || null;
       pdsData.permanent_street = personalProfile.street_subdivision || null;
@@ -710,6 +717,11 @@ exports.importFromProfile = async (req, res) => {
 
     // Import academic profiles as education records
     for (const academic of academicProfiles) {
+      // Skip if essential fields are missing
+      if (!academic.school_name || !academic.degree_course) {
+        continue;
+      }
+
       const existingEducation = await db.PDSEducation.findOne({
         where: {
           pds_id: pds.pds_id,
@@ -721,17 +733,29 @@ exports.importFromProfile = async (req, res) => {
       if (!existingEducation) {
         await db.PDSEducation.create({
           pds_id: pds.pds_id,
-          level: "COLLEGE",
-          school_name: academic.school_name || "",
-          degree_course: academic.degree_course || "",
+          level: academic.level || "COLLEGE",
+          school_name: academic.school_name,
+          degree_course: academic.degree_course,
           year_graduated: academic.year_graduated || null,
           scholarship_honors: academic.honors_received || "",
+          year_attended_from: academic.year_from || null,
+          year_attended_to: academic.year_to || null,
+          units_earned: academic.units_earned || null,
         });
       }
     }
 
     // Import employment profiles as work experience
     for (const employment of employmentProfiles) {
+      // Skip if essential fields are missing
+      if (
+        !employment.position_title ||
+        !employment.company_name ||
+        !employment.date_from
+      ) {
+        continue;
+      }
+
       const existingWork = await db.PDSWorkExperience.findOne({
         where: {
           pds_id: pds.pds_id,
@@ -744,7 +768,7 @@ exports.importFromProfile = async (req, res) => {
       if (!existingWork) {
         await db.PDSWorkExperience.create({
           pds_id: pds.pds_id,
-          date_from: employment.date_from || "",
+          date_from: employment.date_from,
           date_to: employment.date_to || null,
           position_title: employment.position_title || "",
           department_agency: employment.company_name || "",

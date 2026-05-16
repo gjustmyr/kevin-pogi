@@ -117,14 +117,18 @@ exports.savePDS = async (req, res) => {
       where: { user_id: facultyUserId },
     });
 
-    console.log("Faculty lookup result:", faculty ? `Found - Faculty ID: ${faculty.faculty_id}` : "NOT FOUND");
+    console.log(
+      "Faculty lookup result:",
+      faculty ? `Found - Faculty ID: ${faculty.faculty_id}` : "NOT FOUND",
+    );
 
     if (!faculty) {
       console.log("ERROR: No faculty record found for user_id:", facultyUserId);
-      return res.status(404).json({ 
-        message: "Faculty profile not found. Please ensure you have a faculty account linked to your user account.",
+      return res.status(404).json({
+        message:
+          "Faculty profile not found. Please ensure you have a faculty account linked to your user account.",
         user_id: facultyUserId,
-        hint: "Contact your administrator to create a faculty profile for your account."
+        hint: "Contact your administrator to create a faculty profile for your account.",
       });
     }
 
@@ -450,7 +454,7 @@ exports.savePDS = async (req, res) => {
     console.error("Save PDS error:", error);
     console.error("Error details:", error.message);
     console.error("Error stack:", error.stack);
-    
+
     // Send more detailed error message
     res.status(500).json({
       message: "Error saving Personal Data Sheet",
@@ -681,7 +685,7 @@ exports.importFromProfile = async (req, res) => {
       // Set default values for all required NOT NULL fields
       surname: "N/A",
       first_name: "N/A",
-      date_of_birth: new Date('1900-01-01'),
+      date_of_birth: new Date("1900-01-01"),
       place_of_birth: "N/A",
       sex: "Male",
       civil_status: "Single",
@@ -699,7 +703,8 @@ exports.importFromProfile = async (req, res) => {
       pdsData.surname = personalProfile.last_name || "N/A";
       pdsData.first_name = personalProfile.first_name || "N/A";
       pdsData.middle_name = personalProfile.middle_name || "";
-      pdsData.date_of_birth = personalProfile.date_of_birth || new Date('1900-01-01');
+      pdsData.date_of_birth =
+        personalProfile.date_of_birth || new Date("1900-01-01");
       pdsData.place_of_birth = personalProfile.place_of_birth || "N/A";
       pdsData.sex = personalProfile.sex || "Male";
       pdsData.civil_status = personalProfile.civil_status || "Single";
@@ -708,15 +713,19 @@ exports.importFromProfile = async (req, res) => {
       pdsData.citizenship_type = personalProfile.citizenship || "Filipino";
       // Faculty profile uses home_* prefix for address fields
       pdsData.residential_barangay = personalProfile.home_barangay || "";
-      pdsData.residential_city = personalProfile.home_barangay || personalProfile.home_province || "N/A";
+      pdsData.residential_city =
+        personalProfile.home_barangay || personalProfile.home_province || "N/A";
       pdsData.residential_province = personalProfile.home_province || "N/A";
       pdsData.residential_zip_code = personalProfile.home_zip_code || null;
-      pdsData.residential_street = personalProfile.home_street_subdivision || null;
+      pdsData.residential_street =
+        personalProfile.home_street_subdivision || null;
       pdsData.permanent_barangay = personalProfile.home_barangay || "";
-      pdsData.permanent_city = personalProfile.home_barangay || personalProfile.home_province || "N/A";
+      pdsData.permanent_city =
+        personalProfile.home_barangay || personalProfile.home_province || "N/A";
       pdsData.permanent_province = personalProfile.home_province || "N/A";
       pdsData.permanent_zip_code = personalProfile.home_zip_code || null;
-      pdsData.permanent_street = personalProfile.home_street_subdivision || null;
+      pdsData.permanent_street =
+        personalProfile.home_street_subdivision || null;
       pdsData.telephone_no = personalProfile.mobile_number_secondary || null;
     }
 
@@ -730,28 +739,45 @@ exports.importFromProfile = async (req, res) => {
 
     // Import academic profiles as education records
     for (const academic of academicProfiles) {
+      // Skip if essential fields are missing
+      if (!academic.school_name || !academic.degree_course) {
+        continue;
+      }
+
       const existingEducation = await db.PDSEducation.findOne({
         where: {
           pds_id: pds.pds_id,
-          school_name: academic.institution,
-          degree_course: academic.degree_program,
+          school_name: academic.school_name,
+          degree_course: academic.degree_course,
         },
       });
 
       if (!existingEducation) {
         await db.PDSEducation.create({
           pds_id: pds.pds_id,
-          level: "COLLEGE",
-          school_name: academic.institution || "",
-          degree_course: academic.degree_program || "",
+          level: academic.level || "COLLEGE",
+          school_name: academic.school_name,
+          degree_course: academic.degree_course,
           year_graduated: academic.year_graduated || null,
-          scholarship_honors: academic.honors_awards || "",
+          scholarship_honors: academic.honors_received || "",
+          year_attended_from: academic.year_attended_from || null,
+          year_attended_to: academic.year_attended_to || null,
+          units_earned: academic.units_earned || null,
         });
       }
     }
 
     // Import employment profiles as work experience
     for (const employment of employmentProfiles) {
+      // Skip if essential fields are missing
+      if (
+        !employment.position_title ||
+        !employment.company_name ||
+        !employment.date_from
+      ) {
+        continue;
+      }
+
       const existingWork = await db.PDSWorkExperience.findOne({
         where: {
           pds_id: pds.pds_id,
@@ -764,7 +790,7 @@ exports.importFromProfile = async (req, res) => {
       if (!existingWork) {
         await db.PDSWorkExperience.create({
           pds_id: pds.pds_id,
-          date_from: employment.date_from || "",
+          date_from: employment.date_from,
           date_to: employment.date_to || null,
           position_title: employment.position_title || "",
           department_agency: employment.company_name || "",

@@ -158,4 +158,8 @@ router.delete("/extension/:id", deanProfileController.deleteExtensionActivity);
 // ==================== COMPLETE PROFILE ====================
 router.get("/complete", deanProfileController.getCompleteProfile);
 
+// Export activities to Excel
+const exportController = require("../controllers/dean-activities-export.controller");
+router.get("/activities/export", exportController.exportDeanActivitiesToExcel);
+
 module.exports = router;

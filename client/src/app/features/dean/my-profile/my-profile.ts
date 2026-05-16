@@ -826,4 +826,39 @@ export class DeanMyProfile implements OnInit {
         }
       });
   }
+
+  // Export activities to Excel
+  exportActivities() {
+    const token = localStorage.getItem('token');
+    const url = `${environment.apiUrl}/dean/profile/activities/export`;
+
+    // Use fetch to handle the download with auth header
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Export failed');
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `My_Activities_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        this.sweetAlert.success('Activities exported successfully');
+      })
+      .catch((error) => {
+        console.error('Export error:', error);
+        this.sweetAlert.error('Failed to export activities');
+      });
+  }
 }
