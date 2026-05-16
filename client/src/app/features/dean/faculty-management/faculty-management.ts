@@ -13,6 +13,7 @@ import {
   DropdownPositionLevel,
 } from '../../../services/dropdown.service';
 import { DeanAnalyticsService } from '../../../services/dean-analytics.service';
+import { DeanPDSService } from '../../../services/dean-pds.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -63,61 +64,252 @@ export class DeanFacultyManagement implements OnInit {
     private facultyService: DeanFacultyService,
     private dropdownService: DropdownService,
     private analyticsService: DeanAnalyticsService,
+    private pdsService: DeanPDSService,
   ) {}
 
-  showPDFMenu = signal<number | null>(null);
+  generateAllActivitiesPDF(faculty: Faculty) {
+    // Fetch all three types of activities
+    Promise.all([
+      this.analyticsService.getSeminarsTrainingsByFaculty(faculty.faculty_id).toPromise(),
+      this.analyticsService.getResearchActivitiesByFaculty(faculty.faculty_id).toPromise(),
+      this.analyticsService.getExtensionActivitiesByFaculty(faculty.faculty_id).toPromise(),
+    ])
+      .then(([seminarsData, researchData, extensionData]) => {
+        const seminars = seminarsData?.facultyList?.[0]?.activities || [];
+        const research = researchData?.facultyList?.[0]?.activities || [];
+        const extensions = extensionData?.facultyList?.[0]?.activities || [];
 
-  togglePDFMenu(facultyId: number) {
-    if (this.showPDFMenu() === facultyId) {
-      this.showPDFMenu.set(null);
-    } else {
-      this.showPDFMenu.set(facultyId);
-    }
-  }
-
-  generateFacultyPDF(faculty: Faculty, type: 'extension' | 'research' | 'seminars') {
-    this.showPDFMenu.set(null);
-
-    let observable;
-    switch (type) {
-      case 'extension':
-        observable = this.analyticsService.getExtensionActivitiesByFaculty(faculty.faculty_id);
-        break;
-      case 'research':
-        observable = this.analyticsService.getResearchActivitiesByFaculty(faculty.faculty_id);
-        break;
-      case 'seminars':
-        observable = this.analyticsService.getSeminarsTrainingsByFaculty(faculty.faculty_id);
-        break;
-    }
-
-    observable.subscribe({
-      next: (data: any) => {
-        if (
-          !data.facultyList ||
-          data.facultyList.length === 0 ||
-          data.facultyList[0].activities.length === 0
-        ) {
+        if (seminars.length === 0 && research.length === 0 && extensions.length === 0) {
           Swal.fire({
             icon: 'info',
             title: 'No Data',
-            text: `No ${type} activities found for this faculty member.`,
+            text: 'No activities found for this faculty member.',
             confirmButtonColor: '#2563eb',
           });
           return;
         }
-        this.createPDF(data, type, faculty);
-      },
-      error: (error: any) => {
-        console.error(`Error generating ${type} PDF:`, error);
+
+        this.createHTMLPDF(faculty, seminars, research, extensions);
+      })
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: 'Failed to generate PDF. Please try again.',
           confirmButtonColor: '#2563eb',
         });
-      },
-    });
+      });
+  }
+
+  private createHTMLPDF(faculty: Faculty, seminars: any[], research: any[], extensions: any[]) {
+    const currentYear = new Date().getFullYear();
+    const facultyName = `${faculty.last_name.toUpperCase()}, ${faculty.first_name.toUpperCase()} ${faculty.middle_name?.toUpperCase() || ''}`;
+
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+    let htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Faculty Activities Report</title>
+        <style>
+          @media print {
+            @page { margin: 0.5in; size: letter; }
+            body { margin: 0; }
+          }
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
+            line-height: 1.2;
+          }
+          .page-break { page-break-after: always; }
+          .header {
+            text-align: center;
+            margin-bottom: 15px;
+          }
+          .title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+          .subtitle {
+            font-size: 10pt;
+            margin-bottom: 10px;
+          }
+          .faculty-name {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 10pt;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 4px;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            font-size: 8pt;
+          }
+          th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+          }
+          .col-no { width: 5%; }
+          .col-title { width: 40%; }
+          .col-category { width: 15%; }
+          .col-date { width: 15%; }
+          .col-agency { width: 25%; }
+          .col-beneficiary { width: 22%; }
+          .col-location { width: 18%; }
+        </style>
+      </head>
+      <body>
+    `;
+
+    // Seminars Section
+    if (seminars.length > 0) {
+      htmlContent += `
+        <div class="header">
+          <div class="title">Seminars/Trainings/Conferences Attended</div>
+          <div class="subtitle">FY ${currentYear}-${currentYear + 1}</div>
+        </div>
+        <div class="faculty-name">Faculty Name: ${facultyName}</div>
+        <table>
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th class="col-title">Title of Seminar/Workshop/Training/Conference Attended</th>
+              <th class="col-category">Category (Local, National, International)</th>
+              <th class="col-date">Date</th>
+              <th class="col-agency">Sponsoring Agency</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      seminars.forEach((seminar, index) => {
+        htmlContent += `
+          <tr>
+            <td class="col-no">${index + 1}</td>
+            <td class="col-title">${seminar.title || ''}</td>
+            <td class="col-category">${seminar.category || ''}</td>
+            <td class="col-date">${formatDate(seminar.date)}</td>
+            <td class="col-agency">${seminar.sponsoring_agency || ''}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+        <div class="page-break"></div>
+      `;
+    }
+
+    // Research Section
+    if (research.length > 0) {
+      htmlContent += `
+        <div class="header">
+          <div class="title">Research Activities</div>
+          <div class="subtitle">FY ${currentYear}-${currentYear + 1}</div>
+        </div>
+        <div class="faculty-name">Faculty Name: ${facultyName}</div>
+        <table>
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th class="col-title">Title of Research</th>
+              <th class="col-category">Category</th>
+              <th class="col-date">Date</th>
+              <th class="col-agency">Sponsoring Agency</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      research.forEach((item, index) => {
+        htmlContent += `
+          <tr>
+            <td class="col-no">${index + 1}</td>
+            <td class="col-title">${item.title || ''}</td>
+            <td class="col-category">${item.category || ''}</td>
+            <td class="col-date">${formatDate(item.date)}</td>
+            <td class="col-agency">${item.sponsoring_agency || ''}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+        <div class="page-break"></div>
+      `;
+    }
+
+    // Extension Section
+    if (extensions.length > 0) {
+      htmlContent += `
+        <div class="header">
+          <div class="title">Extension Activities</div>
+          <div class="subtitle">FY ${currentYear}-${currentYear + 1}</div>
+        </div>
+        <div class="faculty-name">Faculty Name: ${facultyName}</div>
+        <table>
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th class="col-title">Title of Extension PPAs</th>
+              <th class="col-date">Date of Implementation</th>
+              <th class="col-beneficiary">Beneficiary</th>
+              <th class="col-location">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      extensions.forEach((item, index) => {
+        htmlContent += `
+          <tr>
+            <td class="col-no">${index + 1}</td>
+            <td class="col-title">${item.title || ''}</td>
+            <td class="col-date">${formatDate(item.date_from)}</td>
+            <td class="col-beneficiary">${item.beneficiary || ''}</td>
+            <td class="col-location">${item.location || ''}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+          </tbody>
+        </table>
+      `;
+    }
+
+    htmlContent += `
+      </body>
+      </html>
+    `;
+
+    // Open print dialog
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
   }
 
   private createPDF(data: any, type: string, faculty: Faculty) {
@@ -622,6 +814,53 @@ export class DeanFacultyManagement implements OnInit {
               icon: 'error',
               title: 'Error',
               text: error.error?.message || 'Failed to reset password',
+              confirmButtonColor: '#2563eb',
+            });
+          },
+        });
+      }
+    });
+  }
+
+  downloadFacultyPDS(faculty: Faculty) {
+    Swal.fire({
+      title: 'Download PDS',
+      text: `Download Personal Data Sheet for "${this.getFullName(faculty)}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Download',
+      confirmButtonColor: '#2563eb',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.pdsService.downloadFacultyPDS(faculty.faculty_id).subscribe({
+          next: (blob) => {
+            this.loading.set(false);
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            link.download = `PDS_${faculty.last_name}_${faculty.first_name}_${dateStr}.xlsx`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Download Complete',
+              text: 'PDS file has been downloaded successfully.',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          },
+          error: (error) => {
+            this.loading.set(false);
+            console.error('Download PDS error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Download Failed',
+              text: error.error?.message || 'Failed to download PDS file.',
               confirmButtonColor: '#2563eb',
             });
           },

@@ -27,4 +27,10 @@ router.post("/import-from-profile", controller.importFromProfile);
 // GET: Export PDS to Excel
 router.get("/export/excel", excelController.exportDeanPDSToExcel);
 
+// GET: Export Faculty PDS to Excel (Dean downloads faculty PDS)
+router.get(
+  "/export/faculty/:faculty_id",
+  excelController.exportFacultyPDSByDean,
+);
+
 module.exports = router;

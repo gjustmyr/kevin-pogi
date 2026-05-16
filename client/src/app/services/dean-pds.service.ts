@@ -19,7 +19,7 @@ import {
 })
 export class DeanPDSService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/dean-pds`;  // Fixed: Changed from /dean/pds to /dean-pds
+  private apiUrl = `${environment.apiUrl}/dean-pds`; // Fixed: Changed from /dean/pds to /dean-pds
 
   // Get dean's PDS
   getPDS(): Observable<PersonalDataSheet> {
@@ -53,6 +53,12 @@ export class DeanPDSService {
   // Import data from My Profile
   importFromProfile(): Observable<PersonalDataSheet> {
     return this.http.post<PersonalDataSheet>(`${this.apiUrl}/import-from-profile`, {});
+  }
+
+  // Download Faculty PDS (for Dean)
+  downloadFacultyPDS(facultyId: number): Observable<Blob> {
+    const url = `${this.apiUrl}/export/faculty/${facultyId}`;
+    return this.http.get(url, { responseType: 'blob' });
   }
 }
 

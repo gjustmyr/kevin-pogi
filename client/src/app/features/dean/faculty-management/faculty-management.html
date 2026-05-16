@@ -75,6 +75,13 @@
                     <i class="fas fa-key"></i>
                   </button>
                   <button
+                    (click)="downloadFacultyPDS(faculty)"
+                    class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                    title="Download PDS"
+                  >
+                    <i class="fas fa-file-download"></i>
+                  </button>
+                  <button
                     (click)="openDeleteModal(faculty)"
                     class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                     title="Delete"
@@ -83,42 +90,13 @@
                   </button>
                   <div class="relative">
                     <button
-                      (click)="togglePDFMenu(faculty.faculty_id)"
+                      (click)="generateAllActivitiesPDF(faculty)"
                       class="p-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition flex items-center gap-1"
-                      title="Generate PDF"
+                      title="Generate All Activities PDF"
                     >
                       <i class="fas fa-file-pdf"></i>
-                      <i class="fas fa-chevron-down text-xs"></i>
+                      <span class="text-xs">PDF</span>
                     </button>
-                    @if (showPDFMenu() === faculty.faculty_id) {
-                      <!-- Backdrop to close menu when clicking outside -->
-                      <div (click)="showPDFMenu.set(null)" class="fixed inset-0 z-30"></div>
-                      <div
-                        class="absolute right-0 top-full mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-40"
-                      >
-                        <button
-                          (click)="generateFacultyPDF(faculty, 'extension')"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2 rounded-t-lg"
-                        >
-                          <i class="fas fa-hands-helping text-green-600"></i>
-                          <span>Extension Services</span>
-                        </button>
-                        <button
-                          (click)="generateFacultyPDF(faculty, 'research')"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2"
-                        >
-                          <i class="fas fa-flask text-blue-600"></i>
-                          <span>Research Activities</span>
-                        </button>
-                        <button
-                          (click)="generateFacultyPDF(faculty, 'seminars')"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm flex items-center gap-2 rounded-b-lg"
-                        >
-                          <i class="fas fa-chalkboard-teacher text-purple-600"></i>
-                          <span>Seminars/Trainings</span>
-                        </button>
-                      </div>
-                    }
                   </div>
                 </div>
               </td>
