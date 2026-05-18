@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import {
   DeanPDSService,
   PersonalDataSheet,
@@ -14,7 +15,6 @@ import {
   PDSOtherInfo,
   PDSReference,
 } from '../../../services/dean-pds.service';
-import { PDSExcelExportService } from '../../../services/pds-excel-export.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 
@@ -102,7 +102,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
 
   constructor(
     private pdsService: DeanPDSService,
-    private pdsExcelExportService: PDSExcelExportService,
+    private http: HttpClient,
     private router: Router,
   ) {}
 
@@ -165,12 +165,13 @@ export class DeanPersonalDataSheetComponent implements OnInit {
       },
       error: (error) => {
         console.error('Import error:', error);
-        
+
         // Show detailed error about missing profile fields
         if (error.error?.missingInProfile) {
-          const missingFields = Object.keys(error.error.missingInProfile)
-            .filter(key => error.error.missingInProfile[key] === true);
-          
+          const missingFields = Object.keys(error.error.missingInProfile).filter(
+            (key) => error.error.missingInProfile[key] === true,
+          );
+
           if (missingFields.length > 0) {
             Swal.fire({
               icon: 'warning',
@@ -178,7 +179,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
               html: `
                 <p>Your profile is missing required information:</p>
                 <ul style="text-align: left; margin: 1rem 0;">
-                  ${missingFields.map(field => `<li><strong>${field.replace(/_/g, ' ')}</strong></li>`).join('')}
+                  ${missingFields.map((field) => `<li><strong>${field.replace(/_/g, ' ')}</strong></li>`).join('')}
                 </ul>
                 <p>Please go to <strong>My Profile</strong> and fill in these fields first.</p>
               `,
@@ -191,7 +192,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
             });
           }
         }
-        
+
         // If import fails, just start with empty PDS
         this.loading.set(false);
       },
@@ -224,12 +225,13 @@ export class DeanPersonalDataSheetComponent implements OnInit {
           },
           error: (error) => {
             console.error('Import error:', error);
-            
+
             // Show detailed error about missing profile fields
             if (error.error?.missingInProfile) {
-              const missingFields = Object.keys(error.error.missingInProfile)
-                .filter(key => error.error.missingInProfile[key] === true);
-              
+              const missingFields = Object.keys(error.error.missingInProfile).filter(
+                (key) => error.error.missingInProfile[key] === true,
+              );
+
               if (missingFields.length > 0) {
                 Swal.fire({
                   icon: 'warning',
@@ -238,7 +240,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
                     <div style="text-align: left;">
                       <p>Your profile is missing required information:</p>
                       <ul style="margin: 1rem 0; padding-left: 1.5rem;">
-                        ${missingFields.map(field => `<li><strong>${field.replace(/_/g, ' ').toUpperCase()}</strong></li>`).join('')}
+                        ${missingFields.map((field) => `<li><strong>${field.replace(/_/g, ' ').toUpperCase()}</strong></li>`).join('')}
                       </ul>
                       <p><strong>What to do:</strong></p>
                       <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
@@ -268,7 +270,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
                 confirmButtonColor: '#dc2626',
               });
             }
-            
+
             this.loading.set(false);
           },
         });
@@ -290,10 +292,10 @@ export class DeanPersonalDataSheetComponent implements OnInit {
       },
       error: (error) => {
         console.error('Save error:', error);
-        
+
         // Show detailed error message
         let errorMessage = 'Failed to save Personal Data Sheet';
-        
+
         if (error.error?.missingFields && error.error.missingFields.length > 0) {
           const fields = error.error.missingFields.join(', ');
           errorMessage = `Missing required fields: ${fields}. Please fill in all required fields or import from your profile.`;
@@ -303,7 +305,7 @@ export class DeanPersonalDataSheetComponent implements OnInit {
         } else if (error.error?.message) {
           errorMessage = error.error.message;
         }
-        
+
         Swal.fire({
           icon: 'error',
           title: 'Validation Error',
@@ -755,27 +757,41 @@ export class DeanPersonalDataSheetComponent implements OnInit {
     return (this.pds().other_info || []).some((info) => info.info_type === 'MEMBERSHIP');
   }
 
-  async exportToExcel() {
-    try {
-      this.loading.set(true);
-      await this.pdsExcelExportService.exportToExcel(this.pds());
-      Swal.fire({
-        icon: 'success',
-        title: 'Exported!',
-        text: 'PDS exported to Excel successfully',
-        confirmButtonColor: '#2563eb',
-      });
-      this.loading.set(false);
-    } catch (error) {
-      console.error('Export error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Export Failed',
-        text: 'Failed to export PDS to Excel',
-        confirmButtonColor: '#dc2626',
-      });
-      this.loading.set(false);
-    }
+  exportToExcel() {
+    this.loading.set(true);
+    const url = `${environment.apiUrl}/dean-pds/export/excel`;
+
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        this.loading.set(false);
+        // Create download link
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const pdsData = this.pds();
+        link.download = `PDS_${pdsData.surname}_${pdsData.first_name}_${dateStr}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Exported!',
+          text: 'PDS exported to Excel successfully',
+          confirmButtonColor: '#2563eb',
+        });
+      },
+      error: (error) => {
+        this.loading.set(false);
+        console.error('Export error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Export Failed',
+          text: 'Failed to export PDS to Excel',
+          confirmButtonColor: '#dc2626',
+        });
+      },
+    });
   }
 
   goBack() {

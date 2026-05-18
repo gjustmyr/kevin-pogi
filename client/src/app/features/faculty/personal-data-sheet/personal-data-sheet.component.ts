@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import {
   PDSService,
   PersonalDataSheet,
@@ -13,7 +14,6 @@ import {
   PDSOtherInfo,
   PDSReference,
 } from '../../../services/pds.service';
-import { PDSExcelExportService } from '../../../services/pds-excel-export.service';
 import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 
@@ -101,7 +101,7 @@ export class PersonalDataSheetComponent implements OnInit {
 
   constructor(
     private pdsService: PDSService,
-    private pdsExcelExportService: PDSExcelExportService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -673,26 +673,40 @@ export class PersonalDataSheetComponent implements OnInit {
     return (this.pds().other_info || []).some((info) => info.info_type === 'MEMBERSHIP');
   }
 
-  async exportToExcel() {
-    try {
-      this.loading.set(true);
-      await this.pdsExcelExportService.exportToExcel(this.pds());
-      Swal.fire({
-        icon: 'success',
-        title: 'Exported!',
-        text: 'PDS exported to Excel successfully',
-        confirmButtonColor: '#2563eb',
-      });
-      this.loading.set(false);
-    } catch (error) {
-      console.error('Export error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Export Failed',
-        text: 'Failed to export PDS to Excel',
-        confirmButtonColor: '#dc2626',
-      });
-      this.loading.set(false);
-    }
+  exportToExcel() {
+    this.loading.set(true);
+    const url = `${environment.apiUrl}/pds/export/excel`;
+
+    this.http.get(url, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        this.loading.set(false);
+        // Create download link
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const pdsData = this.pds();
+        link.download = `PDS_${pdsData.surname}_${pdsData.first_name}_${dateStr}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Exported!',
+          text: 'PDS exported to Excel successfully',
+          confirmButtonColor: '#2563eb',
+        });
+      },
+      error: (error) => {
+        this.loading.set(false);
+        console.error('Export error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Export Failed',
+          text: 'Failed to export PDS to Excel',
+          confirmButtonColor: '#dc2626',
+        });
+      },
+    });
   }
 }

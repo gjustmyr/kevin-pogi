@@ -40,24 +40,48 @@ exports.exportFacultyPDSToExcel = async (req, res) => {
       return res.status(404).json({ message: "Faculty profile not found" });
     }
 
-    // Get PDS with all related data
+    // Get PDS basic data first (without includes to save memory)
     const pds = await db.PersonalDataSheet.findOne({
       where: { faculty_id: faculty.faculty_id },
-      include: [
-        { model: db.PDSChild, as: "children" },
-        { model: db.PDSEducation, as: "education" },
-        { model: db.PDSEligibility, as: "eligibilities" },
-        { model: db.PDSWorkExperience, as: "work_experiences" },
-        { model: db.PDSVoluntaryWork, as: "voluntary_works" },
-        { model: db.PDSTraining, as: "trainings" },
-        { model: db.PDSOtherInfo, as: "other_info" },
-        { model: db.PDSReference, as: "references" },
-      ],
     });
 
     if (!pds) {
       return res.status(404).json({ message: "Personal Data Sheet not found" });
     }
+
+    // Load related data separately with limits to prevent memory issues
+    const [
+      children,
+      education,
+      eligibilities,
+      work_experiences,
+      voluntary_works,
+      trainings,
+      other_info,
+      references,
+    ] = await Promise.all([
+      db.PDSChild.findAll({ where: { pds_id: pds.pds_id }, limit: 12 }),
+      db.PDSEducation.findAll({ where: { pds_id: pds.pds_id }, limit: 5 }),
+      db.PDSEligibility.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSWorkExperience.findAll({
+        where: { pds_id: pds.pds_id },
+        limit: 28,
+      }),
+      db.PDSVoluntaryWork.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSTraining.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSOtherInfo.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSReference.findAll({ where: { pds_id: pds.pds_id }, limit: 3 }),
+    ]);
+
+    // Attach related data to pds object
+    pds.children = children;
+    pds.education = education;
+    pds.eligibilities = eligibilities;
+    pds.work_experiences = work_experiences;
+    pds.voluntary_works = voluntary_works;
+    pds.trainings = trainings;
+    pds.other_info = other_info;
+    pds.references = references;
 
     // Generate Excel file
     const buffer = await generatePDSExcel(pds);
@@ -99,24 +123,48 @@ exports.exportDeanPDSToExcel = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    // Get PDS with all related data
+    // Get PDS basic data first (without includes to save memory)
     const pds = await db.PersonalDataSheet.findOne({
       where: { dean_id: dean.dean_id },
-      include: [
-        { model: db.PDSChild, as: "children" },
-        { model: db.PDSEducation, as: "education" },
-        { model: db.PDSEligibility, as: "eligibilities" },
-        { model: db.PDSWorkExperience, as: "work_experiences" },
-        { model: db.PDSVoluntaryWork, as: "voluntary_works" },
-        { model: db.PDSTraining, as: "trainings" },
-        { model: db.PDSOtherInfo, as: "other_info" },
-        { model: db.PDSReference, as: "references" },
-      ],
     });
 
     if (!pds) {
       return res.status(404).json({ message: "Personal Data Sheet not found" });
     }
+
+    // Load related data separately with limits to prevent memory issues
+    const [
+      children,
+      education,
+      eligibilities,
+      work_experiences,
+      voluntary_works,
+      trainings,
+      other_info,
+      references,
+    ] = await Promise.all([
+      db.PDSChild.findAll({ where: { pds_id: pds.pds_id }, limit: 12 }),
+      db.PDSEducation.findAll({ where: { pds_id: pds.pds_id }, limit: 5 }),
+      db.PDSEligibility.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSWorkExperience.findAll({
+        where: { pds_id: pds.pds_id },
+        limit: 28,
+      }),
+      db.PDSVoluntaryWork.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSTraining.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSOtherInfo.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSReference.findAll({ where: { pds_id: pds.pds_id }, limit: 3 }),
+    ]);
+
+    // Attach related data to pds object
+    pds.children = children;
+    pds.education = education;
+    pds.eligibilities = eligibilities;
+    pds.work_experiences = work_experiences;
+    pds.voluntary_works = voluntary_works;
+    pds.trainings = trainings;
+    pds.other_info = other_info;
+    pds.references = references;
 
     // Generate Excel file
     const buffer = await generatePDSExcel(pds);
@@ -153,19 +201,9 @@ exports.exportFacultyPDSByDean = async (req, res) => {
       return res.status(400).json({ message: "Faculty ID is required" });
     }
 
-    // Get PDS with all related data
+    // Get PDS basic data first (without includes to save memory)
     const pds = await db.PersonalDataSheet.findOne({
       where: { faculty_id: faculty_id },
-      include: [
-        { model: db.PDSChild, as: "children" },
-        { model: db.PDSEducation, as: "education" },
-        { model: db.PDSEligibility, as: "eligibilities" },
-        { model: db.PDSWorkExperience, as: "work_experiences" },
-        { model: db.PDSVoluntaryWork, as: "voluntary_works" },
-        { model: db.PDSTraining, as: "trainings" },
-        { model: db.PDSOtherInfo, as: "other_info" },
-        { model: db.PDSReference, as: "references" },
-      ],
     });
 
     if (!pds) {
@@ -173,6 +211,40 @@ exports.exportFacultyPDSByDean = async (req, res) => {
         .status(404)
         .json({ message: "Personal Data Sheet not found for this faculty" });
     }
+
+    // Load related data separately with limits to prevent memory issues
+    const [
+      children,
+      education,
+      eligibilities,
+      work_experiences,
+      voluntary_works,
+      trainings,
+      other_info,
+      references,
+    ] = await Promise.all([
+      db.PDSChild.findAll({ where: { pds_id: pds.pds_id }, limit: 12 }),
+      db.PDSEducation.findAll({ where: { pds_id: pds.pds_id }, limit: 5 }),
+      db.PDSEligibility.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSWorkExperience.findAll({
+        where: { pds_id: pds.pds_id },
+        limit: 28,
+      }),
+      db.PDSVoluntaryWork.findAll({ where: { pds_id: pds.pds_id }, limit: 7 }),
+      db.PDSTraining.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSOtherInfo.findAll({ where: { pds_id: pds.pds_id }, limit: 21 }),
+      db.PDSReference.findAll({ where: { pds_id: pds.pds_id }, limit: 3 }),
+    ]);
+
+    // Attach related data to pds object
+    pds.children = children;
+    pds.education = education;
+    pds.eligibilities = eligibilities;
+    pds.work_experiences = work_experiences;
+    pds.voluntary_works = voluntary_works;
+    pds.trainings = trainings;
+    pds.other_info = other_info;
+    pds.references = references;
 
     // Generate Excel file
     const buffer = await generatePDSExcel(pds);
@@ -219,16 +291,16 @@ async function generatePDSExcel(pds) {
   const worksheet = workbook.getWorksheet(1); // Get first worksheet
 
   // PERSONAL INFORMATION SECTION
-  // Surname: D10
+  // Surname: D10 to N10 (merged cell)
   worksheet.getCell("D10").value = pds.surname || "";
 
-  // First name: D11
+  // First name: D11 to K11 (merged cell)
   worksheet.getCell("D11").value = pds.first_name || "";
 
-  // Name Extension: L11
-  worksheet.getCell("L11").value = pds.name_extension || "";
+  // Name Extension: N11
+  worksheet.getCell("N11").value = pds.name_extension || "";
 
-  // Middle name: D12
+  // Middle name: D12 to N12 (merged cell)
   worksheet.getCell("D12").value = pds.middle_name || "";
 
   // Date of Birth: D13
@@ -302,22 +374,38 @@ async function generatePDSExcel(pds) {
   }
 
   // RESIDENTIAL ADDRESS
-  worksheet.getCell("I18").value = pds.residential_house_no || "";
-  worksheet.getCell("L18").value = pds.residential_street || "";
-  worksheet.getCell("I19").value = pds.residential_subdivision || "";
-  worksheet.getCell("L19").value = pds.residential_barangay || "";
-  worksheet.getCell("I22").value = pds.residential_city || "";
-  worksheet.getCell("L22").value = pds.residential_province || "";
-  worksheet.getCell("I24").value = pds.residential_zip_code || "";
+  // House/Block/Lot No: I19 (merged I19:K19, write to top-left cell only)
+  worksheet.getCell("I17").value = pds.residential_house_no || "";
+  // Street: L19 (merged L19:N19, write to top-left cell only)
+  worksheet.getCell("L17").value = pds.residential_street || "";
+  // Subdivision/Village: I22 (merged I22:K22, write to top-left cell only)
+  worksheet.getCell("I22").value = pds.residential_subdivision || "";
+  // Barangay: L22 (merged L22:N22, write to top-left cell only)
+  worksheet.getCell("L22").value = pds.residential_barangay || "";
+  // City/Municipality: I25 (merged I25:K25, write to top-left cell only)
+  worksheet.getCell("I25").value = pds.residential_city || "";
+  // Province: L25 (merged L25:N25, write to top-left cell only)
+  worksheet.getCell("L25").value = pds.residential_province || "";
+  // ZIP Code: I26
+  // ZIP Code: I26
+  worksheet.getCell("I26").value = pds.residential_zip_code || "";
 
   // PERMANENT ADDRESS
-  worksheet.getCell("I26").value = pds.permanent_house_no || "";
-  worksheet.getCell("L26").value = pds.permanent_street || "";
-  worksheet.getCell("I27").value = pds.permanent_subdivision || "";
-  worksheet.getCell("L27").value = pds.permanent_barangay || "";
-  worksheet.getCell("I28").value = pds.permanent_city || "";
-  worksheet.getCell("L28").value = pds.permanent_province || "";
-  worksheet.getCell("G31").value = pds.permanent_zip_code || "";
+  // House/Block/Lot No: I29 (merged I29:K29, write to top-left cell only)
+  worksheet.getCell("I29").value = pds.permanent_house_no || "";
+  // Street: L29 (merged L29:N29, write to top-left cell only)
+  worksheet.getCell("L29").value = pds.permanent_street || "";
+  // Subdivision/Village: I32 (merged I32:K32, write to top-left cell only)
+  worksheet.getCell("I32").value = pds.permanent_subdivision || "";
+  // Barangay: L32 (merged L32:N32, write to top-left cell only)
+  worksheet.getCell("L32").value = pds.permanent_barangay || "";
+  // City/Municipality: I35 (merged I35:K35, write to top-left cell only)
+  worksheet.getCell("I35").value = pds.permanent_city || "";
+  // Province: L35 (merged L35:N35, write to top-left cell only)
+  worksheet.getCell("L35").value = pds.permanent_province || "";
+  // ZIP Code: I36
+  worksheet.getCell("I36").value = pds.permanent_zip_code || "";
+  worksheet.getCell("I36").value = pds.permanent_zip_code || "";
 
   // CONTACT INFORMATION
   worksheet.getCell("I32").value = pds.telephone_no || "";
