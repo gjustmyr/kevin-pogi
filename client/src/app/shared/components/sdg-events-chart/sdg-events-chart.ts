@@ -43,30 +43,30 @@ export class SDGEventsChartComponent implements AfterViewInit, OnDestroy {
       console.log('SDG Chart data received:', chartData);
       if (chartData && chartData.length > 0) {
         this.updateAvailableFilters();
-        if (this.chart) {
-          this.updateChart();
-        } else if (!this.loading()) {
-          // Data came after view init, create chart now
-          this.createChart();
-        }
+        // Wait a bit to ensure DOM is ready
+        setTimeout(() => {
+          if (this.chart) {
+            this.updateChart();
+          } else {
+            this.createChart();
+          }
+        }, 100);
       } else {
         console.log('No SDG data available');
-        this.loading.set(false);
       }
     });
   }
 
   ngAfterViewInit() {
     console.log('SDG Chart AfterViewInit');
+    this.loading.set(false);
     // Delay chart creation to ensure DOM is ready
     setTimeout(() => {
       const data = this.data();
       if (data && data.length > 0) {
         this.createChart();
-      } else {
-        this.loading.set(false);
       }
-    }, 200);
+    }, 300);
   }
 
   ngOnDestroy() {

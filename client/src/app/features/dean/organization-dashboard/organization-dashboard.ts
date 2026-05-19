@@ -35,12 +35,13 @@ export class DeanOrganizationDashboard implements OnInit {
   }
 
   loadSDGEventData() {
-    this.eventAnalyticsService.deanGetEventsBySDGPerYear().subscribe({
+    // Changed to use reports-based analytics instead of events
+    this.eventAnalyticsService.deanGetReportsBySDGPerYear().subscribe({
       next: (data: SDGEventData[]) => {
         this.sdgEventData.set(data);
       },
       error: (error: any) => {
-        console.error('Failed to load SDG event data:', error);
+        console.error('Failed to load SDG report data:', error);
       },
     });
   }

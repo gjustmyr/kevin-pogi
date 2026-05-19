@@ -31,11 +31,21 @@ export class EventAnalyticsService {
     return this.http.get<SDGEventData[]>(`${this.orgApiUrl}/sdg-per-year`);
   }
 
+  // NEW: Get SDG data from report submissions instead of events
+  getReportsBySDGPerYear(): Observable<SDGEventData[]> {
+    return this.http.get<SDGEventData[]>(`${environment.apiUrl}/organization/analytics/sdg-per-year`);
+  }
+
   getEventStatistics(): Observable<EventStatistics> {
     return this.http.get<EventStatistics>(`${this.orgApiUrl}/statistics`);
   }
 
-  // Dean analytics
+  // Dean analytics - Get reports by SDG per year from organization documents
+  deanGetReportsBySDGPerYear(): Observable<SDGEventData[]> {
+    return this.http.get<SDGEventData[]>(`${environment.apiUrl}/organization/analytics/dean/sdg-per-year`);
+  }
+
+  // Deprecated: Old event-based method (kept for backward compatibility)
   deanGetEventsBySDGPerYear(): Observable<SDGEventData[]> {
     return this.http.get<SDGEventData[]>(`${this.deanApiUrl}/sdg-per-year`);
   }

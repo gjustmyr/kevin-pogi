@@ -131,7 +131,7 @@ export class DeanManagementComponent implements OnInit {
             </div>
             <div>
               <label for="department" class="block mb-2.5 text-sm font-medium text-gray-900">Department</label>
-              <input id="department" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full px-3 py-2.5" placeholder="e.g. College of Engineering" list="department-list">
+              <input id="department" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full px-3 py-2.5" placeholder="e.g. College of Engineering Technology" list="department-list">
               <datalist id="department-list">
                 ${this.departmentsList()
                   .map(
@@ -241,7 +241,7 @@ export class DeanManagementComponent implements OnInit {
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-            <input id="department" class="swal2-input w-full m-0" value="${dean.department || ''}" placeholder="e.g. College of Engineering" list="edit-department-list">
+            <input id="department" class="swal2-input w-full m-0" value="${dean.department || ''}" placeholder="e.g. College of Engineering Technology" list="edit-department-list">
             <datalist id="edit-department-list">
               ${this.departmentsList()
                 .map(

@@ -51,7 +51,9 @@ export class OrganizationMembersComponent implements OnInit {
   showEditModal = signal(false);
   showDeleteModal = signal(false);
   showBulkUploadModal = signal(false);
+  showEditAdviserModal = signal(false);
   selectedMember = signal<OrganizationMember | null>(null);
+  selectedAdviser = signal<any | null>(null);
 
   // Form data
   memberForm = signal({
@@ -70,9 +72,26 @@ export class OrganizationMembersComponent implements OnInit {
     is_active: true,
   });
 
+  // Adviser-specific form data
+  adviserForm = signal({
+    academic_rank: '',
+    employment_status: '',
+    length_of_service: '',
+    educational_attainment: '',
+    campus: '',
+    telephone_number: '',
+    birth_date: '',
+    age: undefined as number | undefined,
+    civil_status: '',
+    home_address: '',
+    signature_url: '',
+    notes: '',
+  });
+
   // Photo upload
   selectedPhoto = signal<File | null>(null);
   photoPreview = signal<string | null>(null);
+  selectedSignature = signal<File | null>(null);
 
   // Bulk upload
   bulkUploadForm = signal({
@@ -245,12 +264,50 @@ export class OrganizationMembersComponent implements OnInit {
     this.showDeleteModal.set(true);
   }
 
+  openEditAdviserModal(adviser: any) {
+    this.selectedAdviser.set(adviser);
+    // Populate basic form with adviser data
+    this.memberForm.set({
+      sr_code: adviser.Faculty?.employee_id || '',
+      first_name: adviser.Faculty?.first_name || '',
+      middle_name: adviser.Faculty?.middle_name || '',
+      last_name: adviser.Faculty?.last_name || '',
+      email: adviser.Faculty?.email || '',
+      contact_number: adviser.Faculty?.contact_number || '',
+      year_level: '1st Year',
+      position: 'Adviser',
+      parent_member_id: undefined,
+      academic_year_id: undefined,
+      term_start_date: '',
+      term_end_date: '',
+      is_active: true,
+    });
+    // Populate adviser-specific form
+    this.adviserForm.set({
+      academic_rank: adviser.Faculty?.academic_rank || '',
+      employment_status: adviser.Faculty?.employment_status || '',
+      length_of_service: adviser.length_of_service || '',
+      educational_attainment: adviser.Faculty?.educational_attainment || '',
+      campus: adviser.Faculty?.campus || '',
+      telephone_number: adviser.Faculty?.telephone_number || '',
+      birth_date: adviser.Faculty?.birth_date || '',
+      age: adviser.Faculty?.age || undefined,
+      civil_status: adviser.Faculty?.civil_status || '',
+      home_address: adviser.Faculty?.home_address || '',
+      signature_url: adviser.Faculty?.signature_url || '',
+      notes: adviser.notes || '',
+    });
+    this.showEditAdviserModal.set(true);
+  }
+
   closeModals() {
     this.showAddModal.set(false);
     this.showEditModal.set(false);
     this.showDeleteModal.set(false);
     this.showBulkUploadModal.set(false);
+    this.showEditAdviserModal.set(false);
     this.selectedMember.set(null);
+    this.selectedAdviser.set(null);
     this.resetForm();
     this.uploadResults.set(null);
   }
@@ -271,8 +328,23 @@ export class OrganizationMembersComponent implements OnInit {
       term_end_date: '',
       is_active: true,
     });
+    this.adviserForm.set({
+      academic_rank: '',
+      employment_status: '',
+      length_of_service: '',
+      educational_attainment: '',
+      campus: '',
+      telephone_number: '',
+      birth_date: '',
+      age: undefined,
+      civil_status: '',
+      home_address: '',
+      signature_url: '',
+      notes: '',
+    });
     this.selectedPhoto.set(null);
     this.photoPreview.set(null);
+    this.selectedSignature.set(null);
     this.errorMessage.set('');
     this.successMessage.set('');
   }
@@ -302,6 +374,28 @@ export class OrganizationMembersComponent implements OnInit {
         this.photoPreview.set(e.target.result);
       };
       reader.readAsDataURL(file);
+      this.errorMessage.set('');
+    }
+  }
+
+  onSignatureSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        this.errorMessage.set('Please select a valid image file (JPG, JPEG, or PNG)');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        this.errorMessage.set('Image size must be less than 5MB');
+        return;
+      }
+
+      this.selectedSignature.set(file);
       this.errorMessage.set('');
     }
   }
@@ -362,7 +456,7 @@ export class OrganizationMembersComponent implements OnInit {
         this.loadMembers();
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.message || 'Failed to add member');
+        this.errorMessage.set(error.error?.message || 'Failed to add officer');
         this.loading.set(false);
       },
     });
@@ -413,6 +507,61 @@ export class OrganizationMembersComponent implements OnInit {
       },
       error: (error) => {
         this.errorMessage.set(error.error?.message || 'Failed to update member');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  updateAdviser() {
+    const adviserId = this.selectedAdviser()?.adviser_id;
+    if (!adviserId) return;
+
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    const formData = new FormData();
+    const form = this.memberForm();
+    const adviserFormData = this.adviserForm();
+
+    // Append basic name fields
+    formData.append('first_name', form.first_name);
+    formData.append('middle_name', form.middle_name || '');
+    formData.append('last_name', form.last_name);
+    formData.append('email', form.email || '');
+    formData.append('contact_number', form.contact_number || '');
+
+    // Append adviser-specific fields
+    formData.append('academic_rank', adviserFormData.academic_rank || '');
+    formData.append('employment_status', adviserFormData.employment_status || '');
+    formData.append('length_of_service', adviserFormData.length_of_service || '');
+    formData.append('educational_attainment', adviserFormData.educational_attainment || '');
+    formData.append('campus', adviserFormData.campus || '');
+    formData.append('telephone_number', adviserFormData.telephone_number || '');
+    formData.append('birth_date', adviserFormData.birth_date || '');
+    formData.append('age', adviserFormData.age?.toString() || '');
+    formData.append('civil_status', adviserFormData.civil_status || '');
+    formData.append('home_address', adviserFormData.home_address || '');
+
+    // Append photo if selected
+    if (this.selectedPhoto()) {
+      formData.append('photo', this.selectedPhoto()!);
+    }
+
+    this.organizationService.updateAdviserPhoto(adviserId, formData).subscribe({
+      next: (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: response.message || 'Adviser updated successfully',
+          confirmButtonColor: '#16a34a',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        this.closeModals();
+        this.loadAdvisers();
+      },
+      error: (error) => {
+        this.errorMessage.set(error.error?.message || 'Failed to update adviser');
         this.loading.set(false);
       },
     });

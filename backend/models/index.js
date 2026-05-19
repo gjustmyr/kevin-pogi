@@ -380,7 +380,7 @@ Faculty.hasMany(OrganizationAdviser, {
 });
 OrganizationAdviser.belongsTo(Faculty, {
   foreignKey: "faculty_id",
-  as: "adviser",
+  as: "Faculty",
 });
 
 /* Organization Member Relationships */

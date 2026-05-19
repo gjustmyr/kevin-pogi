@@ -201,7 +201,7 @@ LIMIT 2;
 
 **Steps:**
 1. Upload CSV with department "College of Computer Studies"
-2. Upload another CSV with department "College of Engineering"
+2. Upload another CSV with department "College of Engineering Technology"
 3. Check database
 
 **Expected Results:**

@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (to, subject, text, html) => {
   try {
     const mailOptions = {
-      from: `"Batstate U" <${process.env.SMTP_USER}>`,
+      from: `"BatStateU" <${process.env.SMTP_USER}>`,
       to,
       subject,
       text,
@@ -71,8 +71,8 @@ const sendAccountCredentials = async (
 
   const config = roleConfig[role] || roleConfig.admin;
 
-  const subject = `${config.emoji} Your ${config.title} Account Credentials - Batstate U`;
-  const text = `Hello ${firstName},\n\nYour ${role} account has been created successfully.\n\nEmail: ${email}\nPassword: ${password}\n\nPlease login and change your password immediately.\n\nBest regards,\nBatstate U Team`;
+  const subject = `${config.emoji} Your ${config.title} Account Credentials - BatStateU`;
+  const text = `Hello ${firstName},\n\nYour ${role} account has been created successfully.\n\nEmail: ${email}\nPassword: ${password}\n\nPlease login and change your password immediately.\n\nBest regards,\nBatStateU Team`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -248,8 +248,8 @@ const sendAccountCredentials = async (
         <div class="header">
           <div class="header-content">
             <div class="logo">${config.emoji}</div>
-            <h1>Welcome to Batstate U</h1>
-            <p>Your ${config.title} Account is Ready</p>
+            <h1>Welcome to BatStateU</h1>
+            <p>Your ${config.title} account is ready!</p>
           </div>
         </div>
         
@@ -258,7 +258,7 @@ const sendAccountCredentials = async (
           
           <p class="message">
             We're excited to have you on board! Your ${role} account has been successfully created. 
-            You now have access to the Batstate U College Management Portal where you can manage your activities.
+            You now have access to the BatStateU College Management Portal where you can manage your activities.
           </p>
 
           <div class="credentials-box">
@@ -292,7 +292,7 @@ const sendAccountCredentials = async (
 
           <p class="message" style="margin-top: 30px; color: #6b7280;">
             Best regards,<br>
-            <strong style="color: #1f2937;">Batstate U Team</strong>
+            <strong style="color: #1f2937;">BatStateU Team</strong>
           </p>
         </div>
 
@@ -301,7 +301,7 @@ const sendAccountCredentials = async (
             This is an automated message. Please do not reply to this email.
           </p>
           <p class="footer-text" style="font-size: 12px; color: #9ca3af;">
-            © 2026 Batstate U. All rights reserved.
+            © 2026 BatStateU. All rights reserved.
           </p>
         </div>
       </div>
@@ -319,8 +319,8 @@ const sendAdminCredentials = async (email, firstName, password) => {
 
 // Send password reset email
 const sendPasswordResetEmail = async (email, resetUrl) => {
-  const subject = "🔐 Password Reset Request - Batstate U";
-  const text = `Hello,\n\nYou requested to reset your password.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 5 minutes.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nBatstate U Team`;
+  const subject = "🔐 Password Reset Request - BatStateU";
+  const text = `Hello,\n\nYou requested to reset your password.\n\nClick the link below to reset your password:\n${resetUrl}\n\nThis link will expire in 5 minutes.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nBatStateU Team`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -432,7 +432,7 @@ const sendPasswordResetEmail = async (email, resetUrl) => {
           </p>
           
           <p class="message">
-            We received a request to reset your password for your Batstate U account. 
+            We received a request to reset your password for your BatStateU account. 
             Click the button below to create a new password:
           </p>
 
@@ -453,7 +453,7 @@ const sendPasswordResetEmail = async (email, resetUrl) => {
 
           <p class="message" style="margin-top: 30px; color: #6b7280;">
             Best regards,<br>
-            <strong style="color: #1f2937;">Batstate U Team</strong>
+            <strong style="color: #1f2937;">BatStateU Team</strong>
           </p>
         </div>
 
@@ -462,7 +462,7 @@ const sendPasswordResetEmail = async (email, resetUrl) => {
             This is an automated message. Please do not reply to this email.
           </p>
           <p class="footer-text" style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
-            © 2026 Batstate U. All rights reserved.
+            © 2026 BatStateU. All rights reserved.
           </p>
         </div>
       </div>

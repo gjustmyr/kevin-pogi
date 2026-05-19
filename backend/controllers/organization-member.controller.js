@@ -174,40 +174,31 @@ exports.createMember = async (req, res) => {
       term_end_date,
     } = req.body;
 
-    // Validate required fields
-    if (
-      !sr_code ||
-      !first_name ||
-      !last_name ||
-      !year_level ||
-      !position ||
-      !academic_year_id ||
-      !term_start_date
-    ) {
-      return res.status(400).json({
-        message:
-          "SR Code, name, year level, position, academic year, and term start date are required",
-      });
-    }
+    // All fields are now optional - no validation required
+    // Convert empty strings to null for foreign key fields
+    const cleanedAcademicYearId = academic_year_id && academic_year_id !== '' ? academic_year_id : null;
+    const cleanedParentMemberId = parent_member_id && parent_member_id !== '' ? parent_member_id : null;
+    const cleanedTermStartDate = term_start_date && term_start_date !== '' ? term_start_date : null;
+    const cleanedTermEndDate = term_end_date && term_end_date !== '' && term_end_date !== 'Invalid date' ? term_end_date : null;
 
-    // Check if member already exists for this exact term and position
-    // Allow same student to have multiple memberships in same academic year
-    // (e.g., different positions, or re-enrollment)
-    const existingMember = await db.OrganizationMember.findOne({
-      where: {
-        organization_id: organization.organization_id,
-        sr_code,
-        academic_year_id,
-        position,
-        is_active: true,
-      },
-    });
-
-    if (existingMember) {
-      return res.status(400).json({
-        message:
-          "This student already has this position for this academic year",
+    // Check if member already exists for this exact term and position (only if we have required data)
+    if (sr_code && cleanedAcademicYearId && position) {
+      const existingMember = await db.OrganizationMember.findOne({
+        where: {
+          organization_id: organization.organization_id,
+          sr_code,
+          academic_year_id: cleanedAcademicYearId,
+          position,
+          is_active: true,
+        },
       });
+
+      if (existingMember) {
+        return res.status(400).json({
+          message:
+            "This student already has this position for this academic year",
+        });
+      }
     }
 
     // Handle photo upload
@@ -219,18 +210,18 @@ exports.createMember = async (req, res) => {
     // Create member
     const member = await db.OrganizationMember.create({
       organization_id: organization.organization_id,
-      sr_code,
-      first_name,
-      middle_name,
-      last_name,
-      email,
-      contact_number,
-      year_level,
-      position,
-      parent_member_id,
-      academic_year_id,
-      term_start_date,
-      term_end_date,
+      sr_code: sr_code || null,
+      first_name: first_name || null,
+      middle_name: middle_name || null,
+      last_name: last_name || null,
+      email: email || null,
+      contact_number: contact_number || null,
+      year_level: year_level || null,
+      position: position || null,
+      parent_member_id: cleanedParentMemberId,
+      academic_year_id: cleanedAcademicYearId,
+      term_start_date: cleanedTermStartDate,
+      term_end_date: cleanedTermEndDate,
       photo_url,
       is_active: true,
     });

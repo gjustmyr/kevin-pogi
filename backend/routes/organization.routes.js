@@ -242,6 +242,17 @@ router.get(
   adviserController.getAdvisers,
 );
 
+router.put(
+  "/advisers/:id/photo",
+  verifyToken,
+  checkRole("organization"),
+  photoUpload.fields([
+    { name: "photo", maxCount: 1 },
+    { name: "signature", maxCount: 1 }
+  ]),
+  adviserController.updateAdviser,
+);
+
 // Demographics routes
 router.get(
   "/demographics",

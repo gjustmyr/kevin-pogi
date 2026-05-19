@@ -118,12 +118,15 @@ exports.createFaculty = async (req, res) => {
       });
     }
 
-    // Check if email already exists
-    const existingUser = await db.User.findOne({ where: { email } });
-    if (existingUser) {
+    // Check email usage limit (max 3 accounts: 1 org, 1 faculty, 1 dean)
+    const { checkEmailUsageLimit } = require('../utils/email-validator');
+    const emailCheck = await checkEmailUsageLimit(email, 'faculty');
+    
+    if (!emailCheck.allowed) {
       await transaction.rollback();
       return res.status(400).json({
-        message: "Email already exists",
+        message: emailCheck.message,
+        usage: emailCheck.usage,
       });
     }
 

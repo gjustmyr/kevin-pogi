@@ -24,7 +24,7 @@ exports.getAdvisers = async (req, res) => {
       include: [
         {
           model: db.Faculty,
-          as: "adviser",
+          as: "Faculty",
           required: false,
           attributes: [
             "faculty_id",
@@ -34,6 +34,17 @@ exports.getAdvisers = async (req, res) => {
             "last_name",
             "email",
             "contact_number",
+            "academic_rank",
+            "employment_status",
+            "educational_attainment",
+            "campus",
+            "telephone_number",
+            "birth_date",
+            "age",
+            "civil_status",
+            "home_address",
+            "photo_url",
+            "signature_url"
           ],
         },
       ],
@@ -82,7 +93,7 @@ exports.deanGetOrganizationAdvisers = async (req, res) => {
       include: [
         {
           model: db.Faculty,
-          as: "adviser",
+          as: "Faculty",
           required: false,
           attributes: [
             "faculty_id",
@@ -238,5 +249,149 @@ exports.deanRemoveAdviser = async (req, res) => {
   } catch (error) {
     console.error("Dean remove adviser error:", error);
     res.status(500).json({ message: "Error removing adviser" });
+  }
+};
+
+// For Organization - Update adviser information
+exports.updateAdviser = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const { id } = req.params;
+    const { 
+      first_name, 
+      middle_name, 
+      last_name,
+      email, 
+      contact_number,
+      academic_rank,
+      employment_status,
+      length_of_service,
+      educational_attainment,
+      campus,
+      telephone_number,
+      birth_date,
+      age,
+      civil_status,
+      home_address
+    } = req.body;
+
+    // Get organization
+    const organization = await db.Organization.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!organization) {
+      return res.status(404).json({ message: "Organization profile not found" });
+    }
+
+    // Get adviser assignment
+    const adviserAssignment = await db.OrganizationAdviser.findOne({
+      where: {
+        adviser_id: id,
+        organization_id: organization.organization_id,
+        is_active: true,
+      },
+      include: [
+        {
+          model: db.Faculty,
+          as: "Faculty",
+          attributes: [
+            "faculty_id",
+            "employee_id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "email",
+            "contact_number",
+            "academic_rank",
+            "employment_status",
+            "educational_attainment",
+            "campus",
+            "telephone_number",
+            "birth_date",
+            "age",
+            "civil_status",
+            "home_address",
+            "photo_url",
+            "signature_url"
+          ],
+        },
+      ],
+    });
+
+    if (!adviserAssignment) {
+      return res.status(404).json({ message: "Adviser not found" });
+    }
+
+    // Update faculty information
+    const faculty = adviserAssignment.Faculty;
+    
+    // Prepare update data
+    const updateData = {};
+    if (first_name !== undefined) updateData.first_name = first_name || faculty.first_name;
+    if (middle_name !== undefined) updateData.middle_name = middle_name || null;
+    if (last_name !== undefined) updateData.last_name = last_name || faculty.last_name;
+    if (email !== undefined) updateData.email = email && email.trim() ? email : null;
+    if (contact_number !== undefined) updateData.contact_number = contact_number || null;
+    if (academic_rank !== undefined) updateData.academic_rank = academic_rank || null;
+    if (employment_status !== undefined) updateData.employment_status = employment_status || null;
+    if (educational_attainment !== undefined) updateData.educational_attainment = educational_attainment || null;
+    if (campus !== undefined) updateData.campus = campus || null;
+    if (telephone_number !== undefined) updateData.telephone_number = telephone_number || null;
+    if (birth_date !== undefined) updateData.birth_date = birth_date || null;
+    if (age !== undefined) updateData.age = age || null;
+    if (civil_status !== undefined) updateData.civil_status = civil_status || null;
+    if (home_address !== undefined) updateData.home_address = home_address || null;
+
+    await faculty.update(updateData);
+
+    // Handle photo upload if provided
+    if (req.files && req.files.photo) {
+      const photoUrl = `/uploads/advisers/${req.files.photo[0].filename}`;
+      await faculty.update({ photo_url: photoUrl });
+    }
+
+    // Update length of service in the adviser assignment if provided
+    if (length_of_service !== undefined) {
+      await adviserAssignment.update({ length_of_service: length_of_service || null });
+    }
+
+    // Reload with updated data
+    await adviserAssignment.reload({
+      include: [
+        {
+          model: db.Faculty,
+          as: "Faculty",
+          attributes: [
+            "faculty_id",
+            "employee_id",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "email",
+            "contact_number",
+            "academic_rank",
+            "employment_status",
+            "educational_attainment",
+            "campus",
+            "telephone_number",
+            "birth_date",
+            "age",
+            "civil_status",
+            "home_address",
+            "photo_url",
+            "signature_url"
+          ],
+        },
+      ],
+    });
+
+    res.json({
+      message: "Adviser updated successfully",
+      adviser: adviserAssignment,
+    });
+  } catch (error) {
+    console.error("Update adviser error:", error);
+    res.status(500).json({ message: "Error updating adviser" });
   }
 };

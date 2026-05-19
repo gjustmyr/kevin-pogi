@@ -26,7 +26,7 @@ export function encrypt(data: string): string {
 /**
  * Decrypt data that was encrypted with encrypt()
  */
-export function decrypt(encryptedData: string): string {
+export function decrypt(encryptedData: string): string | null {
   try {
     const data = atob(encryptedData);
     let result = '';
@@ -38,7 +38,8 @@ export function decrypt(encryptedData: string): string {
     return result;
   } catch (error) {
     console.error('Decryption error:', error);
-    return encryptedData;
+    // Return null instead of corrupted data to indicate failure
+    return null;
   }
 }
 
@@ -56,7 +57,17 @@ export function secureSetItem(key: string, value: string): void {
 export function secureGetItem(key: string): string | null {
   const encrypted = localStorage.getItem(key);
   if (!encrypted) return null;
-  return decrypt(encrypted);
+  
+  const decrypted = decrypt(encrypted);
+  
+  // If decryption failed, clear the corrupted data and return null
+  if (decrypted === null) {
+    console.warn(`Corrupted data found for key "${key}", clearing it`);
+    localStorage.removeItem(key);
+    return null;
+  }
+  
+  return decrypted;
 }
 
 /**

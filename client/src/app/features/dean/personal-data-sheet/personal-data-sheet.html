@@ -432,59 +432,102 @@
               required
             />
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Sex *</label>
-            <select
-              [(ngModel)]="pds().sex"
-              [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
+        </div>
+
+        <!-- Sex at Birth and Civil Status in table format -->
+        <div class="border rounded-lg overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- Sex at Birth -->
+            <div class="border-r border-b p-4 bg-gray-50">
+              <label class="block text-sm font-semibold text-gray-800 mb-3">5. SEX AT BIRTH</label>
+            </div>
+            <div class="border-b p-4">
+              <div class="grid grid-cols-2 gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().sex === 'Male'"
+                    (change)="pds().sex = 'Male'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Male</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().sex === 'Female'"
+                    (change)="pds().sex = 'Female'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Female</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Civil Status -->
+            <div class="border-r p-4 bg-gray-50">
+              <label class="block text-sm font-semibold text-gray-800 mb-3">6. CIVIL STATUS</label>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().civil_status === 'Single'"
+                    (change)="pds().civil_status = 'Single'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Single</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().civil_status === 'Married'"
+                    (change)="pds().civil_status = 'Married'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Married</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().civil_status === 'Widowed'"
+                    (change)="pds().civil_status = 'Widowed'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Widowed</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().civil_status === 'Separated'"
+                    (change)="pds().civil_status = 'Separated'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Separated</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer col-span-2">
+                  <input
+                    type="checkbox"
+                    [checked]="pds().civil_status === 'Others'"
+                    (change)="pds().civil_status = 'Others'"
+                    [disabled]="isFormReadonly()"
+                    class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <span class="text-gray-700">Other/s:</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Civil Status & Citizenship -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Civil Status *</label>
-            <select
-              [(ngModel)]="pds().civil_status"
-              [disabled]="isFormReadonly()"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Widowed">Widowed</option>
-              <option value="Separated">Separated</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Height (m)</label>
-            <input
-              type="text"
-              [(ngModel)]="pds().height"
-              [disabled]="isFormReadonly()"
-              placeholder="e.g., 1.65"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
-            <input
-              type="text"
-              [(ngModel)]="pds().weight"
-              [disabled]="isFormReadonly()"
-              placeholder="e.g., 60"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-        </div>
-
+        <!-- Height, Weight, Blood Type -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
@@ -505,18 +548,52 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Citizenship *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
             <select
-              [(ngModel)]="pds().citizenship_type"
+              [(ngModel)]="pds().blood_type"
               [disabled]="isFormReadonly()"
               class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
-              required
             >
-              <option value="Filipino">Filipino</option>
-              <option value="Dual Citizenship">Dual Citizenship</option>
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
             </select>
           </div>
-          @if (pds().citizenship_type === 'Dual Citizenship') {
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Citizenship *</label>
+            <div class="flex flex-wrap gap-6">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="pds().citizenship_type === 'Filipino'"
+                  (change)="pds().citizenship_type = 'Filipino'"
+                  [disabled]="isFormReadonly()"
+                  class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                />
+                <span class="text-gray-700">Filipino</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="pds().citizenship_type === 'Dual Citizenship'"
+                  (change)="pds().citizenship_type = 'Dual Citizenship'"
+                  [disabled]="isFormReadonly()"
+                  class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                />
+                <span class="text-gray-700">Dual Citizenship</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        @if (pds().citizenship_type === 'Dual Citizenship') {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
               <input
@@ -526,8 +603,8 @@
                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"
               />
             </div>
-          }
-        </div>
+          </div>
+        }
 
         <!-- Residential Address -->
         <div class="border-t pt-4">

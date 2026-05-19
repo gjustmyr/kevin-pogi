@@ -57,12 +57,38 @@ export class OrganizationDocumentsComponent implements OnInit {
   // Form data
   documentForm = signal({
     document_type_id: undefined as number | undefined,
+    document_title: '',
     academic_year_id: undefined as number | undefined,
     semester: '1st Semester' as '1st Semester' | '2nd Semester' | 'Summer',
-    document_title: '',
+    activity_date: '',
+    venue: '',
+    participants: undefined as number | undefined,
   });
 
   selectedFile = signal<File | null>(null);
+
+  // SDG List (17 UN Sustainable Development Goals)
+  sdgList = [
+    { id: 1, name: 'No Poverty' },
+    { id: 2, name: 'Zero Hunger' },
+    { id: 3, name: 'Good Health and Well-being' },
+    { id: 4, name: 'Quality Education' },
+    { id: 5, name: 'Gender Equality' },
+    { id: 6, name: 'Clean Water and Sanitation' },
+    { id: 7, name: 'Affordable and Clean Energy' },
+    { id: 8, name: 'Decent Work and Economic Growth' },
+    { id: 9, name: 'Industry, Innovation and Infrastructure' },
+    { id: 10, name: 'Reduced Inequalities' },
+    { id: 11, name: 'Sustainable Cities and Communities' },
+    { id: 12, name: 'Responsible Consumption and Production' },
+    { id: 13, name: 'Climate Action' },
+    { id: 14, name: 'Life Below Water' },
+    { id: 15, name: 'Life on Land' },
+    { id: 16, name: 'Peace, Justice and Strong Institutions' },
+    { id: 17, name: 'Partnerships for the Goals' },
+  ];
+
+  selectedSDGs = signal<number[]>([]);
 
   loading = signal(false);
   errorMessage = signal('');
@@ -116,11 +142,7 @@ export class OrganizationDocumentsComponent implements OnInit {
     this.academicYearService.getAcademicYears().subscribe({
       next: (response: AcademicYearsResponse) => {
         this.academicYears.set(response.academicYears);
-        // Set latest (first) academic year and semester as default
-        if (response.academicYears.length > 0) {
-          this.selectedAcademicYear.set(response.academicYears[0].academic_year_id);
-        }
-        this.selectedSemester.set('1st Semester');
+        // Don't auto-select filters - show all documents by default
       },
       error: (error: any) => {
         console.error('Failed to load academic years:', error);
@@ -179,9 +201,12 @@ export class OrganizationDocumentsComponent implements OnInit {
     this.selectedDocument.set(document);
     this.documentForm.set({
       document_type_id: document.document_type_id,
+      document_title: document.document_title || '',
       academic_year_id: document.academic_year_id,
       semester: document.semester,
-      document_title: document.document_title,
+      activity_date: document.activity_date || '',
+      venue: document.venue || '',
+      participants: document.participants || undefined,
     });
     this.showUpdateModal.set(true);
   }
@@ -208,21 +233,39 @@ export class OrganizationDocumentsComponent implements OnInit {
   resetForm() {
     this.documentForm.set({
       document_type_id: undefined,
+      document_title: '',
       academic_year_id: undefined,
       semester: '1st Semester',
-      document_title: '',
+      activity_date: '',
+      venue: '',
+      participants: undefined,
     });
     this.selectedFile.set(null);
+    this.selectedSDGs.set([]);
     this.errorMessage.set('');
     this.successMessage.set('');
+  }
+
+  toggleSDG(sdgId: number) {
+    const current = this.selectedSDGs();
+    if (current.includes(sdgId)) {
+      this.selectedSDGs.set(current.filter(id => id !== sdgId));
+    } else {
+      this.selectedSDGs.set([...current, sdgId]);
+    }
   }
 
   submitDocument() {
     const form = this.documentForm();
     const file = this.selectedFile();
 
-    if (!form.document_type_id || !form.academic_year_id || !form.document_title || !file) {
+    if (!form.document_title || !form.academic_year_id || !file || !form.activity_date || !form.venue || !form.participants) {
       this.errorMessage.set('All fields are required');
+      return;
+    }
+
+    if (this.selectedSDGs().length === 0) {
+      this.errorMessage.set('Please select at least one SDG');
       return;
     }
 
@@ -230,10 +273,16 @@ export class OrganizationDocumentsComponent implements OnInit {
     this.errorMessage.set('');
 
     const formData = new FormData();
-    formData.append('document_type_id', form.document_type_id.toString());
+    if (form.document_type_id) {
+      formData.append('document_type_id', form.document_type_id.toString());
+    }
+    formData.append('document_title', form.document_title);
     formData.append('academic_year_id', form.academic_year_id.toString());
     formData.append('semester', form.semester);
-    formData.append('document_title', form.document_title);
+    formData.append('activity_date', form.activity_date);
+    formData.append('venue', form.venue);
+    formData.append('participants', form.participants.toString());
+    formData.append('sdgs', JSON.stringify(this.selectedSDGs()));
     formData.append('document', file);
 
     this.organizationService.submitDocument(formData).subscribe({
@@ -260,11 +309,10 @@ export class OrganizationDocumentsComponent implements OnInit {
     const documentId = this.selectedDocument()?.document_id;
     if (!documentId) return;
 
-    const form = this.documentForm();
     const file = this.selectedFile();
 
-    if (!form.document_title) {
-      this.errorMessage.set('Document title is required');
+    if (!file) {
+      this.errorMessage.set('Please select a file to upload');
       return;
     }
 
@@ -272,10 +320,7 @@ export class OrganizationDocumentsComponent implements OnInit {
     this.errorMessage.set('');
 
     const formData = new FormData();
-    formData.append('document_title', form.document_title);
-    if (file) {
-      formData.append('document', file);
-    }
+    formData.append('document', file);
 
     this.organizationService.updateDocument(documentId, formData).subscribe({
       next: (response) => {
@@ -424,6 +469,29 @@ export class OrganizationDocumentsComponent implements OnInit {
     });
   }
 
+  getSDGName(sdgId: number): string {
+    const sdg = this.sdgList.find(s => s.id === sdgId);
+    return sdg ? sdg.name : 'Unknown';
+  }
+
+  parseSDGs(sdgs: any): number[] {
+    // If it's already an array, return it
+    if (Array.isArray(sdgs)) {
+      return sdgs;
+    }
+    // If it's a string, try to parse it
+    if (typeof sdgs === 'string') {
+      try {
+        const parsed = JSON.parse(sdgs);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        console.error('Error parsing SDGs:', e);
+        return [];
+      }
+    }
+    return [];
+  }
+  
   // Helper methods for checklist progress
   getApprovedCount(): number {
     return this.checklist().filter((item) => item.submitted && item.status === 'approved').length;
