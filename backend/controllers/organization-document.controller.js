@@ -55,10 +55,12 @@ exports.getDocuments = async (req, res) => {
 				{
 					model: db.DocumentType,
 					attributes: ["document_type_id", "type_name", "description"],
+					required: false,
 				},
 				{
 					model: db.AcademicYear,
 					attributes: ["academic_year_id", "year_start", "year_end"],
+					required: false,
 				},
 				{
 					model: db.User,
@@ -100,28 +102,49 @@ exports.submitDocument = async (req, res) => {
 			return res.status(400).json({ message: "No file uploaded" });
 		}
 
-		const { document_type_id, academic_year_id, semester, document_title } =
+		const { document_type_id, academic_year_id, semester, document_title, activity_date, venue, participants, sdgs } =
 			req.body;
 
 		if (
-			!document_type_id ||
 			!academic_year_id ||
-			!semester ||
-			!document_title
+			!semester
 		) {
 			return res.status(400).json({
 				message:
-					"Document type, academic year, semester, and title are required",
+					"Academic year and semester are required",
 			});
+		}
+
+		// Parse SDGs if it's a string
+		let parsedSDGs = null;
+		if (sdgs) {
+			try {
+				parsedSDGs = typeof sdgs === 'string' ? JSON.parse(sdgs) : sdgs;
+			} catch (e) {
+				console.error('Error parsing SDGs:', e);
+			}
+		}
+
+		// Auto-generate document title if not provided
+		let finalDocumentTitle = document_title;
+		if (!finalDocumentTitle || finalDocumentTitle.trim() === '') {
+			// Generate title from activity details
+			const activityDateStr = activity_date ? new Date(activity_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+			const venueStr = venue ? ` at ${venue}` : '';
+			finalDocumentTitle = `Activity Report - ${activityDateStr}${venueStr}`.substring(0, 255);
 		}
 
 		// Create document record
 		const document = await db.OrganizationDocument.create({
 			organization_id: organization.organization_id,
-			document_type_id,
+			document_type_id: document_type_id || null,
 			academic_year_id,
 			semester,
-			document_title,
+			document_title: finalDocumentTitle,
+			activity_date: activity_date || null,
+			venue: venue || null,
+			participants: participants || null,
+			sdgs: parsedSDGs,
 			document_path: req.file.path,
 			original_filename: req.file.originalname,
 			file_size: req.file.size,
@@ -135,7 +158,7 @@ exports.submitDocument = async (req, res) => {
 			document,
 		});
 	} catch (error) {
-		console.error("Submit document error:", error);
+		console.error("Submit report error:", error);
 		// Delete uploaded file if database operation fails
 		if (req.file) {
 			try {
@@ -536,5 +559,177 @@ exports.deanDownloadDocument = async (req, res) => {
 	} catch (error) {
 		console.error("Dean download document error:", error);
 		res.status(500).json({ message: "Error downloading document" });
+	}
+};
+
+// Get reports per SDG per year for organization
+exports.getReportsBySDGPerYear = async (req, res) => {
+	try {
+		const userId = req.user.user_id;
+
+		// Get organization profile
+		const organization = await db.Organization.findOne({
+			where: { user_id: userId },
+		});
+
+		if (!organization) {
+			return res.status(404).json({ message: "Organization not found" });
+		}
+
+		// Get all documents with SDGs
+		const documents = await db.OrganizationDocument.findAll({
+			where: {
+				organization_id: organization.organization_id,
+				sdgs: { [Op.ne]: null },
+			},
+			include: [
+				{
+					model: db.AcademicYear,
+					attributes: ["year_start", "year_end"],
+					required: false,
+				},
+			],
+		});
+
+		// Process SDG data
+		const sdgStats = {};
+
+		documents.forEach((doc) => {
+			// Get year from academic year or activity date
+			let year = null;
+			if (doc.AcademicYear) {
+				year = doc.AcademicYear.year_start;
+			} else if (doc.activity_date) {
+				year = new Date(doc.activity_date).getFullYear();
+			} else {
+				year = new Date(doc.submitted_date).getFullYear();
+			}
+
+			// Parse SDGs (could be array or JSON string)
+			let sdgs = [];
+			if (doc.sdgs) {
+				try {
+					sdgs = typeof doc.sdgs === 'string' ? JSON.parse(doc.sdgs) : doc.sdgs;
+				} catch (e) {
+					console.error('Error parsing SDGs:', e);
+				}
+			}
+
+			// Count each SDG
+			if (Array.isArray(sdgs)) {
+				sdgs.forEach((sdgId) => {
+					const key = `${year}-${sdgId}`;
+					if (!sdgStats[key]) {
+						sdgStats[key] = {
+							year,
+							sdg_number: sdgId,
+							event_count: 0,
+						};
+					}
+					sdgStats[key].event_count++;
+				});
+			}
+		});
+
+		// Convert to array and sort
+		const stats = Object.values(sdgStats).sort((a, b) => {
+			if (b.year !== a.year) return b.year - a.year;
+			return a.sdg_number - b.sdg_number;
+		});
+
+		res.json(stats);
+	} catch (error) {
+		console.error("Get reports by SDG per year error:", error);
+		res.status(500).json({ message: "Error fetching analytics" });
+	}
+};
+
+// Dean: Get reports per SDG per year for all organizations in department
+exports.deanGetReportsBySDGPerYear = async (req, res) => {
+	try {
+		const userId = req.user.user_id;
+
+		// Get dean profile
+		const dean = await db.Dean.findOne({
+			where: { user_id: userId },
+		});
+
+		if (!dean) {
+			return res.status(404).json({ message: "Dean not found" });
+		}
+
+		// Get all organizations in dean's department
+		const organizations = await db.Organization.findAll({
+			where: { department: dean.department },
+			attributes: ["organization_id"],
+		});
+
+		const orgIds = organizations.map(org => org.organization_id);
+
+		// Get all documents with SDGs from these organizations
+		const documents = await db.OrganizationDocument.findAll({
+			where: {
+				organization_id: { [Op.in]: orgIds },
+				sdgs: { [Op.ne]: null },
+			},
+			include: [
+				{
+					model: db.AcademicYear,
+					attributes: ["year_start", "year_end"],
+					required: false,
+				},
+			],
+		});
+
+		// Process SDG data
+		const sdgStats = {};
+
+		documents.forEach((doc) => {
+			// Get year from academic year or activity date
+			let year = null;
+			if (doc.AcademicYear) {
+				year = doc.AcademicYear.year_start;
+			} else if (doc.activity_date) {
+				year = new Date(doc.activity_date).getFullYear();
+			} else {
+				year = new Date(doc.submitted_date).getFullYear();
+			}
+
+			// Parse SDGs (could be array or JSON string)
+			let sdgs = [];
+			if (doc.sdgs) {
+				try {
+					sdgs = typeof doc.sdgs === 'string' ? JSON.parse(doc.sdgs) : doc.sdgs;
+				} catch (e) {
+					console.error('Error parsing SDGs:', e);
+				}
+			}
+
+			// Count each SDG
+			if (Array.isArray(sdgs)) {
+				sdgs.forEach((sdgId) => {
+					const key = `${year}-${sdgId}`;
+					if (!sdgStats[key]) {
+						sdgStats[key] = {
+							year,
+							sdg_number: sdgId,
+							event_count: 0,
+						};
+					}
+					sdgStats[key].event_count++;
+				});
+			}
+		});
+
+		// Convert to array and sort
+		const stats = Object.values(sdgStats).sort((a, b) => {
+			if (b.year !== a.year) return b.year - a.year;
+			return a.sdg_number - b.sdg_number;
+		});
+
+		res.json(stats);
+	} catch (error) {
+		console.error("Dean get reports by SDG per year error:", error);
+		res.status(500).json({ message: "Error fetching analytics" });
 	}
 };

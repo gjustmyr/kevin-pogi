@@ -123,15 +123,15 @@
       </div>
     </div>
 
-    <!-- SDG Events Chart -->
+    <!-- SDG Reports Chart -->
     <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Events per SDG per Year</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Reports per SDG per Year</h2>
       <app-sdg-events-chart [data]="sdgEventData()" />
     </div>
 
     <!-- Recent Documents -->
     <div class="p-6 border border-gray-200 rounded-lg bg-white shadow-sm mb-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Document Submissions</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Report Submissions</h2>
       @if (recentDocuments().length === 0) {
         <div class="text-center py-12">
           <svg
@@ -147,7 +147,7 @@
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <p class="text-gray-500">No documents submitted yet</p>
+          <p class="text-gray-500">No report submitted yet</p>
         </div>
       } @else {
         <div class="space-y-4">

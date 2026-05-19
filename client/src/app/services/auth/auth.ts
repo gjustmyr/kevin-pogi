@@ -21,9 +21,15 @@ export class Auth {
     private router: Router,
   ) {}
 
-  login(credentials: LoginCredentials): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, credentials).pipe(
+  login(credentials: LoginCredentials): Observable<LoginResponse | any> {
+    return this.http.post<LoginResponse | any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap((response) => {
+        // If multiple accounts detected, don't set token/user yet
+        if (response.multipleAccounts) {
+          return;
+        }
+        
+        // Normal login flow
         this.setToken(response.token);
         this.setUser(response.user);
         this.currentUser.set(response.user);
@@ -80,8 +86,16 @@ export class Auth {
   }
 
   private getUserFromStorage(): User | null {
-    const userJson = secureGetItem(this.USER_KEY);
-    return userJson ? JSON.parse(userJson) : null;
+    try {
+      const userJson = secureGetItem(this.USER_KEY);
+      if (!userJson) return null;
+      return JSON.parse(userJson);
+    } catch (error) {
+      console.error('Error parsing user from storage:', error);
+      // Clear corrupted data
+      secureRemoveItem(this.USER_KEY);
+      return null;
+    }
   }
 
   private hasToken(): boolean {

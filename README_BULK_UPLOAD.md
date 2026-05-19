@@ -41,7 +41,7 @@ The bulk upload feature has been successfully implemented and the database is re
 ### Department Field
 - **Required** field in bulk upload form
 - Applies to all members in the uploaded file
-- Example: "College of Computer Studies", "College of Engineering"
+- Example: "College of Computer Studies", "College of Engineering Technology"
 
 ### Upload Tracking
 - System now tracks all bulk uploads

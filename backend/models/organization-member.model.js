@@ -17,12 +17,12 @@ module.exports = (sequelize, Sequelize) => {
     },
     sr_code: {
       type: Sequelize.STRING(20),
-      allowNull: false,
+      allowNull: true,
       comment: "Student Reference Code",
     },
     first_name: {
       type: Sequelize.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     middle_name: {
       type: Sequelize.STRING(100),
@@ -30,7 +30,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     last_name: {
       type: Sequelize.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: Sequelize.STRING(255),
@@ -68,11 +68,11 @@ module.exports = (sequelize, Sequelize) => {
         "4th Year",
         "5th Year",
       ),
-      allowNull: false,
+      allowNull: true,
     },
     position: {
       type: Sequelize.STRING(100),
-      allowNull: false,
+      allowNull: true,
       comment: "President, Vice President, Secretary, etc.",
     },
     parent_member_id: {
@@ -87,7 +87,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     academic_year_id: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
       comment: "Links to academic year/term",
       references: {
         model: "academic_years",
@@ -106,7 +106,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     term_start_date: {
       type: Sequelize.DATEONLY,
-      allowNull: false,
+      allowNull: true,
     },
     term_end_date: {
       type: Sequelize.DATEONLY,

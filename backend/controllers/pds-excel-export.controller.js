@@ -25,6 +25,25 @@ const boolToYesNo = (value) => {
 };
 
 /**
+ * Helper function to create checkbox symbol
+ * @param {boolean} checked - Whether the checkbox should be checked
+ * @returns {string} - Checkbox symbol (☑ or ☐)
+ */
+const checkbox = (checked) => {
+  return checked ? "☑" : "☐";
+};
+
+/**
+ * Helper function to get checkbox for a specific value
+ * @param {string} currentValue - The current value
+ * @param {string} targetValue - The value to check against
+ * @returns {string} - Checkbox symbol
+ */
+const checkboxFor = (currentValue, targetValue) => {
+  return checkbox(currentValue === targetValue);
+};
+
+/**
  * Export PDS to Excel for Faculty
  */
 exports.exportFacultyPDSToExcel = async (req, res) => {
@@ -309,23 +328,17 @@ async function generatePDSExcel(pds) {
   // Place of birth: D15
   worksheet.getCell("D15").value = pds.place_of_birth || "";
 
-  // Sex: Mark checkbox with "X"
-  if (pds.sex === "Male") {
-    worksheet.getCell("E16").value = "X";
-  } else if (pds.sex === "Female") {
-    worksheet.getCell("F16").value = "X";
-  }
+  // Sex at Birth: D16:F16 (merged cell)
+  worksheet.getCell("D16").value = `${checkboxFor(pds.sex, "Male")} Male    ${checkboxFor(pds.sex, "Female")} Female`;
 
-  // Civil Status: Mark checkbox with "X"
-  if (pds.civil_status === "Single") {
-    worksheet.getCell("E17").value = "X";
-  } else if (pds.civil_status === "Married") {
-    worksheet.getCell("P11").value = "X";
-  } else if (pds.civil_status === "Widowed") {
-    worksheet.getCell("P12").value = "X";
-  } else if (pds.civil_status === "Separated") {
-    worksheet.getCell("P13").value = "X";
-  }
+  // Civil Status: D17:F18 (merged cell spanning 2 rows)
+  // Format with line breaks for 2-column layout
+  const civilStatusLines = [
+    `${checkboxFor(pds.civil_status, "Single")} Single                    ${checkboxFor(pds.civil_status, "Married")} Married`,
+    `${checkboxFor(pds.civil_status, "Widowed")} Widowed                ${checkboxFor(pds.civil_status, "Separated")} Separated`,
+    `${checkboxFor(pds.civil_status, "Others")} Other/s: ${pds.civil_status === "Others" && pds.civil_status_others ? pds.civil_status_others : "___________"}`
+  ];
+  worksheet.getCell("D17").value = civilStatusLines.join("\n");
 
   // Height: D22
   worksheet.getCell("D22").value = pds.height ? `${pds.height} m` : "";
@@ -354,23 +367,16 @@ async function generatePDSExcel(pds) {
   // Agency Employee No: D34
   worksheet.getCell("D34").value = pds.agency_employee_no || "";
 
-  // CITIZENSHIP SECTION
-  if (pds.citizenship_type === "Filipino") {
-    worksheet.getCell("D16").value = "X";
-  }
+  // CITIZENSHIP SECTION - Use checkboxes
+  const citizenshipText = [
+    `${checkboxFor(pds.citizenship_type, "Filipino")} Filipino`,
+    `${checkboxFor(pds.citizenship_type, "Dual Citizenship")} Dual Citizenship`,
+  ].join("    ");
+  worksheet.getCell("J13").value = citizenshipText;
 
-  if (pds.citizenship_type === "Dual Citizenship") {
-    worksheet.getCell("G16").value = "X";
-
-    if (pds.dual_citizenship_type === "by birth") {
-      worksheet.getCell("D17").value = "X";
-    } else if (pds.dual_citizenship_type === "by naturalization") {
-      worksheet.getCell("G17").value = "X";
-    }
-
-    if (pds.dual_citizenship_country) {
-      worksheet.getCell("L16").value = pds.dual_citizenship_country;
-    }
+  // If dual citizenship, show country
+  if (pds.citizenship_type === "Dual Citizenship" && pds.dual_citizenship_country) {
+    worksheet.getCell("L13").value = `Country: ${pds.dual_citizenship_country}`;
   }
 
   // RESIDENTIAL ADDRESS
@@ -585,48 +591,48 @@ async function generatePDSExcel(pds) {
     }
   }
 
-  // QUESTIONNAIRE RESPONSES
-  worksheet.getCell("D140").value = boolToYesNo(pds.q34_a_answer);
+  // QUESTIONNAIRE RESPONSES - Use checkboxes for YES/NO
+  worksheet.getCell("D140").value = `${checkbox(pds.q34_a_answer)} YES    ${checkbox(!pds.q34_a_answer)} NO`;
   if (pds.q34_a_details) worksheet.getCell("E140").value = pds.q34_a_details;
 
-  worksheet.getCell("D141").value = boolToYesNo(pds.q34_b_answer);
+  worksheet.getCell("D141").value = `${checkbox(pds.q34_b_answer)} YES    ${checkbox(!pds.q34_b_answer)} NO`;
   if (pds.q34_b_details) worksheet.getCell("E141").value = pds.q34_b_details;
 
-  worksheet.getCell("D142").value = boolToYesNo(pds.q35_a_answer);
+  worksheet.getCell("D142").value = `${checkbox(pds.q35_a_answer)} YES    ${checkbox(!pds.q35_a_answer)} NO`;
   if (pds.q35_a_details) worksheet.getCell("E142").value = pds.q35_a_details;
 
-  worksheet.getCell("D143").value = boolToYesNo(pds.q35_b_answer);
+  worksheet.getCell("D143").value = `${checkbox(pds.q35_b_answer)} YES    ${checkbox(!pds.q35_b_answer)} NO`;
   if (pds.q35_b_details) worksheet.getCell("E143").value = pds.q35_b_details;
 
-  worksheet.getCell("D144").value = boolToYesNo(pds.q36_answer);
+  worksheet.getCell("D144").value = `${checkbox(pds.q36_answer)} YES    ${checkbox(!pds.q36_answer)} NO`;
   if (pds.q36_details) worksheet.getCell("E144").value = pds.q36_details;
   if (pds.q36_date_filed)
     worksheet.getCell("F144").value = formatDate(pds.q36_date_filed);
   if (pds.q36_case_status)
     worksheet.getCell("G144").value = pds.q36_case_status;
 
-  worksheet.getCell("D145").value = boolToYesNo(pds.q37_answer);
+  worksheet.getCell("D145").value = `${checkbox(pds.q37_answer)} YES    ${checkbox(!pds.q37_answer)} NO`;
   if (pds.q37_details) worksheet.getCell("E145").value = pds.q37_details;
 
-  worksheet.getCell("D146").value = boolToYesNo(pds.q38_answer);
+  worksheet.getCell("D146").value = `${checkbox(pds.q38_answer)} YES    ${checkbox(!pds.q38_answer)} NO`;
   if (pds.q38_details) worksheet.getCell("E146").value = pds.q38_details;
 
-  worksheet.getCell("D147").value = boolToYesNo(pds.q39_answer);
+  worksheet.getCell("D147").value = `${checkbox(pds.q39_answer)} YES    ${checkbox(!pds.q39_answer)} NO`;
   if (pds.q39_details) worksheet.getCell("E147").value = pds.q39_details;
 
-  worksheet.getCell("D148").value = boolToYesNo(pds.q40_answer);
+  worksheet.getCell("D148").value = `${checkbox(pds.q40_answer)} YES    ${checkbox(!pds.q40_answer)} NO`;
   if (pds.q40_details) worksheet.getCell("E148").value = pds.q40_details;
 
-  worksheet.getCell("D149").value = boolToYesNo(pds.q41_answer);
+  worksheet.getCell("D149").value = `${checkbox(pds.q41_answer)} YES    ${checkbox(!pds.q41_answer)} NO`;
   if (pds.q41_country) worksheet.getCell("E149").value = pds.q41_country;
 
-  worksheet.getCell("D150").value = boolToYesNo(pds.q42_answer);
+  worksheet.getCell("D150").value = `${checkbox(pds.q42_answer)} YES    ${checkbox(!pds.q42_answer)} NO`;
   if (pds.q42_group) worksheet.getCell("E150").value = pds.q42_group;
 
-  worksheet.getCell("D151").value = boolToYesNo(pds.q43_answer);
+  worksheet.getCell("D151").value = `${checkbox(pds.q43_answer)} YES    ${checkbox(!pds.q43_answer)} NO`;
   if (pds.q43_id_no) worksheet.getCell("E151").value = pds.q43_id_no;
 
-  worksheet.getCell("D152").value = boolToYesNo(pds.q44_answer);
+  worksheet.getCell("D152").value = `${checkbox(pds.q44_answer)} YES    ${checkbox(!pds.q44_answer)} NO`;
   if (pds.q44_id_no) worksheet.getCell("E152").value = pds.q44_id_no;
 
   // Write to buffer

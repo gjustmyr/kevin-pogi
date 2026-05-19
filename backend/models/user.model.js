@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
 		email: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			unique: true,
+			// Removed unique: true to allow same email for different roles
 			validate: {
 				isEmail: true,
 			},
@@ -29,6 +29,15 @@ module.exports = (sequelize, Sequelize) => {
 			allowNull: false,
 			defaultValue: "faculty",
 		},
+	}, {
+		// Add composite unique constraint: one email per role
+		indexes: [
+			{
+				unique: true,
+				fields: ['email', 'role'],
+				name: 'unique_email_role'
+			}
+		]
 	});
 
 	return User;

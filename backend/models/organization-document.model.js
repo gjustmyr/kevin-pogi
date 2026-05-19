@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
 		},
 		document_type_id: {
 			type: Sequelize.INTEGER,
-			allowNull: false,
+			allowNull: true,
 			references: {
 				model: "document_types",
 				key: "document_type_id",
@@ -40,6 +40,26 @@ module.exports = (sequelize, Sequelize) => {
 		document_title: {
 			type: Sequelize.STRING(255),
 			allowNull: false,
+		},
+		activity_date: {
+			type: Sequelize.DATEONLY,
+			allowNull: true,
+			comment: "Date of the activity",
+		},
+		venue: {
+			type: Sequelize.STRING(255),
+			allowNull: true,
+			comment: "Venue of the activity",
+		},
+		participants: {
+			type: Sequelize.INTEGER,
+			allowNull: true,
+			comment: "Number of participants",
+		},
+		sdgs: {
+			type: Sequelize.JSON,
+			allowNull: true,
+			comment: "Array of SDG IDs that this activity addresses",
 		},
 		document_path: {
 			type: Sequelize.STRING(500),

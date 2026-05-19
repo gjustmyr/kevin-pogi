@@ -90,6 +90,10 @@ export interface OrganizationDocument {
   academic_year_id: number;
   semester: '1st Semester' | '2nd Semester' | 'Summer';
   document_title: string;
+  activity_date?: string;
+  venue?: string;
+  participants?: number;
+  sdgs?: number[];
   document_path: string;
   original_filename: string;
   file_size: number;
@@ -329,6 +333,16 @@ export class OrganizationService {
   // Adviser Management
   getAdvisers(): Observable<AdvisersResponse> {
     return this.http.get<AdvisersResponse>(`${this.apiUrl}/advisers`);
+  }
+
+  updateAdviserPhoto(
+    adviserId: number,
+    formData: FormData,
+  ): Observable<{ message: string; adviser: any }> {
+    return this.http.put<{ message: string; adviser: any }>(
+      `${this.apiUrl}/advisers/${adviserId}/photo`,
+      formData,
+    );
   }
 
   // Demographics

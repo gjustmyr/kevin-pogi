@@ -96,7 +96,9 @@ app.use("/api/pds", pdsRoutes); // Added: Direct PDS route for faculty
 
 // Organization module routes
 const organizationEventAnalyticsRoutes = require("./routes/organization-event-analytics.routes");
+const organizationAnalyticsRoutes = require("./routes/organization-analytics.routes");
 app.use("/api/organization/events/analytics", organizationEventAnalyticsRoutes);
+app.use("/api/organization/analytics", organizationAnalyticsRoutes);
 app.use("/api/organization/events", organizationEventRoutes);
 
 // Shared routes (accessible to all authenticated users)

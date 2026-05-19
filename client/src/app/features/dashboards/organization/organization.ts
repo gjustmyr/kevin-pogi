@@ -89,12 +89,14 @@ export class OrganizationDashboard implements OnInit {
   }
 
   loadSDGEventData() {
-    this.eventAnalyticsService.getEventsBySDGPerYear().subscribe({
+    // Changed from getEventsBySDGPerYear to getReportsBySDGPerYear
+    // Now gets SDG data from report submissions instead of events
+    this.eventAnalyticsService.getReportsBySDGPerYear().subscribe({
       next: (data) => {
         this.sdgEventData.set(data);
       },
       error: (error) => {
-        console.error('Failed to load SDG event data:', error);
+        console.error('Failed to load SDG report data:', error);
       },
     });
   }

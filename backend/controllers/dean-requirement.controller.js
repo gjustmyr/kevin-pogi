@@ -234,14 +234,29 @@ exports.getDepartmentStatistics = async (req, res) => {
     const academic_year_id = req.query.academic_year_id;
     const semester = req.query.semester;
 
+    console.log('🔍 getDepartmentStatistics - Looking for dean with user_id:', deanUserId);
+    console.log('🔍 Token data:', req.user);
+
     // Get dean's department
     const dean = await db.Dean.findOne({
       where: { user_id: deanUserId },
     });
 
     if (!dean) {
-      return res.status(404).json({ message: "Dean profile not found" });
+      console.error('❌ Dean profile not found for user_id:', deanUserId);
+      console.error('Available dean user_ids in database:');
+      const allDeans = await db.Dean.findAll({ attributes: ['dean_id', 'user_id', 'first_name', 'last_name'] });
+      console.error(allDeans.map(d => `Dean ID: ${d.dean_id}, User ID: ${d.user_id}, Name: ${d.first_name} ${d.last_name}`));
+      return res.status(404).json({ 
+        message: "Dean profile not found",
+        debug: {
+          user_id: deanUserId,
+          hint: "Try logging out and logging back in to refresh your session"
+        }
+      });
     }
+
+    console.log('✅ Found dean:', dean.first_name, dean.last_name, 'Department:', dean.department);
 
     // Get all faculty in dean's department
     const facultyList = await db.Faculty.findAll({
