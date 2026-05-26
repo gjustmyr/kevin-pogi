@@ -13,5 +13,7 @@ router.get("/:id", academicYearController.getAcademicYear);
 router.post("/", academicYearController.createAcademicYear);
 router.put("/:id", academicYearController.updateAcademicYear);
 router.delete("/:id", academicYearController.deleteAcademicYear);
+router.post("/:id/restore", academicYearController.restoreAcademicYear);
+router.delete("/:id/permanent", academicYearController.permanentlyDeleteAcademicYear);
 
 module.exports = router;

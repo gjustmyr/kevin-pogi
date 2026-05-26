@@ -55,8 +55,9 @@ export interface Statistics {
   completion_rate: number;
 }
 
-// Standard 15 requirement types (for autocomplete suggestions)
+// Standard requirement types (dropdown options)
 export const STANDARD_REQUIREMENTS = [
+  'Certificate',
   'Instructional Materials',
   'Student Class Attendance Sheet',
   'Acknowledgement Receipt of Syllabus',
@@ -71,7 +72,7 @@ export const STANDARD_REQUIREMENTS = [
   'Key to Correction of Final Exam',
   'Report of Grades',
   'Class Record',
-  'Other Academic Documents',
+  'Other Documents',
 ];
 
 @Injectable({

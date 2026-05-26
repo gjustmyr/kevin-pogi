@@ -13,5 +13,6 @@ router.get("/sections", dropdownController.getSections);
 router.get("/organizations", dropdownController.getOrganizations);
 router.get("/academic-years", dropdownController.getAcademicYears);
 router.get("/position-levels", dropdownController.getPositionLevels);
+router.get("/dean-position-levels", dropdownController.getDeanPositionLevels);
 
 module.exports = router;

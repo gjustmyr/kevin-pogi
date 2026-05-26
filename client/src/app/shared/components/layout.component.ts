@@ -2,6 +2,7 @@ import { Component, signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth/auth';
+import { ThemeService } from '../../services/theme/theme.service';
 
 @Component({
   selector: 'app-layout',
@@ -37,7 +38,7 @@ import { Auth } from '../../services/auth/auth';
     <aside
       [class.translate-x-0]="isSidebarOpen()"
       [class.-translate-x-full]="!isSidebarOpen()"
-      class="fixed top-0 left-0 z-40 w-64 h-full transition-transform sm:translate-x-0 bg-white border-r border-gray-200"
+      class="fixed top-0 left-0 z-40 w-64 h-full transition-transform sm:translate-x-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
       aria-label="Sidebar"
     >
       <div class="h-full px-3 py-4 overflow-y-auto">
@@ -45,10 +46,10 @@ import { Auth } from '../../services/auth/auth';
         <div class="mb-6 px-2 flex flex-col items-center">
           <img src="/assets/logo.png" alt="Logo" class="h-24 mb-3" />
           @if (authService.currentUser()?.role === 'admin') {
-            <h2 class="text-xl font-bold text-gray-900 text-center">Admin Portal</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white text-center">Admin Portal</h2>
           } @else {
-            <h2 class="text-lg font-semibold text-gray-900">BatStateU</h2>
-            <p class="text-xs text-gray-600">{{ authService.currentUser()?.role | titlecase }}</p>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">BatStateU</h2>
+            <p class="text-xs text-gray-600 dark:text-gray-400">{{ authService.currentUser()?.role | titlecase }}</p>
           }
         </div>
 
@@ -59,7 +60,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('dean')"
                 [class.bg-green-50]="activeTab() === 'dean'"
                 [class.text-green-600]="activeTab() === 'dean'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'dean'"
+                [class.dark:text-green-300]="activeTab() === 'dean'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -86,7 +89,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('faculty')"
                 [class.bg-green-50]="activeTab() === 'faculty'"
                 [class.text-green-600]="activeTab() === 'faculty'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'faculty'"
+                [class.dark:text-green-300]="activeTab() === 'faculty'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -113,7 +118,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('organizations')"
                 [class.bg-green-50]="activeTab() === 'organizations'"
                 [class.text-green-600]="activeTab() === 'organizations'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'organizations'"
+                [class.dark:text-green-300]="activeTab() === 'organizations'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -143,7 +150,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('departments')"
                 [class.bg-green-50]="activeTab() === 'departments'"
                 [class.text-green-600]="activeTab() === 'departments'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'departments'"
+                [class.dark:text-green-300]="activeTab() === 'departments'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -171,7 +180,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('programs')"
                 [class.bg-green-50]="activeTab() === 'programs'"
                 [class.text-green-600]="activeTab() === 'programs'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'programs'"
+                [class.dark:text-green-300]="activeTab() === 'programs'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -199,7 +210,9 @@ import { Auth } from '../../services/auth/auth';
                 (click)="selectTab('sections')"
                 [class.bg-green-50]="activeTab() === 'sections'"
                 [class.text-green-600]="activeTab() === 'sections'"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                [class.dark:bg-green-900]="activeTab() === 'sections'"
+                [class.dark:text-green-300]="activeTab() === 'sections'"
+                class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="shrink-0 w-5 h-5 transition duration-75"
@@ -222,13 +235,54 @@ import { Auth } from '../../services/auth/auth';
               </button>
             </li>
 
-            <li class="pt-4 mt-4 border-t border-gray-200"></li>
+            <li class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700"></li>
 
-            <!-- Admin Dropdown -->
-            <li class="relative">
+            <!-- Bottom Section: Dark Mode + Profile -->
+            <li class="flex items-center gap-2">
+              <!-- Dark Mode Toggle Button - Enhanced Visibility -->
+              <button
+                (click)="themeService.toggleTheme()"
+                class="flex items-center justify-center p-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                title="Toggle Dark Mode"
+                aria-label="Toggle Dark Mode"
+              >
+                @if (themeService.isDarkMode()) {
+                  <svg
+                    class="w-6 h-6 text-yellow-500"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                    ></path>
+                  </svg>
+                } @else {
+                  <svg
+                    class="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    ></path>
+                  </svg>
+                }
+              </button>
+
+              <!-- Admin Dropdown -->
+              <!-- Admin Profile Dropdown -->
+              <div class="relative flex-1">
               <button
                 (click)="toggleDropdown()"
-                class="flex items-center justify-between w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                class="flex items-center justify-between w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <div class="flex items-center">
                   <svg
@@ -267,11 +321,11 @@ import { Auth } from '../../services/auth/auth';
 
               @if (isDropdownOpen()) {
                 <div
-                  class="absolute bottom-full left-0 w-full mb-1 bg-white border border-gray-200 rounded-lg shadow-lg"
+                  class="absolute bottom-full left-0 w-full mb-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg"
                 >
                   <a
                     href="#"
-                    class="flex items-center px-2 py-1.5 text-gray-700 hover:bg-gray-100 rounded-t-lg"
+                    class="flex items-center px-2 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-t-lg"
                   >
                     <svg
                       class="shrink-0 w-5 h-5 mr-2"
@@ -290,7 +344,7 @@ import { Auth } from '../../services/auth/auth';
                   </a>
                   <button
                     (click)="logout()"
-                    class="flex items-center w-full px-2 py-1.5 text-gray-700 hover:bg-gray-100 rounded-b-lg"
+                    class="flex items-center w-full px-2 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-b-lg"
                   >
                     <svg
                       class="shrink-0 w-5 h-5 mr-2"
@@ -309,6 +363,7 @@ import { Auth } from '../../services/auth/auth';
                   </button>
                 </div>
               }
+              </div>
             </li>
           </ul>
         } @else {
@@ -316,8 +371,8 @@ import { Auth } from '../../services/auth/auth';
             <li>
               <a
                 [routerLink]="['/' + authService.currentUser()?.role + '/dashboard']"
-                routerLinkActive="bg-green-50 text-green-600"
-                class="flex items-center px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                routerLinkActive="bg-green-50 text-green-600 dark:bg-green-900 dark:text-green-300"
+                class="flex items-center px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg
                   class="w-5 h-5 transition duration-75"
@@ -351,8 +406,8 @@ import { Auth } from '../../services/auth/auth';
               <li>
                 <a
                   routerLink="/faculty/requirements"
-                  routerLinkActive="bg-green-50 text-green-600"
-                  class="flex items-center px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                  routerLinkActive="bg-green-50 text-green-600 dark:bg-green-900 dark:text-green-300"
+                  class="flex items-center px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <svg
                     class="shrink-0 w-5 h-5 transition duration-75"
@@ -371,7 +426,7 @@ import { Auth } from '../../services/auth/auth';
                       d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"
                     />
                   </svg>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Accomplishments</span>
+                  <span class="flex-1 ms-3 whitespace-nowrap">Portfolio</span>
                 </a>
               </li>
             }
@@ -380,7 +435,7 @@ import { Auth } from '../../services/auth/auth';
               <li>
                 <a
                   href="#"
-                  class="flex items-center px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+                  class="flex items-center px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
                   <svg
                     class="shrink-0 w-5 h-5 transition duration-75"
@@ -455,30 +510,72 @@ import { Auth } from '../../services/auth/auth';
               </a>
             </li>
 
-            <li class="pt-4 mt-4 border-t border-gray-200">
-              <button
-                (click)="logout()"
-                class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-600 group"
-              >
-                <svg
-                  class="shrink-0 w-5 h-5 transition duration-75"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
+            <li class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+              <!-- Bottom Section: Dark Mode + Sign Out -->
+              <div class="flex items-center gap-2">
+                <!-- Dark Mode Toggle Button - Enhanced Visibility -->
+                <button
+                  (click)="themeService.toggleTheme()"
+                  class="flex items-center justify-center p-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                  title="Toggle Dark Mode"
+                  aria-label="Toggle Dark Mode"
                 >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"
-                  />
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap text-left">Sign Out</span>
-              </button>
+                  @if (themeService.isDarkMode()) {
+                    <svg
+                      class="w-6 h-6 text-yellow-500"
+                      fill="currentColor"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      ></path>
+                    </svg>
+                  } @else {
+                    <svg
+                      class="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+                      fill="currentColor"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      ></path>
+                    </svg>
+                  }
+                </button>
+
+                <!-- Sign Out Button -->
+                <button
+                  (click)="logout()"
+                  class="flex items-center flex-1 px-2 py-1.5 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 group"
+                >
+                  <svg
+                    class="shrink-0 w-5 h-5 transition duration-75"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"
+                    />
+                  </svg>
+                  <span class="flex-1 ms-3 whitespace-nowrap text-left">Sign Out</span>
+                </button>
+              </div>
             </li>
           </ul>
         }
@@ -486,7 +583,7 @@ import { Auth } from '../../services/auth/auth';
     </aside>
 
     <!-- Main Content -->
-    <div class="p-4 sm:ml-64">
+    <div class="p-4 sm:ml-64 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <ng-content></ng-content>
     </div>
   `,
@@ -499,7 +596,7 @@ export class LayoutComponent {
 
   @Output() tabChange = new EventEmitter<string>();
 
-  constructor(public authService: Auth) {}
+  constructor(public authService: Auth, public themeService: ThemeService) {}
 
   toggleSidebar() {
     this.isSidebarOpen.set(!this.isSidebarOpen());

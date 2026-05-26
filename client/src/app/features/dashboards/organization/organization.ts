@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../../services/auth/auth';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { OrganizationService } from '../../../services/organization.service';
 import { OrganizationEventService } from '../../../services/organization-event.service';
 import { EventAnalyticsService, SDGEventData } from '../../../services/event-analytics.service';
 import { OrganizationMembersComponent } from '../../organization/members/organization-members';
 import { OrganizationDocumentsComponent } from '../../organization/documents/organization-documents';
-import { OrganizationEventsComponent } from '../../organization/events/organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 import { SDGEventsChartComponent } from '../../../shared/components/sdg-events-chart/sdg-events-chart';
 
@@ -33,7 +33,6 @@ interface OrganizationStats {
     FormsModule,
     OrganizationMembersComponent,
     OrganizationDocumentsComponent,
-    OrganizationEventsComponent,
     ChangePasswordModal,
     SDGEventsChartComponent,
   ],
@@ -41,6 +40,7 @@ interface OrganizationStats {
 })
 export class OrganizationDashboard implements OnInit {
   authService = inject(Auth);
+  themeService = inject(ThemeService);
   private router = inject(Router);
   private organizationService = inject(OrganizationService);
   private eventService = inject(OrganizationEventService);

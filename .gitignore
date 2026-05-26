@@ -67,3 +67,7 @@ backend/logs/
 
 # Git files
 .git/
+
+# Windows reserved device names
+nul
+**/nul

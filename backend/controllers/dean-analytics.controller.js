@@ -15,9 +15,9 @@ exports.getFacultyDemographics = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    // Get all faculty in the department with their PDS data
+    // Get all active (non-archived) faculty in the department with their PDS data
     const faculties = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.PersonalDataSheet,
@@ -504,9 +504,9 @@ exports.getEducationAnalytics = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    // Get all faculty with their education records from PDS
+    // Get all active (non-archived) faculty with their education records from PDS
     const faculties = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.PersonalDataSheet,
@@ -630,9 +630,9 @@ exports.getResearchAnalytics = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    // Get all faculty with their other info (which includes publications/research)
+    // Get all active (non-archived) faculty with their other info (which includes publications/research)
     const faculties = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.PersonalDataSheet,

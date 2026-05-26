@@ -84,7 +84,7 @@ export class SuperadminDeanManagement implements OnInit {
   }
 
   loadPositionLevels() {
-    this.dropdownService.getPositionLevels().subscribe({
+    this.dropdownService.getDeanPositionLevels().subscribe({
       next: (levels) => this.positionLevels.set(levels),
       error: (error) => console.error('Error loading position levels:', error),
     });

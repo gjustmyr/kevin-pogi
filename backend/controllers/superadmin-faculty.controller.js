@@ -17,7 +17,7 @@ const generateEmployeeId = async () => {
     exists = !!existing;
   }
 
-  return employeeId;
+  return employeeId;  
 };
 
 // Get all faculty with pagination (READ ONLY for superadmin)
@@ -33,7 +33,7 @@ exports.getFaculty = async (req, res) => {
     const departments = [
       {
         department_id: 1,
-        department_name: "College of Engineering ",
+        department_name: "College of Engineering",
         department_acronym: "COE",
       },
       {

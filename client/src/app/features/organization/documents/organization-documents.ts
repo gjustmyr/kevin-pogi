@@ -38,11 +38,11 @@ export class OrganizationDocumentsComponent implements OnInit {
   totalItems = signal(0);
   itemsPerPage = 10;
 
-  // Filters
-  selectedAcademicYear = signal<number | undefined>(undefined);
-  selectedSemester = signal<string | undefined>(undefined);
-  selectedDocumentType = signal<number | undefined>(undefined);
-  selectedStatus = signal<string | undefined>(undefined);
+  // Filters (not signals - used with ngModel)
+  selectedAcademicYear: number | undefined = undefined;
+  selectedSemester: string | undefined = undefined;
+  selectedDocumentType: number | undefined = undefined;
+  selectedStatus: string | undefined = undefined;
 
   // View mode
   viewMode = signal<'documents' | 'checklist'>('documents');
@@ -108,10 +108,10 @@ export class OrganizationDocumentsComponent implements OnInit {
       .getDocuments(
         this.currentPage(),
         this.itemsPerPage,
-        this.selectedAcademicYear(),
-        this.selectedSemester(),
-        this.selectedDocumentType(),
-        this.selectedStatus(),
+        this.selectedAcademicYear,
+        this.selectedSemester,
+        this.selectedDocumentType,
+        this.selectedStatus,
       )
       .subscribe({
         next: (response) => {
@@ -151,8 +151,8 @@ export class OrganizationDocumentsComponent implements OnInit {
   }
 
   loadChecklist() {
-    const academicYearId = this.selectedAcademicYear();
-    const semester = this.selectedSemester();
+    const academicYearId = this.selectedAcademicYear;
+    const semester = this.selectedSemester;
 
     if (!academicYearId || !semester) {
       this.errorMessage.set('Please select academic year and semester');
@@ -184,8 +184,8 @@ export class OrganizationDocumentsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      if (file.size > 10 * 1024 * 1024) {
-        this.errorMessage.set('File size must be less than 10MB');
+      if (file.size > 200 * 1024 * 1024) {
+        this.errorMessage.set('File size must be less than 200MB');
         return;
       }
       this.selectedFile.set(file);

@@ -8,9 +8,13 @@ router.use(verifyToken);
 router.use(checkRole("dean"));
 
 router.get("/", deanFacultyController.getFaculty);
+router.get("/disabled", deanFacultyController.getDisabledFaculty);
 router.post("/", deanFacultyController.createFaculty);
 router.put("/:id", deanFacultyController.updateFaculty);
-router.delete("/:id", deanFacultyController.deleteFaculty);
+router.put("/:id/disable", deanFacultyController.disableFaculty);
+router.put("/:id/restore", deanFacultyController.restoreFaculty);
+router.delete("/:id", deanFacultyController.permanentlyDeleteFaculty);
 router.post("/:id/reset-password", deanFacultyController.resetFacultyPassword);
+router.get("/:facultyId/profile", deanFacultyController.getFacultyFullProfile);
 
 module.exports = router;

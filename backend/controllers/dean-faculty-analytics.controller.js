@@ -17,9 +17,9 @@ exports.getResearchInvolvement = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyResearchActivities,
@@ -89,9 +89,9 @@ exports.getExtensionInvolvement = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyExtensionActivities,
@@ -160,9 +160,9 @@ exports.getSeminarsInvolvement = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultySeminarsTrainings,
@@ -231,9 +231,9 @@ exports.getAwardsStatistics = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyAwards,
@@ -300,9 +300,9 @@ exports.getMembershipStatistics = async (req, res) => {
       return res.status(404).json({ message: "Dean profile not found" });
     }
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyProfessionalMembership,
@@ -360,9 +360,9 @@ exports.getExtensionActivitiesDetails = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department with extension activities
+    // Get all active (non-archived) faculty in dean's department with extension activities
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyExtensionActivities,
@@ -435,9 +435,9 @@ exports.getResearchActivitiesDetails = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department with research activities
+    // Get all active (non-archived) faculty in dean's department with research activities
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyResearchActivities,
@@ -510,9 +510,9 @@ exports.getSeminarsTrainingsDetails = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department with seminars/trainings
+    // Get all active (non-archived) faculty in dean's department with seminars/trainings
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultySeminarsTrainings,
@@ -585,9 +585,9 @@ exports.getDashboardAnalytics = async (req, res) => {
 
     const academicYearId = req.query.academic_year_id;
 
-    // Get all faculty in dean's department with all profile data
+    // Get all active (non-archived) faculty in dean's department with all profile data
     const faculty = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       include: [
         {
           model: db.FacultyResearchActivities,

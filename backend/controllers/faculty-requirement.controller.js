@@ -148,6 +148,15 @@ exports.submitRequirement = async (req, res) => {
 			return res.status(400).json({ message: "At least one file is required" });
 		}
 
+		// Check file sizes
+		const maxSize = 200 * 1024 * 1024; // 200MB
+		const oversizedFiles = req.files.filter(f => f.size > maxSize);
+		if (oversizedFiles.length > 0) {
+			return res.status(400).json({ 
+				message: `File size exceeds 200MB limit: ${oversizedFiles.map(f => f.originalname).join(', ')}` 
+			});
+		}
+
 		// Get faculty profile
 		const faculty = await db.Faculty.findOne({
 			where: { user_id: facultyUserId },
@@ -207,6 +216,14 @@ exports.submitRequirement = async (req, res) => {
 		});
 	} catch (error) {
 		console.error("Submit requirement error:", error);
+		
+		// Handle multer file size error
+		if (error.code === 'LIMIT_FILE_SIZE') {
+			return res.status(400).json({ 
+				message: "File size exceeds the 200MB limit. Please upload smaller files." 
+			});
+		}
+		
 		res.status(500).json({ message: "Error submitting requirement" });
 	}
 };

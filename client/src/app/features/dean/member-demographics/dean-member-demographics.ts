@@ -39,9 +39,9 @@ export class DeanMemberDemographicsComponent implements OnInit {
   private http = inject(HttpClient);
 
   loading = signal(false);
-  selectedOrganization = signal<number | undefined>(undefined);
-  selectedAcademicYear = signal<number | undefined>(undefined);
-  selectedSemester = signal<string | undefined>(undefined);
+  selectedOrganization: number | undefined = undefined;
+  selectedAcademicYear: number | undefined = undefined;
+  selectedSemester: string | undefined = undefined;
   activeOnly = signal(true);
 
   organizations = signal<Organization[]>([]);
@@ -89,20 +89,20 @@ export class DeanMemberDemographicsComponent implements OnInit {
   }
 
   loadDemographics() {
-    if (!this.selectedOrganization()) {
+    if (!this.selectedOrganization) {
       return;
     }
 
     this.loading.set(true);
 
-    let params = new HttpParams().set('organizationId', this.selectedOrganization()!.toString());
+    let params = new HttpParams().set('organizationId', this.selectedOrganization.toString());
 
-    if (this.selectedAcademicYear()) {
-      params = params.set('academicYearId', this.selectedAcademicYear()!.toString());
+    if (this.selectedAcademicYear) {
+      params = params.set('academicYearId', this.selectedAcademicYear.toString());
     }
 
-    if (this.selectedSemester()) {
-      params = params.set('semester', this.selectedSemester()!);
+    if (this.selectedSemester) {
+      params = params.set('semester', this.selectedSemester);
     }
 
     params = params.set('activeOnly', this.activeOnly().toString());

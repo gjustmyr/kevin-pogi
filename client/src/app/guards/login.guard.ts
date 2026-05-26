@@ -27,12 +27,16 @@ export const loginGuard: CanActivateFn = (route, state) => {
  */
 function getDashboardPathByRole(role: string): string {
   switch (role) {
+    case 'superadmin':
+      return '/superadmin/dashboard';
     case 'admin':
       return '/admin/dashboard';
     case 'dean':
       return '/dean/dashboard';
     case 'faculty':
       return '/faculty/dashboard';
+    case 'organization':
+      return '/organization/dashboard';
     default:
       return '/login';
   }

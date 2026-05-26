@@ -82,4 +82,34 @@ export class DeanFacultyService {
       {},
     );
   }
+
+  // Get disabled faculty
+  getDisabledFaculty(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+  ): Observable<FacultyResponse> {
+    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<FacultyResponse>(`${this.apiUrl}/disabled`, { params });
+  }
+
+  // Disable faculty account (soft delete)
+  disableFaculty(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/disable`, {});
+  }
+
+  // Restore disabled faculty account
+  restoreFaculty(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/restore`, {});
+  }
+
+  // Permanently delete faculty (only for disabled accounts)
+  permanentlyDeleteFaculty(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

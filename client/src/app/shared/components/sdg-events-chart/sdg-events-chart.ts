@@ -212,7 +212,7 @@ export class SDGEventsChartComponent implements AfterViewInit, OnDestroy {
     
     const labels = sortedSDGs.map(([sdg]) => `SDG ${sdg}: ${this.getSDGName(sdg)}`);
     const data = sortedSDGs.map(([, count]) => count);
-    const colors = sortedSDGs.map((_, index) => this.getSDGColor(index));
+    const colors = sortedSDGs.map(([sdg]) => this.getSDGColor(sdg));
 
     return {
       labels,
@@ -235,28 +235,28 @@ export class SDGEventsChartComponent implements AfterViewInit, OnDestroy {
     this.chart.update();
   }
 
-  getSDGColor(index: number): string {
-    // Official SDG colors
-    const colors = [
-      '#E5243B', // SDG 1 - Red
-      '#DDA63A', // SDG 2 - Yellow
-      '#4C9F38', // SDG 3 - Green
-      '#C5192D', // SDG 4 - Dark Red
-      '#FF3A21', // SDG 5 - Orange Red
-      '#26BDE2', // SDG 6 - Light Blue
-      '#FCC30B', // SDG 7 - Yellow
-      '#A21942', // SDG 8 - Maroon
-      '#FD6925', // SDG 9 - Orange
-      '#DD1367', // SDG 10 - Pink
-      '#FD9D24', // SDG 11 - Orange
-      '#BF8B2E', // SDG 12 - Brown
-      '#3F7E44', // SDG 13 - Dark Green
-      '#0A97D9', // SDG 14 - Blue
-      '#56C02B', // SDG 15 - Light Green
-      '#00689D', // SDG 16 - Dark Blue
-      '#19486A', // SDG 17 - Navy
-    ];
-    return colors[index % colors.length];
+  getSDGColor(sdgNumber: number): string {
+    // Official UN SDG colors
+    const colors: { [key: number]: string } = {
+      1: '#E5243B',  // No Poverty - Red
+      2: '#DDA63A',  // Zero Hunger - Yellow
+      3: '#4C9F38',  // Good Health - Green
+      4: '#C5192D',  // Quality Education - Dark Red
+      5: '#FF3A21',  // Gender Equality - Orange Red
+      6: '#26BDE2',  // Clean Water - Light Blue
+      7: '#FCC30B',  // Clean Energy - Yellow
+      8: '#A21942',  // Decent Work - Maroon
+      9: '#FD6925',  // Industry Innovation - Orange
+      10: '#DD1367', // Reduced Inequalities - Pink
+      11: '#FD9D24', // Sustainable Cities - Orange
+      12: '#BF8B2E', // Responsible Consumption - Brown
+      13: '#3F7E44', // Climate Action - Dark Green
+      14: '#0A97D9', // Life Below Water - Blue
+      15: '#56C02B', // Life on Land - Light Green
+      16: '#00689D', // Peace and Justice - Dark Blue
+      17: '#19486A', // Partnerships - Navy
+    };
+    return colors[sdgNumber] || '#999999';
   }
 
   getColorForYear(index: number, opacity: number = 0.8): string {
