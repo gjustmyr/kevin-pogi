@@ -2,6 +2,7 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { FacultyRequirements } from '../../faculty/requirements/requirements';
 import { FacultyMyProfile } from '../../faculty/my-profile/my-profile';
 import { PersonalDataSheetComponent } from '../../faculty/personal-data-sheet/personal-data-sheet.component';
@@ -34,15 +35,15 @@ interface Assignment {
     <aside
       [class.translate-x-0]="isSidebarOpen()"
       [class.-translate-x-full]="!isSidebarOpen()"
-      class="fixed top-0 left-0 z-50 w-64 h-full transition-transform bg-white border-r border-gray-200"
+      class="fixed top-0 left-0 z-50 w-64 h-full transition-transform bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700"
     >
       <div class="h-full px-3 py-4 overflow-y-auto">
         <!-- Logo/Brand -->
         <div class="mb-6 px-2 flex flex-col items-center">
           <img src="/assets/logo.png" alt="Logo" class="h-24 mb-3" />
-          <h2 class="text-xl font-bold text-gray-900 text-center">Faculty Portal</h2>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white text-center">Faculty Portal</h2>
           @if (authService.currentUser()?.profile?.department) {
-            <p class="text-sm text-gray-600 text-center mt-1">
+            <p class="text-sm text-gray-600 dark:text-gray-400 text-center mt-1">
               {{ authService.currentUser()?.profile?.department }}
             </p>
           }
@@ -53,9 +54,10 @@ interface Assignment {
           <li>
             <button
               (click)="selectTab('dashboard')"
-              [class.bg-green-50]="activeTab() === 'dashboard'"
-              [class.text-green-600]="activeTab() === 'dashboard'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+              [ngClass]="activeTab() === 'dashboard'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+              class="flex items-center w-full px-2 py-1.5 rounded-lg group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -75,15 +77,16 @@ interface Assignment {
             </button>
           </li>
 
-          <li class="pt-2 mt-2 border-t border-gray-200"></li>
+          <li class="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700"></li>
 
           <!-- Accomplishments -->
           <li>
             <button
               (click)="selectTab('accomplishments')"
-              [class.bg-green-50]="activeTab() === 'accomplishments'"
-              [class.text-green-600]="activeTab() === 'accomplishments'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+              [ngClass]="activeTab() === 'accomplishments'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+              class="flex items-center w-full px-2 py-1.5 rounded-lg group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -101,9 +104,10 @@ interface Assignment {
           <li>
             <button
               (click)="selectTab('credentials')"
-              [class.bg-green-50]="activeTab() === 'credentials'"
-              [class.text-green-600]="activeTab() === 'credentials'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+              [ngClass]="activeTab() === 'credentials'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+              class="flex items-center w-full px-2 py-1.5 rounded-lg group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -121,9 +125,10 @@ interface Assignment {
           <li>
             <button
               (click)="selectTab('pds')"
-              [class.bg-green-50]="activeTab() === 'pds'"
-              [class.text-green-600]="activeTab() === 'pds'"
-              class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
+              [ngClass]="activeTab() === 'pds'
+                ? 'bg-green-600 text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+              class="flex items-center w-full px-2 py-1.5 rounded-lg group"
             >
               <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -142,7 +147,7 @@ interface Assignment {
 
     <!-- Top Bar -->
     <div
-      class="fixed top-0 h-16 bg-white border-b border-gray-200 z-40 flex items-center justify-between px-4 gap-4 transition-all duration-300"
+      class="fixed top-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-40 flex items-center justify-between px-4 gap-4 transition-all duration-300"
       [class.left-64]="isSidebarOpen()"
       [class.left-0]="!isSidebarOpen()"
       [class.right-0]="true"
@@ -151,20 +156,50 @@ interface Assignment {
         <button
           (click)="toggleSidebar()"
           type="button"
-          class="text-gray-900 bg-transparent hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm p-2 focus:outline-none"
+          class="text-gray-900 dark:text-gray-100 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 font-medium rounded-lg text-sm p-2 focus:outline-none"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10" />
           </svg>
         </button>
-        <h1 class="text-xl font-bold text-gray-900">{{ getPageTitle() }}</h1>
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ getPageTitle() }}</h1>
       </div>
 
-      <!-- User Menu -->
-      <div class="relative">
+      <!-- Right Section: Dark Mode + User Menu -->
+      <div class="flex items-center gap-3">
+        <!-- Dark Mode Toggle Button -->
+        <button
+          (click)="themeService.toggleTheme()"
+          class="flex items-center justify-center p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-300 dark:border-gray-600"
+          title="Toggle Dark Mode"
+          aria-label="Toggle Dark Mode"
+        >
+          @if (themeService.isDarkMode()) {
+            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          } @else {
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          }
+        </button>
+
+        <!-- User Menu -->
+        <div class="relative">
         <button
           (click)="toggleUserMenu()"
-          class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+          class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -196,11 +231,11 @@ interface Assignment {
 
         @if (isUserMenuOpen()) {
           <div
-            class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg"
+            class="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
           >
             <button
               (click)="isChangePasswordOpen.set(true); isUserMenuOpen.set(false)"
-              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-t-lg transition"
+              class="flex items-center w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900 hover:text-green-600 dark:hover:text-green-300 rounded-t-lg transition"
             >
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -214,7 +249,7 @@ interface Assignment {
             </button>
             <button
               (click)="logout()"
-              class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-b-lg transition"
+              class="flex items-center w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900 hover:text-green-600 dark:hover:text-green-300 rounded-b-lg transition"
             >
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -230,20 +265,21 @@ interface Assignment {
         }
       </div>
     </div>
+  </div>
 
     <!-- Main Content -->
     <div class="pt-20 pl-4 pr-4 pb-4 transition-all duration-300" [class.ml-64]="isSidebarOpen()">
       @if (activeTab() === 'dashboard') {
-        <div class="p-4 border border-gray-200 border-dashed rounded-lg">
+        <div class="p-4 border border-gray-200 dark:border-gray-700 border-dashed rounded-lg">
           <!-- Filters -->
-          <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white mb-6">
+          <div class="p-4 border border-gray-200 dark:border-gray-700 border-dashed rounded-lg bg-white dark:bg-gray-800 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Academic Year</label>
                 <select
                   [(ngModel)]="selectedAcademicYear"
                   (change)="filterData()"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   @for (year of academicYearsList(); track year.academic_year_id) {
                     <option [value]="year.academic_year_id">
@@ -254,11 +290,11 @@ interface Assignment {
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Semester</label>
                 <select
                   [(ngModel)]="selectedSemester"
                   (change)="filterData()"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="1st Semester">1st Semester</option>
                   <option value="2nd Semester">2nd Semester</option>
@@ -315,7 +351,7 @@ interface Assignment {
                     <div class="flex items-center justify-between">
                       <div>
                         <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
-                        <p class="text-4xl font-bold">Withholding</p>
+                        <p class="text-4xl font-bold">For Review</p>
                         @if (periodClearance()!.clearance_date) {
                           <p class="text-xs opacity-80 mt-1">
                             {{ periodClearance()!.clearance_date | date: 'MMM d, y' }}
@@ -368,7 +404,7 @@ interface Assignment {
                   <div class="flex items-center justify-between">
                     <div>
                       <h3 class="text-sm font-medium opacity-90 mb-1">Clearance Status</h3>
-                      <p class="text-4xl font-bold">Withholding</p>
+                      <p class="text-4xl font-bold">For Review</p>
                       @if (authService.currentUser()!.profile.clearance_date) {
                         <p class="text-xs opacity-80 mt-1">
                           {{ authService.currentUser()!.profile.clearance_date | date: 'MMM d, y' }}
@@ -434,8 +470,8 @@ interface Assignment {
           <!-- Charts and Progress -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Status Distribution -->
-            <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
-              <h3 class="text-lg font-bold text-gray-800 mb-6">Requirements Status Distribution</h3>
+            <div class="p-4 border border-gray-200 dark:border-gray-700 border-dashed rounded-lg bg-white dark:bg-gray-800">
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-6">Requirements Status Distribution</h3>
               <div class="flex items-center justify-center mb-6">
                 <div class="relative w-64 h-64">
                   <!-- Donut Chart -->
@@ -476,12 +512,12 @@ interface Assignment {
                   ></div>
                   <!-- Center white circle -->
                   <div
-                    class="absolute inset-8 bg-white rounded-full flex items-center justify-center flex-col"
+                    class="absolute inset-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center flex-col"
                   >
-                    <div class="text-3xl font-bold text-gray-800">
+                    <div class="text-3xl font-bold text-gray-800 dark:text-white">
                       {{ dashboardStats().totalRequirements }}
                     </div>
-                    <div class="text-sm text-gray-600">Total</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
                   </div>
                 </div>
               </div>
@@ -490,47 +526,47 @@ interface Assignment {
                 <div class="flex items-center space-x-2">
                   <div class="w-4 h-4 bg-green-500 rounded"></div>
                   <div class="text-sm">
-                    <span class="font-semibold">{{ dashboardStats().cleared }}</span>
-                    <span class="text-gray-600"> Cleared</span>
+                    <span class="font-semibold dark:text-white">{{ dashboardStats().cleared }}</span>
+                    <span class="text-gray-600 dark:text-gray-400"> Cleared</span>
                   </div>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="w-4 h-4 bg-yellow-500 rounded"></div>
                   <div class="text-sm">
-                    <span class="font-semibold">{{ dashboardStats().pending }}</span>
-                    <span class="text-gray-600"> Pending</span>
+                    <span class="font-semibold dark:text-white">{{ dashboardStats().pending }}</span>
+                    <span class="text-gray-600 dark:text-gray-400"> Pending</span>
                   </div>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="w-4 h-4 bg-red-500 rounded"></div>
                   <div class="text-sm">
-                    <span class="font-semibold">{{ dashboardStats().returned }}</span>
-                    <span class="text-gray-600"> Returned</span>
+                    <span class="font-semibold dark:text-white">{{ dashboardStats().returned }}</span>
+                    <span class="text-gray-600 dark:text-gray-400"> Returned</span>
                   </div>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="w-4 h-4 bg-gray-400 rounded"></div>
                   <div class="text-sm">
-                    <span class="font-semibold">{{ dashboardStats().notSubmitted }}</span>
-                    <span class="text-gray-600"> Not Submitted</span>
+                    <span class="font-semibold dark:text-white">{{ dashboardStats().notSubmitted }}</span>
+                    <span class="text-gray-600 dark:text-gray-400"> Not Submitted</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Progress Bars -->
-            <div class="p-4 border border-gray-200 border-dashed rounded-lg bg-white">
-              <h3 class="text-lg font-bold text-gray-800 mb-6">Progress Overview</h3>
+            <div class="p-4 border border-gray-200 dark:border-gray-700 border-dashed rounded-lg bg-white dark:bg-gray-800">
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-6">Progress Overview</h3>
               <div class="space-y-6">
                 <!-- Overall Completion -->
                 <div>
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Overall Completion</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Overall Completion</span>
                     <span class="text-sm font-semibold text-green-600">
                       {{ dashboardStats().completionRate }}%
                     </span>
                   </div>
-                  <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
                     <div
                       class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
                       [style.width.%]="dashboardStats().completionRate"
@@ -541,7 +577,7 @@ interface Assignment {
                 <!-- Submitted -->
                 <div>
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Submitted</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Submitted</span>
                     <span class="text-sm font-semibold text-green-600">
                       {{ dashboardStats().submitted }} /
                       {{ dashboardStats().totalRequirements }} ({{
@@ -552,7 +588,7 @@ interface Assignment {
                       }}%)
                     </span>
                   </div>
-                  <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div
                       class="bg-linear-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
@@ -565,12 +601,12 @@ interface Assignment {
                 <!-- Pending -->
                 <div>
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Pending Review</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Pending Review</span>
                     <span class="text-sm font-semibold text-yellow-600">
                       {{ dashboardStats().pending }}
                     </span>
                   </div>
-                  <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div
                       class="bg-linear-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
@@ -583,12 +619,12 @@ interface Assignment {
                 <!-- Returned -->
                 <div>
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Returned for Revision</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Returned for Revision</span>
                     <span class="text-sm font-semibold text-red-600">
                       {{ dashboardStats().returned }}
                     </span>
                   </div>
-                  <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div
                       class="bg-linear-to-r from-red-400 to-red-600 h-full rounded-full transition-all duration-500"
                       [style.width.%]="
@@ -604,13 +640,13 @@ interface Assignment {
           <!-- Status Cards -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div
-              class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              class="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-green-800 mb-1">Cleared</h3>
-                  <p class="text-3xl font-bold text-green-600">{{ dashboardStats().cleared }}</p>
-                  <p class="text-xs text-green-700 mt-2">
+                  <h3 class="text-sm font-medium text-green-800 dark:text-green-300 mb-1">Cleared</h3>
+                  <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ dashboardStats().cleared }}</p>
+                  <p class="text-xs text-green-700 dark:text-green-400 mt-2">
                     {{
                       (
                         (dashboardStats().cleared / dashboardStats().totalRequirements) *
@@ -619,20 +655,20 @@ interface Assignment {
                     }}% of total
                   </p>
                 </div>
-                <div class="text-4xl text-green-300">
+                <div class="text-4xl text-green-300 dark:text-green-700">
                   <i class="fas fa-check-circle"></i>
                 </div>
               </div>
             </div>
 
             <div
-              class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              class="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-500 rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-yellow-800 mb-1">Pending Review</h3>
-                  <p class="text-3xl font-bold text-yellow-600">{{ dashboardStats().pending }}</p>
-                  <p class="text-xs text-yellow-700 mt-2">
+                  <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">Pending Review</h3>
+                  <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ dashboardStats().pending }}</p>
+                  <p class="text-xs text-yellow-700 dark:text-yellow-400 mt-2">
                     {{
                       (
                         (dashboardStats().pending / dashboardStats().totalRequirements) *
@@ -641,20 +677,20 @@ interface Assignment {
                     }}% of total
                   </p>
                 </div>
-                <div class="text-4xl text-yellow-300">
+                <div class="text-4xl text-yellow-300 dark:text-yellow-700">
                   <i class="fas fa-clock"></i>
                 </div>
               </div>
             </div>
 
             <div
-              class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-red-800 mb-1">Returned</h3>
-                  <p class="text-3xl font-bold text-red-600">{{ dashboardStats().returned }}</p>
-                  <p class="text-xs text-red-700 mt-2">
+                  <h3 class="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Returned</h3>
+                  <p class="text-3xl font-bold text-red-600 dark:text-red-400">{{ dashboardStats().returned }}</p>
+                  <p class="text-xs text-red-700 dark:text-red-400 mt-2">
                     {{
                       (
                         (dashboardStats().returned / dashboardStats().totalRequirements) *
@@ -663,22 +699,22 @@ interface Assignment {
                     }}% of total
                   </p>
                 </div>
-                <div class="text-4xl text-red-300">
+                <div class="text-4xl text-red-300 dark:text-red-700">
                   <i class="fas fa-undo"></i>
                 </div>
               </div>
             </div>
 
             <div
-              class="bg-gray-50 border-l-4 border-gray-500 rounded-lg p-6 hover:shadow-md transition-shadow"
+              class="bg-gray-50 dark:bg-gray-700/50 border-l-4 border-gray-500 rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-gray-800 mb-1">Not Submitted</h3>
-                  <p class="text-3xl font-bold text-gray-600">
+                  <h3 class="text-sm font-medium text-gray-800 dark:text-gray-300 mb-1">Not Submitted</h3>
+                  <p class="text-3xl font-bold text-gray-600 dark:text-gray-300">
                     {{ dashboardStats().notSubmitted }}
                   </p>
-                  <p class="text-xs text-gray-700 mt-2">
+                  <p class="text-xs text-gray-700 dark:text-gray-400 mt-2">
                     {{
                       (
                         (dashboardStats().notSubmitted / dashboardStats().totalRequirements) *
@@ -687,7 +723,7 @@ interface Assignment {
                     }}% of total
                   </p>
                 </div>
-                <div class="text-4xl text-gray-300">
+                <div class="text-4xl text-gray-300 dark:text-gray-600">
                   <i class="fas fa-exclamation-circle"></i>
                 </div>
               </div>
@@ -748,6 +784,7 @@ export class FacultyDashboard implements OnInit {
     public authService: Auth,
     private requirementService: FacultyRequirementService,
     private dropdownService: DropdownService,
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit() {

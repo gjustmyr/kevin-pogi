@@ -831,11 +831,12 @@ exports.importFromProfile = async (req, res) => {
 
     // Import professional memberships as other info (MEMBERSHIP)
     for (const membership of memberships) {
+      const membershipDetails = `${membership.organization_name} - ${membership.position || "Member"}`;
       const existingMembership = await db.PDSOtherInfo.findOne({
         where: {
           pds_id: pds.pds_id,
           info_type: "MEMBERSHIP",
-          details: membership.organization_name,
+          details: membershipDetails,
         },
       });
 
@@ -843,18 +844,19 @@ exports.importFromProfile = async (req, res) => {
         await db.PDSOtherInfo.create({
           pds_id: pds.pds_id,
           info_type: "MEMBERSHIP",
-          details: `${membership.organization_name} - ${membership.position || "Member"}`,
+          details: membershipDetails,
         });
       }
     }
 
     // Import awards as other info (RECOGNITION)
     for (const award of awards) {
+      const recognitionDetails = `${award.award_title} - ${award.awarding_body} (${award.date_received || "N/A"})`;
       const existingAward = await db.PDSOtherInfo.findOne({
         where: {
           pds_id: pds.pds_id,
           info_type: "RECOGNITION",
-          details: award.award_title,
+          details: recognitionDetails,
         },
       });
 
@@ -862,7 +864,7 @@ exports.importFromProfile = async (req, res) => {
         await db.PDSOtherInfo.create({
           pds_id: pds.pds_id,
           info_type: "RECOGNITION",
-          details: `${award.award_title} - ${award.awarding_body} (${award.date_received || "N/A"})`,
+          details: recognitionDetails,
         });
       }
     }

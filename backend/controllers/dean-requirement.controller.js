@@ -26,9 +26,9 @@ exports.getAllRequirements = async (req, res) => {
     const status = req.query.status;
     const search = req.query.search || "";
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const facultyList = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
       attributes: ["faculty_id"],
     });
 
@@ -258,9 +258,9 @@ exports.getDepartmentStatistics = async (req, res) => {
 
     console.log('✅ Found dean:', dean.first_name, dean.last_name, 'Department:', dean.department);
 
-    // Get all faculty in dean's department
+    // Get all active (non-archived) faculty in dean's department
     const facultyList = await db.Faculty.findAll({
-      where: { department: dean.department },
+      where: { department: dean.department, is_active: true },
     });
 
     // Count faculties by clearance status

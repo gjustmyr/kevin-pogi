@@ -119,10 +119,13 @@ exports.getOrganizations = async (req, res) => {
   }
 };
 
-// Get all academic years for dropdown
+// Get all academic years for dropdown (only active year)
 exports.getAcademicYears = async (req, res) => {
   try {
     const academicYears = await db.AcademicYear.findAll({
+      where: {
+        is_active: true, // Only show the active academic year
+      },
       attributes: ["academic_year_id", "year_start", "year_end", "is_active"],
       order: [["year_start", "DESC"]],
     });
@@ -135,12 +138,14 @@ exports.getAcademicYears = async (req, res) => {
 };
 
 // Get static position levels for dropdown
+// Note: For deans, Lecturer I-IV are excluded
 exports.getPositionLevels = async (req, res) => {
   try {
     const positionLevels = [
       { value: "Lecturer I", label: "Lecturer I" },
       { value: "Lecturer II", label: "Lecturer II" },
       { value: "Lecturer III", label: "Lecturer III" },
+      { value: "Lecturer IV", label: "Lecturer IV" },
       { value: "Instructor I", label: "Instructor I" },
       { value: "Instructor II", label: "Instructor II" },
       { value: "Instructor III", label: "Instructor III" },
@@ -166,5 +171,37 @@ exports.getPositionLevels = async (req, res) => {
   } catch (error) {
     console.error("Get position levels dropdown error:", error);
     res.status(500).json({ message: "Error fetching position levels" });
+  }
+};
+
+// Get position levels for deans only (excludes Lecturer I-IV)
+exports.getDeanPositionLevels = async (req, res) => {
+  try {
+    const positionLevels = [
+      { value: "Instructor I", label: "Instructor I" },
+      { value: "Instructor II", label: "Instructor II" },
+      { value: "Instructor III", label: "Instructor III" },
+      { value: "Assistant Professor I", label: "Assistant Professor I" },
+      { value: "Assistant Professor II", label: "Assistant Professor II" },
+      { value: "Assistant Professor III", label: "Assistant Professor III" },
+      { value: "Assistant Professor IV", label: "Assistant Professor IV" },
+      { value: "Associate Professor I", label: "Associate Professor I" },
+      { value: "Associate Professor II", label: "Associate Professor II" },
+      { value: "Associate Professor III", label: "Associate Professor III" },
+      { value: "Associate Professor IV", label: "Associate Professor IV" },
+      { value: "Associate Professor V", label: "Associate Professor V" },
+      { value: "Professor I", label: "Professor I" },
+      { value: "Professor II", label: "Professor II" },
+      { value: "Professor III", label: "Professor III" },
+      { value: "Professor IV", label: "Professor IV" },
+      { value: "Professor V", label: "Professor V" },
+      { value: "Professor VI", label: "Professor VI" },
+      { value: "University Professor", label: "University Professor" },
+    ];
+
+    res.json(positionLevels);
+  } catch (error) {
+    console.error("Get dean position levels dropdown error:", error);
+    res.status(500).json({ message: "Error fetching dean position levels" });
   }
 };

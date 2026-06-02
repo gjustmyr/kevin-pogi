@@ -85,4 +85,8 @@ export class DropdownService {
   getPositionLevels(): Observable<DropdownPositionLevel[]> {
     return this.http.get<DropdownPositionLevel[]>(`${this.apiUrl}/position-levels`);
   }
+
+  getDeanPositionLevels(): Observable<DropdownPositionLevel[]> {
+    return this.http.get<DropdownPositionLevel[]>(`${this.apiUrl}/dean-position-levels`);
+  }
 }

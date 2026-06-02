@@ -2,6 +2,7 @@ import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../services/auth/auth';
 import { RouterModule } from '@angular/router';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { SuperadminAcademicYearManagement } from '../../superadmin/academic-year-management/academic-year-management';
 import { SuperadminDeanManagement } from '../../superadmin/dean-management/dean-management';
 import { SuperadminFacultyView } from '../../superadmin/faculty-view/faculty-view';
@@ -45,6 +46,7 @@ export class SuperadminDashboard implements OnInit {
   constructor(
     public authService: Auth,
     private dashboardService: SuperadminDashboardService,
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -88,6 +90,7 @@ export class SuperadminDashboard implements OnInit {
       faculty: 'Faculty Management',
       organization: 'Organization Management',
       'academic-year': 'Academic Year Settings',
+      'archived-academic-year': 'Archived Academic Years',
     };
     return titles[this.activeTab()] || 'Dashboard';
   }

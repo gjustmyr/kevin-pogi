@@ -25,9 +25,9 @@ export class FacultyRequirements implements OnInit {
   pageSize = 10;
 
   academicYearsList = signal<DropdownAcademicYear[]>([]);
-  selectedAcademicYear = signal<number>(0);
-  selectedSemester = signal<string>('');
-  selectedStatus = signal<string>('');
+  selectedAcademicYear: number = 0;
+  selectedSemester: string = '';
+  selectedStatus: string = '';
 
   // For submit modal
   showSubmitModal = signal(false);
@@ -35,6 +35,7 @@ export class FacultyRequirements implements OnInit {
     academic_year_id: 0,
     semester: '',
     requirement_name: '',
+    custom_requirement_name: '',
   };
   selectedFiles: File[] = [];
   uploading = signal(false);
@@ -62,10 +63,10 @@ export class FacultyRequirements implements OnInit {
         this.academicYearsList.set(years);
         // Set latest (first) academic year and semester as default
         if (years.length > 0) {
-          this.selectedAcademicYear.set(years[0].academic_year_id);
+          this.selectedAcademicYear = years[0].academic_year_id;
           this.submitForm.academic_year_id = years[0].academic_year_id;
         }
-        this.selectedSemester.set('1st Semester');
+        this.selectedSemester = '1st Semester';
         this.submitForm.semester = '1st Semester';
       },
       error: (error) => {
@@ -80,9 +81,9 @@ export class FacultyRequirements implements OnInit {
       .getMyRequirements(
         this.currentPage(),
         this.pageSize,
-        this.selectedAcademicYear() || undefined,
-        this.selectedSemester() || undefined,
-        this.selectedStatus() || undefined,
+        this.selectedAcademicYear || undefined,
+        this.selectedSemester || undefined,
+        this.selectedStatus || undefined,
       )
       .subscribe({
         next: (response) => {
@@ -151,6 +152,7 @@ export class FacultyRequirements implements OnInit {
     this.showSubmitModal.set(true);
     this.submitForm.semester = '';
     this.submitForm.requirement_name = '';
+    this.submitForm.custom_requirement_name = '';
     this.selectedFiles = [];
   }
 
@@ -158,13 +160,43 @@ export class FacultyRequirements implements OnInit {
     this.showSubmitModal.set(false);
     this.submitForm.semester = '';
     this.submitForm.requirement_name = '';
+    this.submitForm.custom_requirement_name = '';
+    this.submitForm.requirement_name = '';
     this.selectedFiles = [];
   }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFiles = Array.from(input.files);
+      const files = Array.from(input.files);
+      
+      // Check file count limit
+      if (files.length > 10) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Too Many Files',
+          text: 'You can upload a maximum of 10 files at once. Please select fewer files.',
+          confirmButtonColor: '#2563eb',
+        });
+        input.value = ''; // Clear the input
+        return;
+      }
+      
+      const maxSize = 200 * 1024 * 1024; // 200MB
+      const oversizedFiles = files.filter(f => f.size > maxSize);
+      
+      if (oversizedFiles.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'File Too Large',
+          text: `Some files exceed the 200MB limit: ${oversizedFiles.map(f => f.name).join(', ')}`,
+          confirmButtonColor: '#2563eb',
+        });
+        input.value = ''; // Clear the input
+        return;
+      }
+      
+      this.selectedFiles = files;
     }
   }
 
@@ -188,12 +220,28 @@ export class FacultyRequirements implements OnInit {
       return;
     }
 
+    // Check if "Other Documents" is selected and custom name is required
+    if (this.submitForm.requirement_name === 'Other Documents' && !this.submitForm.custom_requirement_name) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Document Name Required',
+        text: 'Please enter a name for your document',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+
+    // Use custom name if "Other Documents" is selected, otherwise use the selected requirement name
+    const requirementName = this.submitForm.requirement_name === 'Other Documents' 
+      ? this.submitForm.custom_requirement_name 
+      : this.submitForm.requirement_name;
+
     this.uploading.set(true);
     this.requirementService
       .submitRequirement(
         this.submitForm.academic_year_id,
         this.submitForm.semester,
-        this.submitForm.requirement_name,
+        requirementName,
         this.selectedFiles,
       )
       .subscribe({
@@ -244,7 +292,35 @@ export class FacultyRequirements implements OnInit {
   onAddFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.addFiles = Array.from(input.files);
+      const files = Array.from(input.files);
+      
+      // Check file count limit
+      if (files.length > 10) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Too Many Files',
+          text: 'You can upload a maximum of 10 files at once. Please select fewer files.',
+          confirmButtonColor: '#2563eb',
+        });
+        input.value = ''; // Clear the input
+        return;
+      }
+      
+      const maxSize = 200 * 1024 * 1024; // 200MB
+      const oversizedFiles = files.filter(f => f.size > maxSize);
+      
+      if (oversizedFiles.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'File Too Large',
+          text: `Some files exceed the 200MB limit: ${oversizedFiles.map(f => f.name).join(', ')}`,
+          confirmButtonColor: '#2563eb',
+        });
+        input.value = ''; // Clear the input
+        return;
+      }
+      
+      this.addFiles = files;
     }
   }
 

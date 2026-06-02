@@ -66,6 +66,12 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: true,
       comment: "Date when faculty was cleared or status changed",
     },
+    is_active: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+      comment: "Account status: true=active (can login), false=disabled (cannot login)",
+    },
   });
 
   return Faculty;

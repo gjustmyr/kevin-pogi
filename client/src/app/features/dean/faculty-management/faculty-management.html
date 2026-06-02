@@ -1,30 +1,72 @@
 <div class="p-4">
-  <!-- Action Bar -->
-  <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
-    <div class="flex gap-2">
+  <!-- Tab Navigation -->
+  <div class="mb-6 border-b border-gray-200">
+    <nav class="flex space-x-4">
       <button
-        (click)="openCreateModal()"
-        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition text-sm"
+        (click)="switchTab('active')"
+        [class.border-green-500]="activeTab() === 'active'"
+        [class.text-green-600]="activeTab() === 'active'"
+        [class.border-transparent]="activeTab() !== 'active'"
+        [class.text-gray-500]="activeTab() !== 'active'"
+        class="py-3 px-4 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition flex items-center gap-2"
       >
-        + Add Faculty
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Active Faculty
+        <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+          {{ totalItems() }}
+        </span>
       </button>
-    </div>
-    <div class="flex gap-2">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (keyup.enter)="searchFaculty()"
-        placeholder="Search faculty..."
-        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
-      />
       <button
-        (click)="searchFaculty()"
-        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition text-sm"
+        (click)="switchTab('disabled')"
+        [class.border-red-500]="activeTab() === 'disabled'"
+        [class.text-red-600]="activeTab() === 'disabled'"
+        [class.border-transparent]="activeTab() !== 'disabled'"
+        [class.text-gray-500]="activeTab() !== 'disabled'"
+        class="py-3 px-4 border-b-2 font-medium text-sm hover:text-red-600 hover:border-red-300 transition flex items-center gap-2"
       >
-        Search
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+        </svg>
+        Disabled Accounts
+        @if (disabledTotalItems() > 0) {
+          <span class="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+            {{ disabledTotalItems() }}
+          </span>
+        }
       </button>
-    </div>
+    </nav>
   </div>
+
+  <!-- Active Faculty Tab -->
+  @if (activeTab() === 'active') {
+    <!-- Action Bar -->
+    <div class="mb-4 flex flex-col sm:flex-row justify-between gap-4">
+      <div class="flex gap-2">
+        <button
+          (click)="openCreateModal()"
+          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition text-sm"
+        >
+          + Add Faculty
+        </button>
+      </div>
+      <div class="flex gap-2">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="searchFaculty()"
+          placeholder="Search faculty..."
+          class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none text-sm"
+        />
+        <button
+          (click)="searchFaculty()"
+          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition text-sm"
+        >
+          Search
+        </button>
+      </div>
+    </div>
 
   <!-- Table -->
   <div class="relative border border-gray-200 border-dashed rounded-lg overflow-x-auto pb-48">
@@ -82,11 +124,18 @@
                     <i class="fas fa-file-download"></i>
                   </button>
                   <button
-                    (click)="openDeleteModal(faculty)"
-                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                    title="Delete"
+                    (click)="downloadFacultyProfile(faculty)"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                    title="Download Faculty Profile PDF"
                   >
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-id-card"></i>
+                  </button>
+                  <button
+                    (click)="disableFaculty(faculty)"
+                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition"
+                    title="Disable Account"
+                  >
+                    <i class="fas fa-ban"></i>
                   </button>
                   <div class="relative">
                     <button
@@ -144,6 +193,126 @@
       </button>
     </div>
   </div>
+  }
+
+  <!-- Disabled Accounts Tab -->
+  @if (activeTab() === 'disabled') {
+    <!-- Search Bar -->
+    <div class="mb-4 flex justify-end gap-2">
+      <input
+        type="text"
+        [(ngModel)]="disabledSearchQuery"
+        (keyup.enter)="searchDisabledFaculty()"
+        placeholder="Search disabled accounts..."
+        class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-sm"
+      />
+      <button
+        (click)="searchDisabledFaculty()"
+        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition text-sm"
+      >
+        Search
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="relative border border-gray-200 border-dashed rounded-lg overflow-x-auto pb-48">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Employee ID</th>
+            <th scope="col" class="px-6 py-3">Name</th>
+            <th scope="col" class="px-6 py-3">Email</th>
+            <th scope="col" class="px-6 py-3">Contact</th>
+            <th scope="col" class="px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (disabledLoading()) {
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center text-sm">Loading...</td>
+            </tr>
+          } @else if (disabledFacultyList().length === 0) {
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center text-sm">
+                <div class="flex flex-col items-center justify-center py-8">
+                  <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-gray-600 font-medium">No disabled accounts</p>
+                  <p class="text-gray-500 text-sm mt-1">All faculty accounts are active</p>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (faculty of disabledFacultyList(); track faculty.faculty_id) {
+              <tr class="bg-white border-b hover:bg-gray-50">
+                <td class="px-6 py-4 font-medium text-gray-900">{{ faculty.employee_id }}</td>
+                <td class="px-6 py-4">{{ getFullName(faculty) }}</td>
+                <td class="px-6 py-4">{{ faculty.email }}</td>
+                <td class="px-6 py-4">{{ faculty.contact_number || 'N/A' }}</td>
+                <td class="px-6 py-4">
+                  <div class="flex gap-2">
+                    <button
+                      (click)="restoreFaculty(faculty)"
+                      class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                      title="Restore Account"
+                    >
+                      <i class="fas fa-undo"></i>
+                    </button>
+                    <button
+                      (click)="permanentlyDeleteFaculty(faculty)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                      title="Permanently Delete"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination for Disabled Accounts -->
+    <div class="flex justify-between items-center mt-4">
+      <div class="text-sm text-gray-700">
+        Showing {{ (disabledCurrentPage() - 1) * pageSize + 1 }} to
+        {{ Math.min(disabledCurrentPage() * pageSize, disabledTotalItems()) }} of {{ disabledTotalItems() }} results
+      </div>
+      <div class="flex gap-2">
+        <button
+          (click)="changeDisabledPage(disabledCurrentPage() - 1)"
+          [disabled]="disabledCurrentPage() === 1"
+          class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
+          Previous
+        </button>
+        @for (page of getPageNumbers(); track page) {
+          @if (page === -1) {
+            <span class="px-3 py-1 text-sm">...</span>
+          } @else {
+            <button
+              (click)="changeDisabledPage(page)"
+              [class.bg-red-600]="page === disabledCurrentPage()"
+              [class.text-white]="page === disabledCurrentPage()"
+              class="px-3 py-1 border rounded hover:bg-gray-100 text-sm"
+            >
+              {{ page }}
+            </button>
+          }
+        }
+        <button
+          (click)="changeDisabledPage(disabledCurrentPage() + 1)"
+          [disabled]="disabledCurrentPage() === disabledTotalPages()"
+          class="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  }
 </div>
 
 <!-- Create Modal -->

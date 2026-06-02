@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -15,6 +15,8 @@ import Swal from 'sweetalert2';
   styleUrl: './academic-year-management.css',
 })
 export class SuperadminAcademicYearManagement implements OnInit {
+  @Input() showArchived: boolean = false;
+  
   academicYearsList = signal<AcademicYear[]>([]);
   loading = signal(false);
   currentPage = signal(1);
@@ -46,7 +48,7 @@ export class SuperadminAcademicYearManagement implements OnInit {
 
   loadAcademicYears() {
     this.loading.set(true);
-    this.academicYearService.getAcademicYears(this.currentPage(), this.pageSize).subscribe({
+    this.academicYearService.getAcademicYears(this.currentPage(), this.pageSize, this.showArchived).subscribe({
       next: (response) => {
         this.academicYearsList.set(response.academicYears);
         this.currentPage.set(response.currentPage);
@@ -212,11 +214,11 @@ export class SuperadminAcademicYearManagement implements OnInit {
 
   openDeleteModal(academicYear: AcademicYear) {
     Swal.fire({
-      title: 'Delete Academic Year',
-      text: `Are you sure you want to delete "${academicYear.year_start}-${academicYear.year_end}"? This action cannot be undone.`,
+      title: 'Archive Academic Year',
+      text: `Are you sure you want to archive "${academicYear.year_start}-${academicYear.year_end}"? All files and data will be preserved and can be restored later.`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Delete',
+      confirmButtonText: 'Archive',
       confirmButtonColor: '#dc2626',
       cancelButtonText: 'Cancel',
     }).then((result) => {
@@ -227,8 +229,8 @@ export class SuperadminAcademicYearManagement implements OnInit {
             this.loading.set(false);
             Swal.fire({
               icon: 'success',
-              title: 'Deleted!',
-              text: 'Academic year deleted successfully',
+              title: 'Archived!',
+              text: 'Academic year archived successfully',
               confirmButtonColor: '#dc2626',
             });
             this.loadAcademicYears();
@@ -238,7 +240,92 @@ export class SuperadminAcademicYearManagement implements OnInit {
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: error.error?.message || 'Failed to delete academic year',
+              text: error.error?.message || 'Failed to archive academic year',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
+    });
+  }
+
+  restoreAcademicYear(academicYear: AcademicYear) {
+    Swal.fire({
+      title: 'Restore Academic Year',
+      text: `Are you sure you want to restore "${academicYear.year_start}-${academicYear.year_end}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Restore',
+      confirmButtonColor: '#16a34a',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.academicYearService.restoreAcademicYear(academicYear.academic_year_id).subscribe({
+          next: () => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'success',
+              title: 'Restored!',
+              text: 'Academic year restored successfully',
+              confirmButtonColor: '#16a34a',
+            });
+            this.loadAcademicYears();
+          },
+          error: (error) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to restore academic year',
+              confirmButtonColor: '#dc2626',
+            });
+          },
+        });
+      }
+    });
+  }
+
+  openPermanentDeleteModal(academicYear: AcademicYear) {
+    Swal.fire({
+      title: 'Permanently Delete Academic Year',
+      html: `
+        <p class="text-gray-700 mb-3">Are you sure you want to <strong class="text-red-600">permanently delete</strong> "${academicYear.year_start}-${academicYear.year_end}"?</p>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-left">
+          <p class="text-red-800 font-semibold mb-2">⚠️ Warning: This action cannot be undone!</p>
+          <ul class="text-sm text-red-700 list-disc list-inside space-y-1">
+            <li>All data will be permanently deleted</li>
+            <li>All associated files will be lost</li>
+            <li>This cannot be restored</li>
+          </ul>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Permanently Delete',
+      confirmButtonColor: '#dc2626',
+      cancelButtonText: 'Cancel',
+      cancelButtonColor: '#6b7280',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading.set(true);
+        this.academicYearService.permanentlyDeleteAcademicYear(academicYear.academic_year_id).subscribe({
+          next: () => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'success',
+              title: 'Permanently Deleted!',
+              text: 'Academic year has been permanently deleted',
+              confirmButtonColor: '#dc2626',
+            });
+            this.loadAcademicYears();
+          },
+          error: (error) => {
+            this.loading.set(false);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error?.message || 'Failed to permanently delete academic year',
               confirmButtonColor: '#dc2626',
             });
           },

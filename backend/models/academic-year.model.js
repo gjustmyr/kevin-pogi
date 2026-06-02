@@ -18,6 +18,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    is_archived: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   });
 
   return AcademicYear;

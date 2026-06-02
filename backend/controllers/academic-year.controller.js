@@ -7,8 +7,14 @@ exports.getAcademicYears = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const includeArchived = req.query.includeArchived === 'true';
+
+    // If includeArchived is true, show ONLY archived (is_archived = true)
+    // If includeArchived is false, show ONLY non-archived (is_archived = false)
+    const whereClause = includeArchived ? { is_archived: true } : { is_archived: false };
 
     const { count, rows } = await AcademicYear.findAndCountAll({
+      where: whereClause,
       limit,
       offset,
       order: [["year_start", "DESC"]],
@@ -99,7 +105,7 @@ exports.updateAcademicYear = async (req, res) => {
   }
 };
 
-// Delete academic year
+// Delete academic year (soft delete - archive)
 exports.deleteAcademicYear = async (req, res) => {
   try {
     const { id } = req.params;
@@ -110,11 +116,64 @@ exports.deleteAcademicYear = async (req, res) => {
       return res.status(404).json({ message: "Academic year not found" });
     }
 
-    await academicYear.destroy();
+    // Soft delete - set is_archived to true
+    await academicYear.update({ is_archived: true });
 
-    res.json({ message: "Academic year deleted successfully" });
+    res.json({ message: "Academic year archived successfully" });
   } catch (error) {
     console.error("Delete academic year error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Restore archived academic year
+exports.restoreAcademicYear = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const academicYear = await AcademicYear.findByPk(id);
+
+    if (!academicYear) {
+      return res.status(404).json({ message: "Academic year not found" });
+    }
+
+    if (!academicYear.is_archived) {
+      return res.status(400).json({ message: "Academic year is not archived" });
+    }
+
+    // Restore - set is_archived to false
+    await academicYear.update({ is_archived: false });
+
+    res.json({ message: "Academic year restored successfully" });
+  } catch (error) {
+    console.error("Restore academic year error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Permanently delete academic year (hard delete)
+exports.permanentlyDeleteAcademicYear = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const academicYear = await AcademicYear.findByPk(id);
+
+    if (!academicYear) {
+      return res.status(404).json({ message: "Academic year not found" });
+    }
+
+    if (!academicYear.is_archived) {
+      return res.status(400).json({ 
+        message: "Academic year must be archived before permanent deletion" 
+      });
+    }
+
+    // Permanently delete from database
+    await academicYear.destroy();
+
+    res.json({ message: "Academic year permanently deleted successfully" });
+  } catch (error) {
+    console.error("Permanently delete academic year error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

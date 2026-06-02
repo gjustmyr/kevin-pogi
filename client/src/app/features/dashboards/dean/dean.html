@@ -84,7 +84,7 @@
         </button>
       </li>
 
-      <!-- Accomplishments -->
+      <!-- Portfolio -->
       <li>
         <button
           (click)="selectTab('accomplishments')"
@@ -100,16 +100,16 @@
               d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"
             />
           </svg>
-          <span class="flex-1 ms-3 whitespace-nowrap text-left">Accomplishments</span>
+          <span class="flex-1 ms-3 whitespace-nowrap text-left">Portfolio</span>
         </button>
       </li>
 
-      <!-- Personal Data Sheet -->
+      <!-- Send Email -->
       <li>
         <button
-          (click)="selectTab('pds')"
-          [class.bg-green-50]="activeTab() === 'pds'"
-          [class.text-green-600]="activeTab() === 'pds'"
+          (click)="selectTab('faculty-notifications')"
+          [class.bg-green-50]="activeTab() === 'faculty-notifications'"
+          [class.text-green-600]="activeTab() === 'faculty-notifications'"
           class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
         >
           <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,10 +117,10 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
             />
           </svg>
-          <span class="flex-1 ms-3 whitespace-nowrap text-left">Personal Data Sheet</span>
+          <span class="flex-1 ms-3 whitespace-nowrap text-left">Send Email</span>
         </button>
       </li>
 
@@ -170,26 +170,6 @@
         </button>
       </li>
 
-      <!-- Organization Events -->
-      <li>
-        <button
-          (click)="selectTab('org-events')"
-          [class.bg-green-50]="activeTab() === 'org-events'"
-          [class.text-green-600]="activeTab() === 'org-events'"
-          class="flex items-center w-full px-2 py-1.5 text-gray-700 rounded-lg hover:bg-gray-100 group"
-        >
-          <svg class="shrink-0 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          <span class="flex-1 ms-3 whitespace-nowrap text-left">Organization Events</span>
-        </button>
-      </li>
-
       <li class="pt-2 mt-2 border-t border-gray-200"></li>
     </ul>
   </div>
@@ -197,7 +177,7 @@
 
 <!-- Top Bar -->
 <div
-  class="fixed top-0 h-16 bg-white border-b border-gray-200 z-40 flex items-center justify-between px-4 gap-4 transition-all duration-300"
+  class="fixed top-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 flex items-center justify-between px-4 gap-4 transition-all duration-300"
   [class.left-64]="isSidebarOpen()"
   [class.left-0]="!isSidebarOpen()"
   [class.right-0]="true"
@@ -206,32 +186,62 @@
     <button
       (click)="toggleSidebar()"
       type="button"
-      class="text-gray-900 bg-transparent hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm p-2 focus:outline-none"
+      class="text-gray-900 dark:text-gray-100 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 font-medium rounded-lg text-sm p-2 focus:outline-none"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10" />
       </svg>
     </button>
-    <h1 class="text-xl font-bold text-gray-900">{{ getPageTitle() }}</h1>
+    <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ getPageTitle() }}</h1>
   </div>
 
-  <!-- User Menu -->
-  <div class="relative">
+  <!-- Right Section: Dark Mode + User Menu -->
+  <div class="flex items-center gap-3">
+    <!-- Dark Mode Toggle Button -->
     <button
-      (click)="toggleUserMenu()"
-      class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+      (click)="themeService.toggleTheme()"
+      class="flex items-center justify-center p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-300 dark:border-gray-600"
+      title="Toggle Dark Mode"
+      aria-label="Toggle Dark Mode"
     >
-      <span class="font-medium">{{ deanName() || 'Dean' }}</span>
-      <svg
-        class="w-4 h-4 transition-transform"
-        [class.rotate-180]="isUserMenuOpen()"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
+      @if (themeService.isDarkMode()) {
+        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          />
+        </svg>
+      } @else {
+        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
+        </svg>
+      }
     </button>
+
+    <!-- User Menu -->
+    <div class="relative">
+      <button
+        (click)="toggleUserMenu()"
+        class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+      >
+        <span class="font-medium">{{ deanName() || 'Dean' }}</span>
+        <svg
+          class="w-4 h-4 transition-transform"
+          [class.rotate-180]="isUserMenuOpen()"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
     @if (isUserMenuOpen()) {
       <div class="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -266,6 +276,7 @@
       </div>
     }
   </div>
+</div>
 </div>
 
 <!-- Main Content -->
@@ -602,7 +613,7 @@
                 </div>
               </div>
 
-              <!-- Withholding Faculties -->
+              <!-- For Review Faculties -->
               <div
                 class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg border-2 border-red-200"
               >
@@ -617,7 +628,7 @@
                   <p class="text-3xl font-bold text-red-700">
                     {{ departmentStats()!.withholding_faculties }}
                   </p>
-                  <p class="text-sm text-red-600 font-medium">Withholding</p>
+                  <p class="text-sm text-red-600 font-medium">For Review</p>
                   <p class="text-xs text-gray-600 mt-1">Has returned requirements</p>
                 </div>
               </div>
@@ -1480,6 +1491,9 @@
   @if (activeTab() === 'faculty') {
     <app-dean-faculty-management />
   }
+  @if (activeTab() === 'faculty-notifications') {
+    <app-faculty-notifications />
+  }
   @if (activeTab() === 'organization') {
     <app-dean-organization-management />
   }
@@ -1489,14 +1503,8 @@
   @if (activeTab() === 'org-documents') {
     <app-dean-organization-documents />
   }
-  @if (activeTab() === 'org-events') {
-    <app-dean-organization-events />
-  }
   @if (activeTab() === 'my-profile') {
     <app-dean-my-profile />
-  }
-  @if (activeTab() === 'pds') {
-    <app-dean-personal-data-sheet />
   }
 </div>
 

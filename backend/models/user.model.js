@@ -29,6 +29,12 @@ module.exports = (sequelize, Sequelize) => {
 			allowNull: false,
 			defaultValue: "faculty",
 		},
+		is_active: {
+			type: Sequelize.BOOLEAN,
+			defaultValue: true,
+			allowNull: false,
+			comment: "Account status: true=active (can login), false=disabled (cannot login)",
+		},
 	}, {
 		// Add composite unique constraint: one email per role
 		indexes: [

@@ -36,6 +36,7 @@ exports.getFaculty = async (req, res) => {
 
     const whereClause = {
       department: dean.department,
+      is_active: true, // Only show active faculty
     };
 
     if (search) {
@@ -407,5 +408,336 @@ exports.resetFacultyPassword = async (req, res) => {
   } catch (error) {
     console.error("Reset password error:", error);
     res.status(500).json({ message: "Error resetting password" });
+  }
+};
+
+
+// Get faculty full profile for PDF export
+exports.getFacultyFullProfile = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+    const { facultyId } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    // Get faculty and verify they belong to dean's department
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id: facultyId,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      return res.status(404).json({
+        message: "Faculty not found or does not belong to your department",
+      });
+    }
+
+    // Get all profile data
+    const [
+      personalProfile,
+      academicProfiles,
+      employmentProfiles,
+      memberships,
+      awards,
+    ] = await Promise.all([
+      db.FacultyPersonalProfile.findOne({
+        where: { faculty_id: facultyId },
+      }),
+      db.FacultyAcademicProfile.findAll({
+        where: { faculty_id: facultyId },
+        order: [["year_graduated", "DESC"]],
+      }),
+      db.FacultyEmploymentProfile.findAll({
+        where: { faculty_id: facultyId },
+        order: [["date_from", "DESC"]],
+      }),
+      db.FacultyProfessionalMembership.findAll({
+        where: { faculty_id: facultyId },
+        order: [["date_joined", "DESC"]],
+      }),
+      db.FacultyAwards.findAll({
+        where: { faculty_id: facultyId },
+        order: [["date_received", "DESC"]],
+      }),
+    ]);
+
+    // Get eligibilities from PDS if exists
+    let eligibilities = [];
+    const pds = await db.PersonalDataSheet.findOne({
+      where: { faculty_id: facultyId },
+      include: [
+        {
+          model: db.PDSEligibility,
+          as: "eligibilities",
+        },
+      ],
+    });
+    if (pds && pds.eligibilities) {
+      eligibilities = pds.eligibilities;
+    }
+
+    // Get courses handled (from requirements or other source)
+    // This is a placeholder - adjust based on your actual data structure
+    const coursesHandled = [];
+
+    res.json({
+      personal: personalProfile || null,
+      academic: academicProfiles || [],
+      employment: employmentProfiles || [],
+      memberships: memberships || [],
+      awards: awards || [],
+      eligibilities: eligibilities || [],
+      coursesHandled: coursesHandled,
+      faculty: {
+        employee_id: faculty.employee_id,
+        first_name: faculty.first_name,
+        middle_name: faculty.middle_name,
+        last_name: faculty.last_name,
+        email: faculty.email,
+        contact_number: faculty.contact_number,
+        department: faculty.department,
+        position_level: faculty.position_level,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching faculty full profile:", error);
+    res.status(500).json({
+      message: "Error fetching faculty profile",
+      error: error.message,
+    });
+  }
+};
+
+
+// Get disabled faculty for dean's department
+exports.getDisabledFaculty = async (req, res) => {
+  try {
+    const deanId = req.user.user_id;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || "";
+
+    const whereClause = {
+      department: dean.department,
+      is_active: false, // Only show disabled faculty
+    };
+
+    if (search) {
+      whereClause[Op.or] = [
+        { first_name: { [Op.like]: `%${search}%` } },
+        { last_name: { [Op.like]: `%${search}%` } },
+        { email: { [Op.like]: `%${search}%` } },
+      ];
+    }
+
+    const { count, rows } = await db.Faculty.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset,
+      order: [["last_name", "ASC"]],
+    });
+
+    res.json({
+      faculty: rows,
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+    });
+  } catch (error) {
+    console.error("Get disabled faculty error:", error);
+    res.status(500).json({ message: "Error fetching disabled faculty" });
+  }
+};
+
+// Disable faculty account (soft delete)
+exports.disableFaculty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    // Check if already disabled
+    if (!faculty.is_active) {
+      await transaction.rollback();
+      return res.status(400).json({ message: "Faculty account is already disabled" });
+    }
+
+    // Disable faculty account
+    await faculty.update({ is_active: false }, { transaction });
+
+    // Also disable the associated user account
+    await db.User.update(
+      { is_active: false },
+      { where: { user_id: faculty.user_id }, transaction }
+    );
+
+    await transaction.commit();
+
+    res.json({
+      message: "Faculty account disabled successfully",
+      faculty,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Disable faculty error:", error);
+    res.status(500).json({ message: "Error disabling faculty account" });
+  }
+};
+
+// Restore faculty account
+exports.restoreFaculty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    // Check if already active
+    if (faculty.is_active) {
+      await transaction.rollback();
+      return res.status(400).json({ message: "Faculty account is already active" });
+    }
+
+    // Restore faculty account
+    await faculty.update({ is_active: true }, { transaction });
+
+    // Also restore the associated user account
+    await db.User.update(
+      { is_active: true },
+      { where: { user_id: faculty.user_id }, transaction }
+    );
+
+    await transaction.commit();
+
+    res.json({
+      message: "Faculty account restored successfully",
+      faculty,
+    });
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Restore faculty error:", error);
+    res.status(500).json({ message: "Error restoring faculty account" });
+  }
+};
+
+// Permanently delete faculty (only for disabled accounts)
+exports.permanentlyDeleteFaculty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+
+  try {
+    const deanId = req.user.user_id;
+    const { id } = req.params;
+
+    // Get dean's department
+    const dean = await db.Dean.findOne({
+      where: { user_id: deanId },
+    });
+
+    if (!dean) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Dean profile not found" });
+    }
+
+    const faculty = await db.Faculty.findOne({
+      where: {
+        faculty_id: id,
+        department: dean.department,
+      },
+    });
+
+    if (!faculty) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    // Only allow permanent deletion of disabled accounts
+    if (faculty.is_active) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: "Cannot permanently delete an active account. Please disable it first.",
+      });
+    }
+
+    // Delete user account
+    await db.User.destroy({
+      where: { user_id: faculty.user_id },
+      transaction,
+    });
+
+    // Delete faculty profile
+    await faculty.destroy({ transaction });
+
+    await transaction.commit();
+
+    res.json({ message: "Faculty permanently deleted successfully" });
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Permanently delete faculty error:", error);
+    res.status(500).json({ message: "Error permanently deleting faculty" });
   }
 };

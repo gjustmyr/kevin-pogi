@@ -69,6 +69,13 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Check if account is active
+    if (user.is_active === false) {
+      return res.status(403).json({
+        message: "Your account has been disabled. Please contact your administrator.",
+      });
+    }
+
     // Get user profile based on role
     let profile = null;
     let profileData = {};

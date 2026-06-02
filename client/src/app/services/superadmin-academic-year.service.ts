@@ -8,6 +8,7 @@ export interface AcademicYear {
   year_start: number;
   year_end: number;
   is_active: boolean;
+  is_archived?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -39,8 +40,11 @@ export class SuperadminAcademicYearService {
 
   constructor(private http: HttpClient) {}
 
-  getAcademicYears(page: number = 1, limit: number = 10): Observable<AcademicYearsResponse> {
-    let params = new HttpParams().set('page', page.toString()).set('limit', limit.toString());
+  getAcademicYears(page: number = 1, limit: number = 10, includeArchived: boolean = false): Observable<AcademicYearsResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('includeArchived', includeArchived.toString());
 
     return this.http.get<AcademicYearsResponse>(this.apiUrl, { params });
   }
@@ -63,5 +67,13 @@ export class SuperadminAcademicYearService {
 
   deleteAcademicYear(id: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
+  }
+
+  restoreAcademicYear(id: number): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/${id}/restore`, {});
+  }
+
+  permanentlyDeleteAcademicYear(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}/permanent`);
   }
 }

@@ -1,6 +1,7 @@
 export interface LoginCredentials {
   email: string;
   password: string;
+  recaptchaToken?: string; // Optional for backward compatibility
 }
 
 export enum UserRole {

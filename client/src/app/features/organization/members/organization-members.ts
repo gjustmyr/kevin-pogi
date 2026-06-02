@@ -97,8 +97,7 @@ export class OrganizationMembersComponent implements OnInit {
   bulkUploadForm = signal({
     file: null as File | null,
     academic_year_id: undefined as number | undefined,
-    term_start_date: '',
-    department: '',
+    section: '',
   });
   uploadResults = signal<any>(null);
 
@@ -705,8 +704,7 @@ export class OrganizationMembersComponent implements OnInit {
     this.bulkUploadForm.set({
       file: null,
       academic_year_id: undefined,
-      term_start_date: '',
-      department: '',
+      section: '',
     });
     this.uploadResults.set(null);
     this.showBulkUploadModal.set(true);
@@ -742,7 +740,7 @@ export class OrganizationMembersComponent implements OnInit {
   uploadMembers() {
     const form = this.bulkUploadForm();
 
-    if (!form.file || !form.academic_year_id || !form.term_start_date || !form.department) {
+    if (!form.file || !form.academic_year_id || !form.section) {
       this.errorMessage.set('Please fill all required fields and select a file');
       return;
     }
@@ -753,8 +751,7 @@ export class OrganizationMembersComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', form.file);
     formData.append('academic_year_id', form.academic_year_id.toString());
-    formData.append('term_start_date', form.term_start_date);
-    formData.append('department', form.department);
+    formData.append('section', form.section);
 
     this.organizationService.bulkUploadMembers(formData).subscribe({
       next: (response) => {

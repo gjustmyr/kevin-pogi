@@ -21,12 +21,12 @@ export interface PersonalProfile {
   mobile_secondary?: string;
   email_primary?: string;
   email_secondary?: string;
-  country?: string;
-  region?: string;
-  province?: string;
-  barangay?: string;
-  street_subdivision?: string;
-  zip_code?: string;
+  home_country?: string;
+  home_region?: string;
+  home_province?: string;
+  home_barangay?: string;
+  home_street_subdivision?: string;
+  home_zip_code?: string;
   profile_picture?: string;
   passport_photo?: string;
 }

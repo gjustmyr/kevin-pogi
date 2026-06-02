@@ -70,7 +70,7 @@ exports.getOrganizations = async (req, res) => {
           include: [
             {
               model: db.Faculty,
-              as: "adviser",
+              as: "Faculty",
               attributes: [
                 "faculty_id",
                 "employee_id",

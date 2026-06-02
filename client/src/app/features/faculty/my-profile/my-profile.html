@@ -1,77 +1,77 @@
-<div class="flex h-full bg-gray-50">
+<div class="flex h-full bg-gray-50 dark:bg-gray-900">
   <!-- Sidebar Navigation -->
-  <div class="w-96 bg-white border-r border-gray-200 p-4 flex-shrink-0">
-    <h2 class="text-lg font-bold text-gray-800 mb-4">My Profile</h2>
+  <div class="w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
+    <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-4">My Profile</h2>
     <nav class="space-y-1 text-xs">
       <button
         (click)="selectSection('personal')"
-        [class.bg-green-50]="activeSection() === 'personal'"
-        [class.text-green-600]="activeSection() === 'personal'"
-        [class.border-green-500]="activeSection() === 'personal'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'personal'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Personal Profile
       </button>
       <button
         (click)="selectSection('academic')"
-        [class.bg-green-50]="activeSection() === 'academic'"
-        [class.text-green-600]="activeSection() === 'academic'"
-        [class.border-green-500]="activeSection() === 'academic'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'academic'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Academic Profile
       </button>
       <button
         (click)="selectSection('employment')"
-        [class.bg-green-50]="activeSection() === 'employment'"
-        [class.text-green-600]="activeSection() === 'employment'"
-        [class.border-green-500]="activeSection() === 'employment'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'employment'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Employment
       </button>
       <button
         (click)="selectSection('membership')"
-        [class.bg-green-50]="activeSection() === 'membership'"
-        [class.text-green-600]="activeSection() === 'membership'"
-        [class.border-green-500]="activeSection() === 'membership'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'membership'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Membership in Professional Organization
       </button>
       <button
         (click)="selectSection('awards')"
-        [class.bg-green-50]="activeSection() === 'awards'"
-        [class.text-green-600]="activeSection() === 'awards'"
-        [class.border-green-500]="activeSection() === 'awards'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'awards'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Awards Received
       </button>
       <button
         (click)="selectSection('seminars')"
-        [class.bg-green-50]="activeSection() === 'seminars'"
-        [class.text-green-600]="activeSection() === 'seminars'"
-        [class.border-green-500]="activeSection() === 'seminars'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'seminars'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Seminars/Trainings/Conferences Attended
       </button>
       <button
         (click)="selectSection('research')"
-        [class.bg-green-50]="activeSection() === 'research'"
-        [class.text-green-600]="activeSection() === 'research'"
-        [class.border-green-500]="activeSection() === 'research'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'research'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Research-related Seminars/Workshops/Trainings/Conferences
       </button>
       <button
         (click)="selectSection('extension')"
-        [class.bg-green-50]="activeSection() === 'extension'"
-        [class.text-green-600]="activeSection() === 'extension'"
-        [class.border-green-500]="activeSection() === 'extension'"
-        class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 transition border-transparent whitespace-normal leading-relaxed"
+        [ngClass]="activeSection() === 'extension'
+          ? 'bg-green-600 text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+        class="w-full text-left px-4 py-2 rounded-lg transition whitespace-normal leading-relaxed"
       >
         Faculty Involvement in Extension Activities
       </button>
@@ -79,7 +79,7 @@
   </div>
 
   <!-- Main Content Area -->
-  <div class="flex-1 p-6 overflow-y-auto">
+  <div class="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900">
     @if (loading()) {
       <div class="flex items-center justify-center h-64">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
@@ -88,9 +88,9 @@
 
     <!-- Personal Profile Section -->
     @if (activeSection() === 'personal' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Personal Profile</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Personal Profile</h3>
           @if (!isEditingPersonal()) {
             <button
               (click)="startEditingPersonal()"
@@ -121,94 +121,94 @@
               <!-- Personal Info on Right -->
               <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Title</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().title || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().title || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().last_name || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().last_name || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">First Name</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().first_name || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().first_name || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Middle Name</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().middle_name || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Middle Name</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().middle_name || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Extension</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().extension || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Extension</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().extension || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().date_of_birth || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().date_of_birth || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Place of Birth</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().place_of_birth || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Place of Birth</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().place_of_birth || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Civil Status</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().civil_status || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Civil Status</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().civil_status || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Sex</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().sex || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sex</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().sex || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Citizenship</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().citizenship || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Citizenship</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().citizenship || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Primary Mobile</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().mobile_primary || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Primary Mobile</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().mobile_primary || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Secondary Mobile</label>
-                  <p class="mt-1 text-gray-900">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Secondary Mobile</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">
                     {{ personalProfile().mobile_secondary || 'N/A' }}
                   </p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Primary Email</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().email_primary || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Primary Email</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().email_primary || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Secondary Email</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().email_secondary || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Secondary Email</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().email_secondary || 'N/A' }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="border-t pt-4 mt-4">
-              <h4 class="font-semibold text-gray-800 mb-3">Home Address</h4>
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+              <h4 class="font-semibold text-gray-800 dark:text-white mb-3">Home Address</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Country</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().country || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().home_country || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Region</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().region || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Region</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().home_region || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Province</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().province || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Province</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().home_province || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Barangay</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().barangay || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Barangay</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().home_barangay || 'N/A' }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Street/Subdivision</label>
-                  <p class="mt-1 text-gray-900">
-                    {{ personalProfile().street_subdivision || 'N/A' }}
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Street/Subdivision</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">
+                    {{ personalProfile().home_street_subdivision || 'N/A' }}
                   </p>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Zip Code</label>
-                  <p class="mt-1 text-gray-900">{{ personalProfile().zip_code || 'N/A' }}</p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Zip Code</label>
+                  <p class="mt-1 text-gray-900 dark:text-white">{{ personalProfile().home_zip_code || 'N/A' }}</p>
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Passport Photo (White Background)
                   </label>
                   <input
@@ -248,11 +248,11 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
                 <select
                   [(ngModel)]="personalForm().title"
                   name="title"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Select Title</option>
                   <option value="Mr.">Mr.</option>
@@ -265,66 +265,66 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().last_name"
                   name="last_name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">First Name</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().first_name"
                   name="first_name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Middle Name</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().middle_name"
                   name="middle_name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Extension</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Extension</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().extension"
                   name="extension"
                   placeholder="Jr., Sr., III, etc."
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
                 <input
                   type="date"
                   [(ngModel)]="personalForm().date_of_birth"
                   name="date_of_birth"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Place of Birth</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Place of Birth</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().place_of_birth"
                   name="place_of_birth"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Civil Status</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Civil Status</label>
                 <select
                   [(ngModel)]="personalForm().civil_status"
                   name="civil_status"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Select</option>
                   <option value="Single">Single</option>
@@ -335,11 +335,11 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Sex</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sex</label>
                 <select
                   [(ngModel)]="personalForm().sex"
                   name="sex"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">Select</option>
                   <option value="Male">Male</option>
@@ -347,115 +347,115 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Citizenship</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Citizenship</label>
                 <input
                   type="text"
                   [(ngModel)]="personalForm().citizenship"
                   name="citizenship"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >Primary Mobile (Required)</label
                 >
                 <input
                   type="tel"
                   [(ngModel)]="personalForm().mobile_primary"
                   name="mobile_primary"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >Secondary Mobile (Optional)</label
                 >
                 <input
                   type="tel"
                   [(ngModel)]="personalForm().mobile_secondary"
                   name="mobile_secondary"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >Primary Email (Required)</label
                 >
                 <input
                   type="email"
                   [(ngModel)]="personalForm().email_primary"
                   name="email_primary"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >Secondary Email (Optional)</label
                 >
                 <input
                   type="email"
                   [(ngModel)]="personalForm().email_secondary"
                   name="email_secondary"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
             </div>
 
-            <div class="border-t pt-4 mt-4">
-              <h4 class="font-semibold text-gray-800 mb-3">Home Address</h4>
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+              <h4 class="font-semibold text-gray-800 dark:text-white mb-3">Home Address</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Country</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().country"
-                    name="country"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_country"
+                    name="home_country"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Region</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Region</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().region"
-                    name="region"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_region"
+                    name="home_region"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Province</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Province</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().province"
-                    name="province"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_province"
+                    name="home_province"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Barangay</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Barangay</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().barangay"
-                    name="barangay"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_barangay"
+                    name="home_barangay"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Street/Subdivision</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Street/Subdivision</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().street_subdivision"
-                    name="street_subdivision"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_street_subdivision"
+                    name="home_street_subdivision"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Zip Code</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Zip Code</label>
                   <input
                     type="text"
-                    [(ngModel)]="personalForm().zip_code"
-                    name="zip_code"
-                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                    [(ngModel)]="personalForm().home_zip_code"
+                    name="home_zip_code"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -465,7 +465,7 @@
               <button
                 type="button"
                 (click)="cancelPersonalEdit()"
-                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 Cancel
               </button>
@@ -483,9 +483,9 @@
 
     <!-- Academic Profile Section -->
     @if (activeSection() === 'academic' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Academic Profile</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Academic Profile</h3>
           <button
             (click)="openAcademicModal()"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
@@ -495,17 +495,17 @@
         </div>
 
         @if (academicProfiles().length === 0) {
-          <p class="text-gray-500 text-center py-8">No academic profiles added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No academic profiles added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (profile of academicProfiles(); track profile.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ profile.level }}</h4>
-                    <p class="text-gray-600">{{ profile.school_name }}</p>
-                    <p class="text-gray-600">{{ profile.degree_course }}</p>
-                    <p class="text-sm text-gray-500">
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ profile.level }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ profile.school_name }}</p>
+                    <p class="text-gray-600 dark:text-gray-400">{{ profile.degree_course }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ profile.year_from }} - {{ profile.year_to }} (Graduated:
                       {{ profile.year_graduated }})
                     </p>
@@ -539,9 +539,9 @@
 
     <!-- Employment Profile Section -->
     @if (activeSection() === 'employment' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Employment Profile</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Employment Profile</h3>
           <button
             (click)="openEmploymentModal()"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
@@ -551,16 +551,16 @@
         </div>
 
         @if (employmentProfiles().length === 0) {
-          <p class="text-gray-500 text-center py-8">No employment records added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No employment records added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (profile of employmentProfiles(); track profile.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ profile.position_title }}</h4>
-                    <p class="text-gray-600">{{ profile.company_name }}</p>
-                    <p class="text-sm text-gray-500">
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ profile.position_title }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ profile.company_name }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ profile.employment_status }} | {{ profile.date_from }} -
                       {{ profile.date_to || 'Present' }}
                     </p>
@@ -595,9 +595,9 @@
 
     <!-- Professional Membership Section -->
     @if (activeSection() === 'membership' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Membership in Professional Organization</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Membership in Professional Organization</h3>
           <button
             (click)="openMembershipModal()"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
@@ -607,18 +607,18 @@
         </div>
 
         @if (memberships().length === 0) {
-          <p class="text-gray-500 text-center py-8">No memberships added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No memberships added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (membership of memberships(); track membership.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ membership.organization_name }}</h4>
-                    <p class="text-gray-600">
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ membership.organization_name }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">
                       {{ membership.position }} | {{ membership.membership_type }}
                     </p>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ membership.date_joined }} - {{ membership.date_ended || 'Present' }}
                     </p>
                   </div>
@@ -646,9 +646,9 @@
 
     <!-- Awards Section -->
     @if (activeSection() === 'awards' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Awards Received</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Awards Received</h3>
           <button
             (click)="openAwardModal()"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
@@ -658,20 +658,20 @@
         </div>
 
         @if (awards().length === 0) {
-          <p class="text-gray-500 text-center py-8">No awards added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No awards added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (award of awards(); track award.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ award.award_title }}</h4>
-                    <p class="text-gray-600">{{ award.awarding_body }}</p>
-                    <p class="text-sm text-gray-500">
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ award.award_title }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ award.awarding_body }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ award.date_received }} | {{ award.level }}
                     </p>
                     @if (award.description) {
-                      <p class="text-sm text-gray-600 mt-1">{{ award.description }}</p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ award.description }}</p>
                     }
                     @if (award.certificate_file) {
                       <a
@@ -707,9 +707,9 @@
 
     <!-- Seminars/Trainings Section -->
     @if (activeSection() === 'seminars' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Seminars/Trainings/Conferences Attended</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">Seminars/Trainings/Conferences Attended</h3>
           <button
             (click)="openSeminarModal()"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
@@ -719,16 +719,16 @@
         </div>
 
         @if (seminars().length === 0) {
-          <p class="text-gray-500 text-center py-8">No seminars/trainings added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No seminars/trainings added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (seminar of seminars(); track seminar.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ seminar.title }}</h4>
-                    <p class="text-gray-600">{{ seminar.category }}</p>
-                    <p class="text-sm text-gray-500">{{ seminar.date }}</p>
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ seminar.title }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ seminar.category }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ seminar.date }}</p>
                     <p class="text-sm text-gray-600">
                       Sponsoring Agency: {{ seminar.sponsoring_agency }}
                     </p>
@@ -766,9 +766,9 @@
 
     <!-- Research Activities Section -->
     @if (activeSection() === 'research' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">
             Research-related Seminars/Workshops/Trainings/Conferences
           </h3>
           <button
@@ -780,16 +780,16 @@
         </div>
 
         @if (researchActivities().length === 0) {
-          <p class="text-gray-500 text-center py-8">No research activities added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No research activities added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (activity of researchActivities(); track activity.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ activity.research_title }}</h4>
-                    <p class="text-gray-600">{{ activity.category }}</p>
-                    <p class="text-sm text-gray-500">{{ activity.date }}</p>
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ activity.research_title }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ activity.category }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ activity.date }}</p>
                     <p class="text-sm text-gray-600">
                       Sponsoring Agency: {{ activity.sponsoring_agency }}
                     </p>
@@ -827,9 +827,9 @@
 
     <!-- Extension Activities Section -->
     @if (activeSection() === 'extension' && !loading()) {
-      <div class="bg-white rounded-lg shadow p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white">
             Faculty Involvement in Extension Activities
           </h3>
           <button
@@ -841,16 +841,16 @@
         </div>
 
         @if (extensionActivities().length === 0) {
-          <p class="text-gray-500 text-center py-8">No extension activities added yet.</p>
+          <p class="text-gray-500 dark:text-gray-400 text-center py-8">No extension activities added yet.</p>
         } @else {
           <div class="space-y-4">
             @for (activity of extensionActivities(); track activity.id) {
-              <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+              <div class="border border-gray-200 dark:border-gray-700 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800">{{ activity.extension_title }}</h4>
-                    <p class="text-gray-600">{{ activity.beneficiary }}</p>
-                    <p class="text-sm text-gray-500">{{ activity.date_of_implementation }}</p>
+                    <h4 class="font-semibold text-gray-800 dark:text-white">{{ activity.extension_title }}</h4>
+                    <p class="text-gray-600 dark:text-gray-400">{{ activity.beneficiary }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ activity.date_of_implementation }}</p>
                     <p class="text-sm text-gray-600">Location: {{ activity.location }}</p>
                     @if (activity.documentation_file) {
                       <a
@@ -891,17 +891,17 @@
   <div class="modal-overlay" (click)="showAcademicModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingAcademic() ? 'Edit' : 'Add' }} Academic Profile
         </h3>
         <form (ngSubmit)="saveAcademicProfile()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Level</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Level</label>
             <select
               [(ngModel)]="academicForm().level"
               name="level"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Level</option>
               <option value="Elementary">Elementary</option>
@@ -912,67 +912,67 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">School Name</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">School Name</label>
             <input
               type="text"
               [(ngModel)]="academicForm().school_name"
               name="school_name"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Degree/Course</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Degree/Course</label>
             <input
               type="text"
               [(ngModel)]="academicForm().degree_course"
               name="degree_course"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Year From</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Year From</label>
               <input
                 type="number"
                 [(ngModel)]="academicForm().year_from"
                 name="year_from"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Year To</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Year To</label>
               <input
                 type="number"
                 [(ngModel)]="academicForm().year_to"
                 name="year_to"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Year Graduated</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Year Graduated</label>
             <input
               type="number"
               [(ngModel)]="academicForm().year_graduated"
               name="year_graduated"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Honors Received</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Honors Received</label>
             <input
               type="text"
               [(ngModel)]="academicForm().honors_received"
               name="honors_received"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div class="flex gap-3 justify-end pt-4">
             <button
               type="button"
               (click)="showAcademicModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -994,36 +994,36 @@
   <div class="modal-overlay" (click)="showEmploymentModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingEmployment() ? 'Edit' : 'Add' }} Employment Profile
         </h3>
         <form (ngSubmit)="saveEmploymentProfile()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Position Title</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Position Title</label>
             <input
               type="text"
               [(ngModel)]="employmentForm().position_title"
               name="position_title"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Company Name</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
             <input
               type="text"
               [(ngModel)]="employmentForm().company_name"
               name="company_name"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Employment Status</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Employment Status</label>
             <select
               [(ngModel)]="employmentForm().employment_status"
               name="employment_status"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Status</option>
               <option value="Permanent">Permanent</option>
@@ -1034,44 +1034,44 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Monthly Salary</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monthly Salary</label>
               <input
                 type="number"
                 step="0.01"
                 [(ngModel)]="employmentForm().monthly_salary"
                 name="monthly_salary"
                 placeholder="0.00"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Salary Grade</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Salary Grade</label>
               <input
                 type="text"
                 [(ngModel)]="employmentForm().salary_grade"
                 name="salary_grade"
                 placeholder="e.g., SG-15"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date From</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date From</label>
               <input
                 type="date"
                 [(ngModel)]="employmentForm().date_from"
                 name="date_from"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date To</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date To</label>
               <input
                 type="date"
                 [(ngModel)]="employmentForm().date_to"
                 name="date_to"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
@@ -1099,7 +1099,7 @@
             <button
               type="button"
               (click)="showEmploymentModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -1121,12 +1121,12 @@
   <div class="modal-overlay" (click)="showMembershipModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingMembership() ? 'Edit' : 'Add' }} Professional Membership
         </h3>
         <form (ngSubmit)="saveMembership()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Professional Organization Name</label
             >
             <input
@@ -1134,15 +1134,15 @@
               [(ngModel)]="membershipForm().organization_name"
               name="organization_name"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Position</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Position</label>
             <select
               [(ngModel)]="membershipForm().position"
               name="position"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Position</option>
               <option value="President">President</option>
@@ -1158,11 +1158,11 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Membership Type</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Membership Type</label>
             <select
               [(ngModel)]="membershipForm().membership_type"
               name="membership_type"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Type</option>
               <option value="Regular">Regular</option>
@@ -1187,16 +1187,16 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date Started</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date Started</label>
               <input
                 type="date"
                 [(ngModel)]="membershipForm().date_joined"
                 name="date_joined"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Date Validity</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date Validity</label>
               <input
                 type="date"
                 [(ngModel)]="membershipForm().date_ended"
@@ -1210,7 +1210,7 @@
             <button
               type="button"
               (click)="showMembershipModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -1232,45 +1232,45 @@
   <div class="modal-overlay" (click)="showAwardModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingAward() ? 'Edit' : 'Add' }} Award
         </h3>
         <form (ngSubmit)="saveAward()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Award Title</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Award Title</label>
             <input
               type="text"
               [(ngModel)]="awardForm().award_title"
               name="award_title"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Awarding Body</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Awarding Body</label>
             <input
               type="text"
               [(ngModel)]="awardForm().awarding_body"
               name="awarding_body"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date Received</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date Received</label>
             <input
               type="date"
               [(ngModel)]="awardForm().date_received"
               name="date_received"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Level</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Level</label>
             <select
               [(ngModel)]="awardForm().level"
               name="level"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Level</option>
               <option value="International">International</option>
@@ -1281,16 +1281,16 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
             <textarea
               [(ngModel)]="awardForm().description"
               name="description"
               rows="3"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             ></textarea>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Upload Certificate</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Certificate</label>
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -1305,7 +1305,7 @@
             <button
               type="button"
               (click)="showAwardModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -1327,12 +1327,12 @@
   <div class="modal-overlay" (click)="showSeminarModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingSeminar() ? 'Edit' : 'Add' }} Seminar/Training
         </h3>
         <form (ngSubmit)="saveSeminar()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Title of Seminar/Workshop/Training/Conference Attended</label
             >
             <input
@@ -1340,18 +1340,18 @@
               [(ngModel)]="seminarForm().title"
               name="title"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Category (Local, National, International)</label
             >
             <select
               [(ngModel)]="seminarForm().category"
               name="category"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="">Select Category</option>
               <option value="Local">Local</option>
@@ -1360,27 +1360,27 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
             <input
               type="date"
               [(ngModel)]="seminarForm().date"
               name="date"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Sponsoring Agency</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sponsoring Agency</label>
             <input
               type="text"
               [(ngModel)]="seminarForm().sponsoring_agency"
               name="sponsoring_agency"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Training Provider / Service Provider</label
             >
             <input
@@ -1388,11 +1388,11 @@
               [(ngModel)]="seminarForm().training_provider"
               name="training_provider"
               placeholder="Enter the organization or institution that provided the training"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Upload Certificate</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Certificate</label>
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -1404,7 +1404,7 @@
             <button
               type="button"
               (click)="showSeminarModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -1426,52 +1426,52 @@
   <div class="modal-overlay" (click)="showResearchModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingResearch() ? 'Edit' : 'Add' }} Research Activity
         </h3>
         <form (ngSubmit)="saveResearch()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Title of Research</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title of Research</label>
             <input
               type="text"
               [(ngModel)]="researchForm().research_title"
               name="research_title"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Category</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
             <input
               type="text"
               [(ngModel)]="researchForm().category"
               name="category"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
             <input
               type="date"
               [(ngModel)]="researchForm().date"
               name="date"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Sponsoring Agency</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sponsoring Agency</label>
             <input
               type="text"
               [(ngModel)]="researchForm().sponsoring_agency"
               name="sponsoring_agency"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Upload Certificate</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Certificate</label>
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -1483,7 +1483,7 @@
             <button
               type="button"
               (click)="showResearchModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -1505,52 +1505,52 @@
   <div class="modal-overlay" (click)="showExtensionModal.set(false)">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
           {{ isEditingExtension() ? 'Edit' : 'Add' }} Extension Activity
         </h3>
         <form (ngSubmit)="saveExtension()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Title of Extension PPAs</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title of Extension PPAs</label>
             <input
               type="text"
               [(ngModel)]="extensionForm().extension_title"
               name="extension_title"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date of Implementation</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Implementation</label>
             <input
               type="date"
               [(ngModel)]="extensionForm().date_of_implementation"
               name="date_of_implementation"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Beneficiary</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Beneficiary</label>
             <input
               type="text"
               [(ngModel)]="extensionForm().beneficiary"
               name="beneficiary"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Location</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
             <input
               type="text"
               [(ngModel)]="extensionForm().location"
               name="location"
               required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Documentation File</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documentation File</label>
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
@@ -1562,7 +1562,7 @@
             <button
               type="button"
               (click)="showExtensionModal.set(false)"
-              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>

@@ -387,31 +387,31 @@ async function generatePDSExcel(pds) {
   // Subdivision/Village: I22 (merged I22:K22, write to top-left cell only)
   worksheet.getCell("I22").value = pds.residential_subdivision || "";
   // Barangay: L22 (merged L22:N22, write to top-left cell only)
-  worksheet.getCell("L22").value = pds.residential_barangay || "";
+  worksheet.getCell("L20").value = pds.residential_barangay || "";
   // City/Municipality: I25 (merged I25:K25, write to top-left cell only)
-  worksheet.getCell("I25").value = pds.residential_city || "";
+  worksheet.getCell("I22").value = pds.residential_city || "";
   // Province: L25 (merged L25:N25, write to top-left cell only)
-  worksheet.getCell("L25").value = pds.residential_province || "";
+  worksheet.getCell("L22").value = pds.residential_province || "";
+  // ZIP Code: I22
   // ZIP Code: I26
-  // ZIP Code: I26
-  worksheet.getCell("I26").value = pds.residential_zip_code || "";
+  worksheet.getCell("I24").value = pds.residential_zip_code || "";
 
   // PERMANENT ADDRESS
   // House/Block/Lot No: I29 (merged I29:K29, write to top-left cell only)
-  worksheet.getCell("I29").value = pds.permanent_house_no || "";
+  worksheet.getCell("I25").value = pds.permanent_house_no || "";
   // Street: L29 (merged L29:N29, write to top-left cell only)
-  worksheet.getCell("L29").value = pds.permanent_street || "";
+  worksheet.getCell("L25").value = pds.permanent_street || "";
   // Subdivision/Village: I32 (merged I32:K32, write to top-left cell only)
-  worksheet.getCell("I32").value = pds.permanent_subdivision || "";
+  worksheet.getCell("I25").value = pds.permanent_subdivision || "";
   // Barangay: L32 (merged L32:N32, write to top-left cell only)
-  worksheet.getCell("L32").value = pds.permanent_barangay || "";
+  worksheet.getCell("L28").value = pds.permanent_barangay || "";
   // City/Municipality: I35 (merged I35:K35, write to top-left cell only)
-  worksheet.getCell("I35").value = pds.permanent_city || "";
+  worksheet.getCell("J29").value = pds.permanent_city || "";
   // Province: L35 (merged L35:N35, write to top-left cell only)
-  worksheet.getCell("L35").value = pds.permanent_province || "";
+  worksheet.getCell("L29").value = pds.permanent_province || "";
   // ZIP Code: I36
-  worksheet.getCell("I36").value = pds.permanent_zip_code || "";
-  worksheet.getCell("I36").value = pds.permanent_zip_code || "";
+  worksheet.getCell("I31").value = pds.permanent_zip_code || "";
+  
 
   // CONTACT INFORMATION
   worksheet.getCell("I32").value = pds.telephone_no || "";

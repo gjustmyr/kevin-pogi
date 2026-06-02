@@ -151,7 +151,7 @@
               [class.cursor-not-allowed]="!isSpecificPeriodSelected()"
               class="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors disabled:hover:bg-red-600"
             >
-              <i class="fas fa-exclamation-circle"></i> Set as Withholding
+              <i class="fas fa-exclamation-circle"></i> Set as For Review
             </button>
             <button
               (click)="setFacultyClearanceStatus('pending')"
@@ -292,7 +292,7 @@
 
   @if (!selectedFacultyRequirements() && !loading()) {
     <div class="text-center py-12 bg-white rounded-lg">
-      <p class="text-gray-600">Please select a faculty member to view their accomplishments</p>
+      <p class="text-gray-600">Please select a faculty member to view their portfolio</p>
     </div>
   }
 </div>

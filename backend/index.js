@@ -45,6 +45,7 @@ const deanFacultyProfileRoutes = require("./routes/dean-faculty-profile.routes")
 const deanProfileRoutes = require("./routes/dean-profile.routes");
 const deanPDSRoutes = require("./routes/dean-pds.routes");
 const deanOrganizationEventsRoutes = require("./routes/dean-organization-events.routes");
+const deanFacultyNotificationRoutes = require("./routes/dean-faculty-notification.routes");
 
 // Faculty specific routes
 const facultyRequirementRoutes = require("./routes/faculty-requirement.routes");
@@ -86,6 +87,7 @@ app.use("/api/dean/faculty-profiles", deanFacultyProfileRoutes);
 app.use("/api/dean/profile", deanProfileRoutes);
 app.use("/api/dean/pds", deanPDSRoutes);
 app.use("/api/dean/organization-events", deanOrganizationEventsRoutes);
+app.use("/api/dean/faculty-notifications", deanFacultyNotificationRoutes);
 
 // Faculty module routes
 app.use("/api/faculty/requirements", facultyRequirementRoutes);
@@ -130,6 +132,7 @@ db.sequelize
     console.error("Database error:", err.message);
   });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Access from other devices using your IP address`);
 });

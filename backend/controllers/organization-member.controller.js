@@ -481,13 +481,22 @@ exports.bulkUploadMembers = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const { academic_year_id, term_start_date, department } = req.body;
+    const { academic_year_id, section } = req.body;
 
-    if (!academic_year_id || !term_start_date || !department) {
+    if (!academic_year_id || !section) {
       return res.status(400).json({
-        message: "Academic year, term start date, and department are required",
+        message: "Academic year and section are required",
       });
     }
+
+    // Get academic year to use its start date
+    const academicYear = await db.AcademicYear.findByPk(academic_year_id);
+    if (!academicYear) {
+      return res.status(404).json({ message: "Academic year not found" });
+    }
+
+    // Use academic year start as term_start_date
+    const term_start_date = `${academicYear.year_start}-08-01`; // August 1st of start year
 
     // Parse CSV file
     const fs = require("fs");
@@ -511,10 +520,10 @@ exports.bulkUploadMembers = async (req, res) => {
           for (const row of results) {
             try {
               // Validate required fields
-              if (!row.sr_code || !row.student_name || !row.position) {
+              if (!row.sr_code || !row.student_name) {
                 uploadResults.errors.push({
                   row: row,
-                  error: "Missing SR Code, student name, or position",
+                  error: "Missing SR Code or student name",
                 });
                 uploadResults.skipped++;
                 continue;
@@ -559,8 +568,8 @@ exports.bulkUploadMembers = async (req, res) => {
                 contact_number: null, // Not in template
                 gender: row.gender ? row.gender.trim() : null,
                 program: row.program ? row.program.trim() : null,
-                section: row.section ? row.section.trim() : null,
-                department: department, // Use department from form
+                section: section, // Use section from form
+                department: row.department ? row.department.trim() : null,
                 year_level: row.year_level ? row.year_level.trim() : "1st Year",
                 position: position,
                 parent_member_id: null,
@@ -602,7 +611,7 @@ exports.bulkUploadMembers = async (req, res) => {
           await db.OrganizationBulkUpload.create({
             organization_id: organization.organization_id,
             file_name: req.file.originalname,
-            department: department,
+            department: section, // Store section in department field for now
             academic_year_id: academic_year_id,
             term_start_date: term_start_date,
             total_records: uploadResults.total,

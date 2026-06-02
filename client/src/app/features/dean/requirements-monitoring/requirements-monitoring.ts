@@ -23,9 +23,9 @@ export class DeanRequirementsMonitoring implements OnInit {
   // Filters
   academicYearsList = signal<DropdownAcademicYear[]>([]);
   facultyList = signal<Faculty[]>([]);
-  selectedAcademicYear = signal<number>(0);
-  selectedSemester = signal<string>('');
-  selectedFacultyId = signal<number>(0);
+  selectedAcademicYear: number = 0;
+  selectedSemester: string = '';
+  selectedFacultyId: number = 0;
   searchQuery = signal<string>('');
 
   // Pagination
@@ -60,9 +60,9 @@ export class DeanRequirementsMonitoring implements OnInit {
         this.academicYearsList.set(years);
         // Set latest (first) academic year and semester as default
         if (years.length > 0) {
-          this.selectedAcademicYear.set(years[0].academic_year_id);
+          this.selectedAcademicYear = years[0].academic_year_id;
         }
-        this.selectedSemester.set('1st Semester');
+        this.selectedSemester = '1st Semester';
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -85,13 +85,13 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   filterData() {
     this.currentPage.set(1);
-    if (this.selectedFacultyId()) {
+    if (this.selectedFacultyId) {
       this.loadFacultyRequirements();
     }
   }
 
   loadFacultyRequirements() {
-    if (!this.selectedFacultyId()) {
+    if (!this.selectedFacultyId) {
       this.selectedFacultyRequirements.set(null);
       return;
     }
@@ -99,9 +99,9 @@ export class DeanRequirementsMonitoring implements OnInit {
     this.loading.set(true);
     this.requirementService
       .getFacultyRequirements(
-        this.selectedFacultyId(),
-        this.selectedAcademicYear() || undefined,
-        this.selectedSemester() || undefined,
+        this.selectedFacultyId,
+        this.selectedAcademicYear || undefined,
+        this.selectedSemester || undefined,
       )
       .subscribe({
         next: (requirements) => {
@@ -118,7 +118,7 @@ export class DeanRequirementsMonitoring implements OnInit {
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
-      if (this.selectedFacultyId()) {
+      if (this.selectedFacultyId) {
         this.loadFacultyRequirements();
       }
     }
@@ -302,7 +302,7 @@ export class DeanRequirementsMonitoring implements OnInit {
 
   // Check if specific academic year and semester are selected
   isSpecificPeriodSelected(): boolean {
-    return this.selectedAcademicYear() !== 0 && this.selectedSemester() !== '';
+    return this.selectedAcademicYear !== 0 && this.selectedSemester !== '';
   }
 
   getClearanceStatusClass(status?: string): string {
@@ -322,7 +322,7 @@ export class DeanRequirementsMonitoring implements OnInit {
       case 'cleared':
         return 'CLEARED';
       case 'withholding':
-        return 'WITHHOLDING';
+        return 'FOR REVIEW';
       case 'pending':
       default:
         return 'PENDING';
@@ -344,7 +344,7 @@ export class DeanRequirementsMonitoring implements OnInit {
     }
 
     const statusText =
-      status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'Withholding' : 'Pending';
+      status === 'cleared' ? 'Cleared' : status === 'withholding' ? 'For Review' : 'Pending';
 
     Swal.fire({
       title: `Set Faculty Status to ${statusText}?`,
@@ -364,8 +364,8 @@ export class DeanRequirementsMonitoring implements OnInit {
             this.selectedFacultyRequirements()!.faculty.faculty_id,
             status,
             result.value || undefined,
-            this.selectedAcademicYear() || undefined,
-            this.selectedSemester() || undefined,
+            this.selectedAcademicYear || undefined,
+            this.selectedSemester || undefined,
           )
           .subscribe({
             next: () => {

@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../../services/auth/auth';
 import { Router, RouterModule } from '@angular/router';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { DeanFacultyManagement } from '../../dean/faculty-management/faculty-management';
 import { DeanOrganizationManagement } from '../../dean/organization-management/organization-management';
 import { DeanRequirementsMonitoring } from '../../dean/requirements-monitoring/requirements-monitoring';
 import { DeanOrganizationDocumentsComponent } from '../../dean/organization-documents/dean-organization-documents';
 import { DeanOrganizationDashboard } from '../../dean/organization-dashboard/organization-dashboard';
 import { DeanMyProfile } from '../../dean/my-profile/my-profile';
-import { DeanPersonalDataSheetComponent } from '../../dean/personal-data-sheet/personal-data-sheet.component';
 import {
   DeanRequirementService,
   DepartmentStatistics,
@@ -22,10 +22,10 @@ import {
   ResearchAnalytics,
   FacultyInvolvementResponse,
 } from '../../../services/dean-analytics.service';
-import { DeanOrganizationEventsComponent } from '../../dean/organization-events/dean-organization-events';
 import { ChangePasswordModal } from '../../../shared/components/change-password-modal/change-password-modal';
 import { DeanService, Dean } from '../../../services/dean.service';
 import { DeanMemberDemographicsComponent } from '../../dean/member-demographics/dean-member-demographics';
+import { FacultyNotificationsComponent } from '../../dean/faculty-notifications/faculty-notifications';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -42,10 +42,9 @@ Chart.register(...registerables);
     DeanOrganizationDocumentsComponent,
     DeanOrganizationDashboard,
     DeanMyProfile,
-    DeanPersonalDataSheetComponent,
-    DeanOrganizationEventsComponent,
     ChangePasswordModal,
     DeanMemberDemographicsComponent,
+    FacultyNotificationsComponent,
   ],
   templateUrl: './dean.html',
   styles: [],
@@ -66,8 +65,8 @@ export class DeanDashboard implements OnInit, AfterViewInit {
   loading = signal(false);
   departmentStats = signal<DepartmentStatistics | null>(null);
   academicYearsList = signal<DropdownAcademicYear[]>([]);
-  selectedAcademicYear = signal<number>(0);
-  selectedSemester = signal<string>('');
+  selectedAcademicYear: number = 0;
+  selectedSemester: string = '';
 
   // Analytics data
   facultyDemographics = signal<FacultyDemographics | null>(null);
@@ -104,6 +103,7 @@ export class DeanDashboard implements OnInit, AfterViewInit {
     private dropdownService: DropdownService,
     private analyticsService: DeanAnalyticsService,
     private deanService: DeanService,
+    public themeService: ThemeService,
   ) {}
 
   ngOnInit() {
@@ -151,9 +151,9 @@ export class DeanDashboard implements OnInit, AfterViewInit {
         this.academicYearsList.set(years);
         // Set latest (first) academic year and semester as default
         if (years.length > 0) {
-          this.selectedAcademicYear.set(years[0].academic_year_id);
+          this.selectedAcademicYear = years[0].academic_year_id;
         }
-        this.selectedSemester.set('1st Semester');
+        this.selectedSemester = '1st Semester';
       },
       error: (error) => {
         console.error('Error loading academic years:', error);
@@ -165,8 +165,8 @@ export class DeanDashboard implements OnInit, AfterViewInit {
     this.loading.set(true);
     this.requirementService
       .getDepartmentStatistics(
-        this.selectedAcademicYear() || undefined,
-        this.selectedSemester() || undefined,
+        this.selectedAcademicYear || undefined,
+        this.selectedSemester || undefined,
       )
       .subscribe({
         next: (stats) => {
@@ -250,13 +250,13 @@ export class DeanDashboard implements OnInit, AfterViewInit {
     const titles: { [key: string]: string } = {
       dashboard: 'Dashboard',
       faculty: 'Faculty Management',
+      'faculty-notifications': 'Send Email',
       organization: 'Organization Management',
       accomplishments: 'Accomplishments Monitoring',
       credentials: 'Faculty Credentials',
       'org-documents': 'Organization Documents',
       'org-events': 'Organization Events',
       'my-profile': 'My Profile',
-      pds: 'Personal Data Sheet',
     };
     return titles[this.activeTab()] || 'Dashboard';
   }
